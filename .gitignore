@@ -4,3 +4,5 @@ build/Main/
 build/Render
 build/index.html
 build/mydb.db
+package-lock.json
+
