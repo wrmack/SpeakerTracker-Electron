@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../build/Render",
+    "allowJs": true,
+    "target": "es2020",
+    "strict": true,
+    "moduleResolution": "node",
+    "composite": true
+  },
+  "include": ["./**/*"],
+}

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "../../build/Main",
+    "allowJs": true,
+    "target": "es2017",
+    "strict": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "composite": true
+  },
+  "files": ["./preload.ts","./main.ts" ],
+}

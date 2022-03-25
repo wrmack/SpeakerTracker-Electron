@@ -1,0 +1,28 @@
+body {
+  font-family: arial;
+  padding: 20px;
+}
+
+.help-large-title {
+  font-size: 20pt;
+  color: rgb(0,64,128);
+  padding-bottom: 10px;
+}
+
+.help-title {
+  font-size: 18pt;
+  color: rgb(0,64,128);
+  line-height: 40pt;
+}
+
+.help-title2 {
+  font-size: 14pt;
+  color: rgb(156 184 255);
+  line-height: 30pt;
+}
+
+.help-text {
+  font-size: 11pt;
+  color: rgb(0,0,0);
+}
+

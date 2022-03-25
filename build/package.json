@@ -1,0 +1,19 @@
+{
+  "name": "speakertracke",
+  "productName": "Speaker Tracker",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./Main/main.js",
+  "version": "1.0.0",
+  "author": "warwickmcnaughton",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@vscode/sqlite3": "^5.0.7"
+  },
+  "devDependencies": {
+    "electron": "16.0.7",
+    "eslint": "^8.7.0"
+  }
+}

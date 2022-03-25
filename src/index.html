@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <link href="./styles.css" rel="stylesheet">
+    <title>Speaker Tracker</title>
+  </head>
+  <body>
+  
+    <div id="nav-btn-container">
+      <button class="nav-item-btn active" id="speakers-btn">
+        <span class="nav-item-label">Speakers</span>
+      </button>
+      <button class="nav-item-btn" id="setup-btn">
+        <span class="nav-item-label">Setup</span>
+      </button>
+      <button class="nav-item-btn" id="reports-btn">
+        <span class="nav-item-label">Reports</span>
+      </button>
+    </div>
+
+    <div id="content-container"></div>
+
+
+    <!-- You can also require other files to run in this process -->
+    <script src="./render/content.js"></script>
+  </body>
+</html>

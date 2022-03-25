@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+  },
+  "exclude": ["build", "node_modules","./src" ],
+  "references": [
+    { "path": "./src/Main" },
+    { "path": "./src/Render" }
+  ]
+}

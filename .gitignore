@@ -1,0 +1,6 @@
+.DS_Store
+node_modules/
+build/Main/
+build/Render
+build/index.html
+build/mydb.db
