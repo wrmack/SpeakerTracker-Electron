@@ -1,7 +1,7 @@
 {
-  "name": "tables",
-  "productName": "Tables",
-  "description": "My Electron application description",
+  "name": "speakertracker",
+  "productName": "Speaker Tracker",
+  "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./build/Main/main.js",
   "version": "1.0.0",
