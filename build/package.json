@@ -10,7 +10,6 @@
     "start": "electron ."
   },
   "dependencies": {
-    "@vscode/sqlite3": "^5.0.7"
   },
   "devDependencies": {
     "electron": "16.0.7",

@@ -247,7 +247,7 @@ const getSavedEntGroupId = async () => {
     // No saved state exists so save first group of first entity
     const ent = await getEntityAtIdx(0) as Entity
     const grpIds = await getGroupIdsForEntityId(ent.Id)
-    const createRowSql = `INSERT INTO State (EntityId, GroupId) VALUES (${ent.Id}, ${grpIds[0]})` 
+    const createRowSql = `INSERT INTO State (EntityId, GroupId) VALUES (${ent.Id}, ${grpIds[0].Id})` 
     await window.myapi.selectAll(createRowSql)
     return {entId: ent.Id, grpId: grpIds[0]}
   } else {

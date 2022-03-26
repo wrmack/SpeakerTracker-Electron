@@ -10,7 +10,7 @@
     "start": "cd ./build && electron ."
   },
   "dependencies": {
-    "@vscode/sqlite3": "^5.0.7"
+    "sqlite3": "github:mapbox/node-sqlite3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.12.0",
