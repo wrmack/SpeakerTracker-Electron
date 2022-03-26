@@ -36,8 +36,7 @@ contextBridge.exposeInMainWorld('myapi', {
       if (err) {
         console.error(err.message);
       }
-      console.log('connected to sqlite');
-      console.log(sqlite3)
+      console.log('Connected to sqlite3, version ',sqlite3.VERSION);
     });
   },
   initDb: () => {
