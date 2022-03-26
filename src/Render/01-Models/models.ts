@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-// Access to @vscode/sqlite node module
+// Access to sqlite3 node module
 
 /** 
  * Execute a collection of SQL statements passed in through a string. 

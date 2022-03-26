@@ -1,4 +1,7 @@
-import type { Database } from '@vscode/sqlite3';
+
+import type { Database } from 'sqlite3';
+
+declare module 'sqlite3'
 
 export interface MyAPI {
   connect: () => Promise<void>,
@@ -28,12 +31,13 @@ let db: Database
 
 contextBridge.exposeInMainWorld('myapi', {
   connect: async () => {
-    const sqlite3 = require('@vscode/sqlite3').verbose();
+    const sqlite3 = require('sqlite3').verbose();
     db = new sqlite3.Database('mydb.db', (err: Error) => {
       if (err) {
         console.error(err.message);
       }
       console.log('connected to sqlite');
+      console.log(sqlite3)
     });
   },
   initDb: () => {
