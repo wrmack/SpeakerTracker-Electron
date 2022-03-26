@@ -10,7 +10,7 @@
     "start": "cd ./build && electron ."
   },
   "dependencies": {
-    "sqlite3": "github:mapbox/node-sqlite3"
+    "@vscode/sqlite3": "latest"
   },
   "devDependencies": {
     "@types/sqlite3": "^3.1.8",
