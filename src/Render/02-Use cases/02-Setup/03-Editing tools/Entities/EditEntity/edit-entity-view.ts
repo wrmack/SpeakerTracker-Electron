@@ -24,31 +24,47 @@ const loadEditEntitySheet = async function () {
 
 const setupEditEntityListeners = () => {
   // Cancel button
-  const canc = document.getElementById('edit-entity-cancel-btn');
+  const canc = document.getElementById('edit-entity-cancel-btn')
   if (!canc) {return}
-  canc.addEventListener('click', () => {
-    const ed = document.getElementById('editing-sheet')
-    if (!ed) {return}
-    ed.style.left = '100%'
-  })
+  canc.addEventListener('click', handleCancel)
 
   // Save button
   const sv = document.getElementById('edit-entity-save-btn');
   if (!sv) {return;}
-  sv.addEventListener('click', async () => {
-    const enam = document.getElementById('input-edit-entity-name') as HTMLInputElement;
-    if (!enam) {return}
-    const newName = enam.value
-    // Change in database
-    const entity = await getEntityAtIdx(masterRowIdx)
-    const mysql = `UPDATE Entities SET EntName = '${newName}' WHERE Entities.Id = ${entity.Id};`
-    execSql(mysql)
+  sv.addEventListener('click', handleSave)
+}
 
-    // Close the panel    
-    const ed = document.getElementById('editing-sheet')
-    if (!ed) {return}
-    ed.style.left = '100%'
-  })
+//
+// Handlers
+//
+
+function handleCancel() {
+  const edSht = document.getElementById('editing-sheet') as HTMLElement
+  edSht.style.left = '100%'
+}
+
+async function handleSave() {
+
+  const enam = document.getElementById('input-edit-entity-name') as HTMLInputElement;
+  if (!enam) {return}
+  const newName = enam.value
+  
+  // Change in database
+  const entity = await getEntityAtIdx(masterRowIdx)
+  const mysql = `UPDATE Entities SET EntName = '${newName}' WHERE Entities.Id = ${entity.Id};`
+  await execSql(mysql)
+
+  // Close the panel    
+  const ed = document.getElementById('editing-sheet')
+  if (!ed) {return}
+  ed.style.left = '100%'
+
+  // Emit a ent-saved event to cause a refresh
+  document.dispatchEvent(new CustomEvent('ent-saved', {
+    bubbles: true,
+    cancelable: false,
+    detail: { }
+  }))
 }
 
 export { loadEditEntitySheet, setupEditEntityListeners }

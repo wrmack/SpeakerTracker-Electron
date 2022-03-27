@@ -30,6 +30,12 @@ button:disabled {
   opacity: 0.6;
 }
 
+#titlebar {
+  width: 100%;
+  height: 40px;
+  background-color: #666;
+  -webkit-app-region: drag; 
+}
 
 #nav-btn-container {
   display: block;
@@ -665,6 +671,7 @@ div#setup-content-container {
 
 #master-entities {
   background-color: #333;
+  margin-top: 20px;
 }
 .master {
   background-color: #333;
@@ -677,7 +684,7 @@ div#setup-content-container {
 
 .master-cell-btn {
   border-radius: 6px;
-  width: 260px;
+  width: 248px;
   height: 40px;
   /* margin-left: auto; */
   /* margin-right: auto; */

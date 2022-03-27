@@ -20,28 +20,40 @@ export const setupAddEntityListeners = function () {
   // Cancel button
   const cncl = document.getElementById('add-entity-cancel-btn');
   if (!cncl) {return}
-  cncl.addEventListener('click', () => {
-    const ed = document.getElementById('editing-sheet');
-    if (ed) {
-      ed.style.left = '100%'
-    }
-  })
+  cncl.addEventListener('click', handleCancel) 
 
   // Save button
   const sv = document.getElementById('add-entity-save-btn');
   if (!sv) {return}
-  sv.addEventListener('click', async () => {
-    const enam = document.getElementById('entity-name') as HTMLInputElement
-    if (!enam) {return}
-    const newCouncilName = enam.value
+  sv.addEventListener('click', handleSave)
+}
 
-    // Save to database
-    const mysql = "INSERT INTO Entities (EntName) VALUES ('" + newCouncilName + "' );"
-    execSql(mysql)
+//
+// Handlers
+//
 
-    // Close the panel
-    const esht = document.getElementById('editing-sheet');
-    if (!esht) {return}
-    esht.style.left = '100%'
-  })
+function handleCancel() {
+  const edSht = document.getElementById('editing-sheet') as HTMLElement
+  edSht.style.left = '100%'
+}
+
+async function handleSave() {
+  const enam = document.getElementById('entity-name') as HTMLInputElement
+  const newCouncilName = enam.value
+
+  // Save to database
+  const mysql = "INSERT INTO Entities (EntName) VALUES ('" + newCouncilName + "' );"
+  await execSql(mysql)
+
+
+  // Close the panel
+  const edSHT = document.getElementById('editing-sheet') as HTMLElement
+  edSHT.style.left = '100%'
+
+  // Emit a ent-saved event to cause a refresh
+  document.dispatchEvent(new CustomEvent('ent-saved', {
+    bubbles: true,
+    cancelable: false,
+    detail: { }
+  }))
 }

@@ -2,6 +2,10 @@
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
+// titleBarOverlay: {
+//   color: '#666',
+//   symbolColor: '#bbb'
+// },
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -9,10 +13,14 @@ function createWindow () {
     minHeight: 780,
     width: 1120,
     height: 780,
+    backgroundColor: '#666',
+    titleBarStyle: 'hidden',
+    titleBarOverlay: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
     }
   })
+  mainWindow.menuBarVisible = false
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')

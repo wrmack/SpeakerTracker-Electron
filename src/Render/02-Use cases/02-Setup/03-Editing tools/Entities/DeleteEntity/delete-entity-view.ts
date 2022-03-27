@@ -26,25 +26,39 @@ const setupDeleteEntityListeners = function () {
   // Cancel button
   const canc = document.getElementById('delete-entity-cancel-btn');
   if (!canc) {return}
-  canc.addEventListener('click', () => {
-    const ed = document.getElementById('editing-sheet');
-    if (!ed) {return}
-    ed.style.left = '100%'
-  })
+  canc.addEventListener('click', handleCancel) 
 
   // Delete button
   const del = document.getElementById('delete-entity-save-btn');
   if (!del) {return}
-  del.addEventListener('click', async () => {
+  del.addEventListener('click', handleDelete)
+}
+
+//
+// Handlers
+//
+
+function handleCancel() {
+  const edSht = document.getElementById('editing-sheet') as HTMLElement
+  edSht.style.left = '100%'
+}
+
+async function handleDelete() {
     // Delete in database
     const entity = await getEntityAtIdx(masterRowIdx)
     const mysql = `DELETE FROM Entities WHERE Entities.Id = ${entity.Id};`
-    execSql(mysql)
+    await execSql(mysql)
 
     // Close the panel
-    const ed = document.getElementById('editing-sheet');
-    if (!ed) {return}
+    const ed = document.getElementById('editing-sheet') as HTMLElement
     ed.style.left = '100%'
-  })
+
+   // Emit a ent-saved event to cause a refresh
+   document.dispatchEvent(new CustomEvent('ent-saved', {
+    bubbles: true,
+    cancelable: false,
+    detail: { }
+  }))
 }
+
 export { loadDeleteEntitySheet, setupDeleteEntityListeners }

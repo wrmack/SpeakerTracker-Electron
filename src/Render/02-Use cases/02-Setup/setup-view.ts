@@ -114,7 +114,7 @@ const setupEditItemListeners = function () {
 
 }
 
-const setupSidebarListeners = function () {
+const setupSidebarListeners =  function () {
   // Entities button
   const sident = document.getElementById('setup-sidebar-ent-btn');
   if (!sident) {return}
@@ -123,6 +123,11 @@ const setupSidebarListeners = function () {
     removeSelectedClass()
     sident.classList.add('setup-sidebar-btn-selected')
     sideBarSelection.name = 'entities'
+  })
+  document.addEventListener('ent-saved', async (event) => {
+    if (event instanceof CustomEvent) {
+      await showEntities()
+    }
   })
 
   // Members button
@@ -134,9 +139,9 @@ const setupSidebarListeners = function () {
     sidemem.classList.add('setup-sidebar-btn-selected')
     sideBarSelection.name = 'members'
   })
-  document.addEventListener('mbr-saved', (event) => {
+  document.addEventListener('mbr-saved', async (event) => {
     if (event instanceof CustomEvent) {
-      showMembers()
+      await showMembers()
     }
   })
 
@@ -149,9 +154,9 @@ const setupSidebarListeners = function () {
     sidegp.classList.add('setup-sidebar-btn-selected')
     sideBarSelection.name = 'groups'
   })
-  document.addEventListener('grp-saved', (event) => {
+  document.addEventListener('grp-saved', async (event) => {
     if (event instanceof CustomEvent) {
-      showGroups()
+      await showGroups()
     }
   })
 }
