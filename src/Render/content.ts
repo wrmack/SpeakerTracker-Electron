@@ -20,11 +20,12 @@ import {
 
 
 // Initialise database
-window.myapi.connect()
-window.myapi.initDb()
+async function initialise() {
+  await window.myapi.connect()
+  await window.myapi.initDb()
+  loadSpeakersView()
+}
 
-// Global variable holds selected setup view
-const setupViewType = 'entities'
 
 //
 // Event listeners for navigation buttons
@@ -90,5 +91,5 @@ function removeActiveClasses() {
   setupbtn?.classList.remove('active')
 }
 
-// Start by loading the speaker view
-loadSpeakersView()
+// Start by calling initialise
+initialise()

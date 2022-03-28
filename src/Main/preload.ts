@@ -5,11 +5,11 @@ declare module 'sqlite3'
 
 export interface MyAPI {
   connect: () => Promise<void>,
-  initDb: () => void,
+  initDb: () =>  Promise<void>,
   close: () => void,
-  execSQL: (arg0: string) => void,
-  runSQL: (sql: string, params: any) => void,
-  selectAll: (arg0: string) => any[],
+  execSQL: (arg0: string) =>  Promise<void>,
+  runSQL: (sql: string, params: any) =>  Promise<void>,
+  selectAll: (sql: string, val?: never[]) =>  Promise<unknown>,
 }
 
 declare global {
@@ -39,7 +39,7 @@ contextBridge.exposeInMainWorld('myapi', {
       console.log('Connected to sqlite3, version ',sqlite3.VERSION);
     });
   },
-  initDb: () => {
+  initDb: async () => {
     const sql = `
     CREATE TABLE IF NOT EXISTS Entities (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntName TEXT);
     CREATE TABLE IF NOT EXISTS Members (Id INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, FirstName TEXT, LastName TEXT, Entity INTEGER);

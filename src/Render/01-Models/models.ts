@@ -3,16 +3,21 @@ declare interface MyAPI {
   /** Connect to database */
   connect: () => Promise<void>;
   /** Initialise database with empty tables if they don't exist */
-  initDb: () => void;
+  initDb: () =>  Promise<void>;
   close: () => void;
-  /** Run SQL statements in a string with no results returned */ 
-  execSQL: (arg0: string) => void;
+  /** Runs SQL statements (can be more than one) in a string with no results returned.
+   * 
+   * node-sqlite3 API: db.exec wrapped in db.serialize  */ 
+  execSQL: (arg0: string) =>  Promise<void>;
   /** Runs the SQL query with the specified parameters and 
-   * calls the callback afterwards if there is an error. */
-  runSQL: (sql: string, params: any) => void;
+   * calls the callback afterwards if there is an error. 
+   * 
+   * node-sqlite3 API: db.run.*/
+  runSQL: (sql: string, params: any) =>  Promise<void>;
   /** Runs the SQL query with the specified parameters and calls 
    * the callback with all result rows afterwards. 
-   * Wrapped in a Promise.*/ 
+   * 
+   * node-sqlite3 API: db.all wrapped in db.serialize.*/ 
   selectAll: (sql: string, val?: never[]) => Promise<any[]>;
 }
 
@@ -68,6 +73,30 @@ const getEntityAtIdx = async (idx: number) => {
   const selectedEntity = entities[idx]
   return selectedEntity
 }
+
+const deleteEntityWithId = async (id: number) => {
+  const mysql1 = `
+  DELETE FROM Entities WHERE Entities.Id = ${id};
+  DELETE FROM Members WHERE Members.Entity = ${id};
+  `
+  await window.myapi.connect()
+  await window.myapi.execSQL(mysql1)
+  
+  const mysql2 = `DELETE FROM Groups WHERE Groups.Entity = ${id} RETURNING Groups.Id;`
+  await window.myapi.connect()
+  const grpIds = await window.myapi.selectAll(mysql2)
+  
+  let mysql3 = ''
+  grpIds.forEach( (grpId) => {
+    mysql3 += `DELETE FROM GroupMembers WHERE GroupMembers.GroupId = ${grpId};`
+  })
+  if (mysql3.length > 0) {
+    await window.myapi.connect()
+    await window.myapi.selectAll(mysql3)
+  }
+  
+}
+
 
 //
 // Members
@@ -346,6 +375,7 @@ export {
   setCurrentEntGroupId,
   getEntities,
   getEntityAtIdx,
+  deleteEntityWithId,
   getMembersForCurrentEntity,
   getMemberAtIdx,
   getMemberWithId,

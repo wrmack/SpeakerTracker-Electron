@@ -1,4 +1,4 @@
-import { getEntityAtIdx, masterRowIdx, execSql } from '../../../../../01-Models/models.js'
+import { getEntityAtIdx, deleteEntityWithId, masterRowIdx, execSql, setSelectedEntityId, setSelectedGroupId } from '../../../../../01-Models/models.js'
 
 const deleteEntityView = `
   <div class='editing-btn-container'>
@@ -46,8 +46,10 @@ function handleCancel() {
 async function handleDelete() {
     // Delete in database
     const entity = await getEntityAtIdx(masterRowIdx)
-    const mysql = `DELETE FROM Entities WHERE Entities.Id = ${entity.Id};`
-    await execSql(mysql)
+    await deleteEntityWithId(entity.Id)
+    await setSelectedEntityId(0)
+    await setSelectedGroupId(0)
+
 
     // Close the panel
     const ed = document.getElementById('editing-sheet') as HTMLElement
