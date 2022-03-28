@@ -95,7 +95,7 @@ button:disabled {
 }
 
 #content-container {
-  height: 85vh;
+  height: 83vh;
   width: 100%;  
 }
 
@@ -622,6 +622,7 @@ div#setup-content-container {
   flex-wrap: nowrap;
   align-items: center;
   flex-shrink: 0;
+  border-bottom: 1px solid rgb(80,80,80);
 }
 
 .setup-sidebar-btn {
