@@ -81,6 +81,9 @@ async function loadSetupView () {
   setupSidebarListeners()
   // Initial view shows entities
   showEntities()
+  const sident = document.getElementById('setup-sidebar-ent-btn')
+  if (!sident) {return}
+  sident.classList.add('setup-sidebar-btn-selected')
 }
 
 // Helpers

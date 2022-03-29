@@ -116,7 +116,7 @@ const setupEditItemListeners = function () {
 
 const setupSidebarListeners =  function () {
   // Entities button
-  const sident = document.getElementById('setup-sidebar-ent-btn');
+  const sident = document.getElementById('setup-sidebar-ent-btn')
   if (!sident) {return}
   sident.addEventListener('click', () => {
     showEntities()
@@ -131,7 +131,7 @@ const setupSidebarListeners =  function () {
   })
 
   // Members button
-  const sidemem =  document.getElementById('setup-sidebar-mbrs-btn');
+  const sidemem =  document.getElementById('setup-sidebar-mbrs-btn')
   if (!sidemem) {return}
   sidemem.addEventListener('click', () => {
     showMembers()
