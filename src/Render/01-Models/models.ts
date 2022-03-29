@@ -88,11 +88,11 @@ const deleteEntityWithId = async (id: number) => {
   
   let mysql3 = ''
   grpIds.forEach( (grpId) => {
-    mysql3 += `DELETE FROM GroupMembers WHERE GroupMembers.GroupId = ${grpId};`
+    mysql3 += `DELETE FROM GroupMembers WHERE GroupMembers.GroupId = ${grpId.Id};`
   })
   if (mysql3.length > 0) {
     await window.myapi.connect()
-    await window.myapi.selectAll(mysql3)
+    await window.myapi.execSQL(mysql3)
   }
   
 }
