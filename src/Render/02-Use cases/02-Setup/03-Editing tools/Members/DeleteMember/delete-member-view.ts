@@ -1,4 +1,5 @@
 import { masterRowIdx, execSql, getMembersForCurrentEntity } from '../../../../../01-Models/models.js'
+import { enableButtons } from '../../../setup-view.js'
 
 const deleteMemberView = `
   <div class='editing-btn-container'>
@@ -50,6 +51,7 @@ const setupDeleteMemberListeners = function () {
 function handleCancel() {
   const edSht = document.getElementById('editing-sheet') as HTMLElement
   edSht.style.left = '100%'
+  enableButtons()
 }
 
 async function handleDelete() {
@@ -63,6 +65,7 @@ async function handleDelete() {
   // Close the panel
   const edSHt = document.getElementById('editing-sheet') as HTMLElement
   edSHt.style.left = '100%'
+  enableButtons()
 
    // Emit a mbr-saved event to cause a refresh
    document.dispatchEvent(new CustomEvent('mbr-saved', {

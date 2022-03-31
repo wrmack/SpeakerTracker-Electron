@@ -6,6 +6,8 @@ import {
   getMembersForGroupId,
   getMemberWithId
 } from '../../../../../01-Models/models.js'
+import { enableButtons } from '../../../setup-view.js'
+
 
 let memberIds:any[] = []
 
@@ -148,6 +150,7 @@ const moveEditSelectMembersSheet = () => {
 function handleCancel() {
   const ed = document.getElementById('editing-sheet') as HTMLElement
   ed.style.left = '100%'
+  enableButtons()
 }
 
 async function handleSave() {
@@ -168,6 +171,7 @@ async function handleSave() {
   // Close the panel
   const ed = document.getElementById('editing-sheet') as HTMLElement
   ed.style.left = '100%'
+  enableButtons()
 
   // Emit a mbr-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('grp-saved', {

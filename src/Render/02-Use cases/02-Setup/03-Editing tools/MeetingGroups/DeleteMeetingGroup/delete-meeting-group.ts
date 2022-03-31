@@ -1,4 +1,5 @@
 import { execSql, masterRowIdx, getGroupsForCurrentEntity, getMembersForGroupId, getMemberWithId } from "../../../../../01-Models/models.js"
+import { enableButtons } from "../../../setup-view.js"
 
 const deleteGroupView = `
   <div class='editing-btn-container'>
@@ -53,6 +54,7 @@ const setupDeleteGroupListeners = () => {
 function handleCancel() {
   const ed = document.getElementById('editing-sheet') as HTMLElement
   ed.style.left = '100%'
+  enableButtons()
 }
 
 async function handleDelete() {
@@ -68,6 +70,7 @@ async function handleDelete() {
   // Close the panel
   const ed = document.getElementById('editing-sheet') as HTMLElement
   ed.style.left = '100%'
+  enableButtons()
 
   // Emit a grp-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('grp-saved', {

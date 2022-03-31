@@ -143,11 +143,11 @@ button:disabled {
   visibility: hidden;
   position: absolute;
   display: flex;
-  top: 187px;
+  top: 225px;
   left: 10px;
-  width: 85%;
+  width: 86%;
   max-width: 1297px;
-  height: 73vh;
+  height: 69vh;
   background-color: #525254;
   opacity: 0.95;
   /* transform: translate(-50%); */
@@ -573,8 +573,10 @@ hr {
 
 .setup-topbar-item {
   float: left;
-  margin-top:  30px;
+  margin-top: 30px;
+  font-size: 16pt;
   /* border: 1px solid; */
+  color: white;
 }
 
 #setup-topbar-heading {
@@ -632,6 +634,7 @@ div#setup-content-container {
   background: none;
   color: white;
   text-align: center;
+  font-size:12pt;
 }
 
 .setup-sidebar-btn-selected {

@@ -25,16 +25,16 @@ const sideBarSelection = { name: 'entities' }
 const setupView = `
 <div id='setup-topbar-container'>
   <div id='setup-topbar-heading' class='setup-topbar-item'></div>
-  <div id='setup-topbar-add' class='setup-topbar-item'>Add</div>
-  <div id='setup-topbar-trash' class='setup-topbar-item'></div>
-  <div id='setup-topbar-edit' class='setup-topbar-item'>Edit</div>
+  <button id='setup-topbar-add' class='setup-topbar-item'>Add</button>
+  <button id='setup-topbar-trash' class='setup-topbar-item'></button>
+  <button id='setup-topbar-edit' class='setup-topbar-item'>Edit</button>
 </div>
 <div id="setup-content-container">
   <div id="setup-sidebar"> 
     <button class="setup-sidebar-btn" id='setup-sidebar-ent-btn'>Entities</button>
     <button class="setup-sidebar-btn" id='setup-sidebar-mbrs-btn'>Members</button>
     <button class="setup-sidebar-btn" id='setup-sidebar-groups-btn'>Meeting groups</button>
-    <button class="setup-sidebar-btn">Events</button>
+    <!-- <button class="setup-sidebar-btn">Events</button> -->
   </div>
   <div id="setup-master"></div>
   <div id="setup-detail"></div>
@@ -49,12 +49,15 @@ const setupView = `
 //
 // Editing is done by sliding in an editing sheet
 
-// Clicking Add causes the editing sheet to slide in.
 const setupEditItemListeners = function () {
   // 'Add' is pressed
   const topadd = document.getElementById('setup-topbar-add');
   if (!topadd) {return}
   topadd.addEventListener('click', async () => {
+    const trashBtn = document.getElementById('setup-topbar-trash') as HTMLButtonElement
+    trashBtn.disabled = true
+    const editBtn = document.getElementById('setup-topbar-edit') as HTMLButtonElement
+    editBtn.disabled = true
     moveSheet()
     switch (sideBarSelection.name) {
       case 'entities':
@@ -76,6 +79,10 @@ const setupEditItemListeners = function () {
   const toptrash = document.getElementById('setup-topbar-trash');
   if (!toptrash) {return}
   toptrash.addEventListener('click', async () => {
+    const addBtn = document.getElementById('setup-topbar-add') as HTMLButtonElement
+    addBtn.disabled = true
+    const editBtn = document.getElementById('setup-topbar-edit') as HTMLButtonElement
+    editBtn.disabled = true
     moveSheet()
     switch (sideBarSelection.name) {
       case 'entities':
@@ -96,6 +103,10 @@ const setupEditItemListeners = function () {
   const toped = document.getElementById('setup-topbar-edit');
   if (!toped) {return}
   toped.addEventListener('click', async () => {
+    const trashBtn = document.getElementById('setup-topbar-trash') as HTMLButtonElement
+    trashBtn.disabled = true
+    const addBtn = document.getElementById('setup-topbar-add') as HTMLButtonElement
+    addBtn.disabled = true
     moveSheet()
     switch (sideBarSelection.name) {
       case 'entities':
@@ -212,20 +223,18 @@ const removeSelectedClass = () => {
 }
 
 const moveSheet = () => {
-  const ed = document.getElementById('editing-sheet')
-  if (!ed) {return}
-  // 
+  const ed = document.getElementById('editing-sheet') as HTMLElement
   ed.style.left = (ed.style.left == '100%' || ed.style.left == '') ? '405px' : '100%'
-  // if (ed.style.left == '100%' || ed.style.left == '') {
-  //   ed.style.left = '405px'
-  //   ed.style.right = '0px'
-  //   ed.style.width = ''
-  // }
-  // else {
-  //   // ed.style.width = sheetWidthStrg
-  //   ed.style.right = ''
-  //   ed.style.left = '100%'
-  // }
+  if (ed.style.left == '100%') {enableButtons()}
+}
+
+const enableButtons = () => {
+  const addBtn = document.getElementById('setup-topbar-add') as HTMLButtonElement
+  addBtn.disabled = false
+  const trashBtn = document.getElementById('setup-topbar-trash') as HTMLButtonElement
+  trashBtn.disabled = false
+  const editBtn = document.getElementById('setup-topbar-edit') as HTMLButtonElement
+  editBtn.disabled = false
 }
 
 
@@ -233,5 +242,6 @@ export {
   setupView,
   setupEditItemListeners,
   setupSidebarListeners,
-  showEntities
+  showEntities,
+  enableButtons
 }

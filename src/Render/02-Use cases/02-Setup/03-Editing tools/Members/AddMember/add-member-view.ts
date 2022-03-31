@@ -1,4 +1,5 @@
 import { selectedEntityId, addMember } from '../../../../../01-Models/models.js'
+import { enableButtons } from '../../../setup-view.js'
 
 // Inserted into sheet
 const addMemberView = `
@@ -45,6 +46,7 @@ const setupAddMemberListeners = function () {
 function handleCancel() {
   const edSht = document.getElementById('editing-sheet') as HTMLElement
   edSht.style.left = '100%'
+  enableButtons()
 }
 
 async function handleSave() {
@@ -72,6 +74,7 @@ async function handleSave() {
   // Close the panel
   const edSHT = document.getElementById('editing-sheet') as HTMLElement
   edSHT.style.left = '100%'
+  enableButtons()
 
   // Emit a mbr-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('mbr-saved', {

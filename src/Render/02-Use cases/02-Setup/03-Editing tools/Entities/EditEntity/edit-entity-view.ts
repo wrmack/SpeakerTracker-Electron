@@ -1,4 +1,5 @@
 import { masterRowIdx, getEntityAtIdx, execSql } from '../../../../../01-Models/models.js'
+import { enableButtons } from '../../../setup-view.js'
 
 const editEntityView = `
 <div class='editing-btn-container'>
@@ -41,6 +42,7 @@ const setupEditEntityListeners = () => {
 function handleCancel() {
   const edSht = document.getElementById('editing-sheet') as HTMLElement
   edSht.style.left = '100%'
+  enableButtons()
 }
 
 async function handleSave() {
@@ -58,6 +60,7 @@ async function handleSave() {
   const ed = document.getElementById('editing-sheet')
   if (!ed) {return}
   ed.style.left = '100%'
+  enableButtons()
 
   // Emit a ent-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('ent-saved', {
