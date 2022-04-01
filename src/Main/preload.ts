@@ -10,6 +10,7 @@ export interface MyAPI {
   execSQL: (arg0: string) =>  Promise<void>,
   runSQL: (sql: string, params: any) =>  Promise<void>,
   selectAll: (sql: string, val?: never[]) =>  Promise<unknown>,
+  dbPath: string,
 }
 
 declare global {
@@ -28,16 +29,21 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 let db: Database
+let dbPath: string
 
 contextBridge.exposeInMainWorld('myapi', {
+  dbPath: () => { window.location},
   connect: async () => {
-    const sqlite3 = require('@vscode/sqlite3').verbose();
+    console.log("dbPath", dbPath)
+    const sqlite3 = require('@vscode/sqlite3').verbose()
     db = new sqlite3.Database('mydb.db', (err: Error) => {
       if (err) {
         console.error(err.message);
       }
-      console.log('Connected to sqlite3, version ',sqlite3.VERSION);
-    });
+      else {
+        console.log('Connected to sqlite3, version ',sqlite3.VERSION)
+      }
+    })
   },
   initDb: async () => {
     const sql = `

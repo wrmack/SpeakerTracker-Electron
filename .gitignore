@@ -5,3 +5,5 @@ build/Render
 build/mydb.db
 package-lock.json
 
+
+out/
