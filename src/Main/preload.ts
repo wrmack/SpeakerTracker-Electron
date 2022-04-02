@@ -9,8 +9,8 @@ export interface MyAPI {
   close: () => void,
   execSQL: (arg0: string) =>  Promise<void>,
   runSQL: (sql: string, params: any) =>  Promise<void>,
-  selectAll: (sql: string, val?: never[]) =>  Promise<unknown>,
-  dbPath: string,
+  selectAll: (sql: string, val?: never[]) =>  Promise<unknown>
+  getPaths: () => {userData: string, appData: string, logs: string, appPath: string }
 }
 
 declare global {
@@ -22,21 +22,24 @@ declare global {
 
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
-const { contextBridge } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron')
 
 window.addEventListener('DOMContentLoaded', () => {
   console.log('Testing')
 })
 
 let db: Database
-let dbPath: string
+// let dbPath = app.getPath('userData')
 
 contextBridge.exposeInMainWorld('myapi', {
-  dbPath: () => { window.location},
+  getPaths: () => ipcRenderer.invoke('getPaths'),
   connect: async () => {
-    console.log("dbPath", dbPath)
     const sqlite3 = require('@vscode/sqlite3').verbose()
-    db = new sqlite3.Database('mydb.db', (err: Error) => {
+    const path = require('path')
+    const appPaths = await ipcRenderer.invoke('getPaths')
+    const userPath = appPaths.userData
+    const dbPath = path.join(userPath,'mydb.db')
+    db = new sqlite3.Database(dbPath, (err: Error) => {
       if (err) {
         console.error(err.message);
       }

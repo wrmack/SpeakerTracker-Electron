@@ -1,24 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare interface MyAPI {
   /** Connect to database */
-  connect: () => Promise<void>;
+  connect: () => Promise<void>
   /** Initialise database with empty tables if they don't exist */
-  initDb: () =>  Promise<void>;
-  close: () => void;
+  initDb: () =>  Promise<void>
+  close: () => void
   /** Runs SQL statements (can be more than one) in a string with no results returned.
    * 
    * node-sqlite3 API: db.exec wrapped in db.serialize  */ 
-  execSQL: (arg0: string) =>  Promise<void>;
+  execSQL: (arg0: string) =>  Promise<void>
   /** Runs the SQL query with the specified parameters and 
    * calls the callback afterwards if there is an error. 
    * 
    * node-sqlite3 API: db.run.*/
-  runSQL: (sql: string, params: any) =>  Promise<void>;
+  runSQL: (sql: string, params: any) =>  Promise<void>
   /** Runs the SQL query with the specified parameters and calls 
    * the callback with all result rows afterwards. 
    * 
    * node-sqlite3 API: db.all wrapped in db.serialize.*/ 
-  selectAll: (sql: string, val?: never[]) => Promise<any[]>;
+  selectAll: (sql: string, val?: never[]) => Promise<any[]>
+  getPaths: () => {userData: string, appData: string, logs: string, appPath: string }
 }
 
 declare global {

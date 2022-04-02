@@ -4,6 +4,7 @@ build/Main/
 build/Render
 build/mydb.db
 package-lock.json
-
-
+yarn.lock
+.yarn/
 out/
+package.json

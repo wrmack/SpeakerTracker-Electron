@@ -21,6 +21,8 @@ import {
 
 // Initialise database
 async function initialise() {
+  const paths = await window.myapi.getPaths()
+  console.log("App paths: ",paths)
   await window.myapi.connect()
   await window.myapi.initDb()
   loadSpeakersView()
