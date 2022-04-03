@@ -29,7 +29,6 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 let db: Database
-// let dbPath = app.getPath('userData')
 
 contextBridge.exposeInMainWorld('myapi', {
   getPaths: () => ipcRenderer.invoke('getPaths'),
@@ -57,8 +56,6 @@ contextBridge.exposeInMainWorld('myapi', {
     CREATE TABLE IF NOT EXISTS State (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntityId INTEGER, GroupId INTEGER);
     `
 
-    // exec(sql: string, callback?: ((this: Statement, err: Error | null) => void) | undefined): Database
-
     db.exec(sql, (err: Error | null) => {
       if (err) {
         return console.error(err.message);
@@ -69,7 +66,6 @@ contextBridge.exposeInMainWorld('myapi', {
     db.close()
   },
   execSQL: async (sql: string) => {
-    console.log(sql)
     db.serialize(function () {
       console.log(sql)
       db.exec(sql, (err) => {

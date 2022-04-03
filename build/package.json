@@ -1,6 +1,6 @@
 {
   "name": "speakertracke",
-  "productName": "Speaker Tracker",
+  "productName": "SpeakerTracker",
   "description": "My Electron application description",
   "keywords": [],
   "main": "./Main/main.js",

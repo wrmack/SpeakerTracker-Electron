@@ -83,11 +83,11 @@ button:disabled {
   border-collapse: collapse;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
   -webkit-app-region: no-drag;
-  background-color: rgb(80, 80, 80);
+  background-color: rgb(100, 100, 100);
 }
 
 .nav-item-btn.active {
-  background-color: rgb(100,100,100);
+  background-color: rgb(80, 80, 80);
 }
 
 .nav-item-label {

@@ -31,6 +31,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
+        "icon": "./assets/SpeakerTracker.icns",
         "osxSign": {
           "identity": "Developer ID Application: W McNaughton (C4XR3G25JL)",
           "hardened-runtime": true,
@@ -63,7 +64,7 @@
         {
           "name": "@electron-forge/maker-dmg",
           "config": {
-            "background": "./assets/dmg-background.png",
+            "icon": "./assets/SpeakerTracker.icns",
             "format": "ULFO"
           }
         }
