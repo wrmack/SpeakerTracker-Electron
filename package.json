@@ -7,9 +7,9 @@
   "version": "1.0.0",
   "author": "warwickmcnaughton",
   "scripts": {
-    "start": "cd ./build && electron-forge start --app-path './build'",
+    "start": "cd ./build && electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make --targets @electron-forge/maker-dmg"
+    "make": "electron-forge make"
   },
   "dependencies": {
     "@vscode/sqlite3": "latest",
@@ -26,7 +26,8 @@
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "electron": "17.2.0",
-    "eslint": "^8.7.0"
+    "eslint": "^8.7.0",
+    "source-map-support": "^0.5.21"
   },
   "config": {
     "forge": {

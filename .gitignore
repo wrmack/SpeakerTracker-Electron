@@ -7,4 +7,3 @@ package-lock.json
 yarn.lock
 .yarn/
 out/
-package.json
