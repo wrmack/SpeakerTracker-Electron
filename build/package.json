@@ -1,7 +1,7 @@
 {
-  "name": "speakertracke",
+  "name": "speakertracker",
   "productName": "SpeakerTracker",
-  "description": "My Electron application description",
+  "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./Main/main.js",
   "version": "1.0.0",

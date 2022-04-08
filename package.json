@@ -32,7 +32,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./assets/SpeakerTracker.icns",
+        "icon": "./assets/SpeakerTracker44x44.ico",
         "osxSign": {
           "identity": "Developer ID Application: W McNaughton (C4XR3G25JL)",
           "hardened-runtime": true,
@@ -45,7 +45,8 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "speakertracker"
+            "name": "speakertracker",
+            "icon": "./assets/SpeakerTracker44x44.ico"
           }
         },
         {
@@ -71,5 +72,6 @@
         }
       ]
     }
-  }
+  },
+  "packageManager": "yarn@3.2.0"
 }
