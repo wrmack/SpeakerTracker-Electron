@@ -166,7 +166,7 @@ const getGroupsForCurrentEntity = async function () {
  *  @returns An array of group records containing only the Id field.
 */
 const getGroupIdsForEntityId = async function (id: number) {
-  const sql = `SELECT Id FROM GROUPS WHERE Groups.Entity = ${id};`
+  const sql = `SELECT Id FROM GROUPS WHERE Groups.Entity = ${id} ORDER BY GrpName;`
   await window.myapi.connect()
   return await window.myapi.selectAll(sql)
 }
@@ -176,7 +176,7 @@ const getGroupIdsForEntityId = async function (id: number) {
  *  @returns An array of group records containing all fields.
 */
 const getGroupsForEntityId = async function (id: number) {
-  const sql = `SELECT * FROM GROUPS WHERE Groups.Entity = ${id};`
+  const sql = `SELECT * FROM GROUPS WHERE Groups.Entity = ${id} ORDER BY GrpName;`
   await window.myapi.connect()
   return await window.myapi.selectAll(sql)
 }

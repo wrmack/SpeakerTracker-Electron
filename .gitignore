@@ -6,5 +6,4 @@ build/mydb.db
 package-lock.json
 yarn.lock
 .yarn/
-.yarnrc.yml
 out/

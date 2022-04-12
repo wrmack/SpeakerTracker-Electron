@@ -32,7 +32,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./assets/SpeakerTracker44x44.ico",
+        "icon": "./assets/SpeakerTracker48x48.ico",
         "osxSign": {
           "identity": "Developer ID Application: W McNaughton (C4XR3G25JL)",
           "hardened-runtime": true,
