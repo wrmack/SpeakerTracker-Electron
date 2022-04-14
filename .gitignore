@@ -3,7 +3,8 @@ node_modules/
 build/Main/
 build/Render
 build/mydb.db
+out/
 package-lock.json
 yarn.lock
 .yarn/
-out/
+.yarnrc.yml
