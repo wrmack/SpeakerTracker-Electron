@@ -1,5 +1,5 @@
 
-import type { Database } from '@vscode/sqlite3';
+import type { Database } from 'sqlite3';
 
 declare module 'sqlite3'
 
@@ -25,7 +25,8 @@ declare global {
 const { contextBridge, ipcRenderer } = require('electron')
 
 window.addEventListener('DOMContentLoaded', () => {
-  console.log('Testing')
+  console.log('DOM content loaded')
+  console.log("Versions: ",process.versions)
 })
 
 let db: Database
@@ -33,7 +34,7 @@ let db: Database
 contextBridge.exposeInMainWorld('myapi', {
   getPaths: () => ipcRenderer.invoke('getPaths'),
   connect: async () => {
-    const sqlite3 = require('@vscode/sqlite3').verbose()
+    const sqlite3 = require('sqlite3').verbose()
     const path = require('path')
     const appPaths = await ipcRenderer.invoke('getPaths')
     const userPath = appPaths.userData

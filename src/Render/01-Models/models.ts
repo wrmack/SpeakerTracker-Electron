@@ -72,7 +72,7 @@ const getEntities = async function () {
 const getEntityAtIdx = async (idx: number) => {
   const entities = await getEntities()
   const selectedEntity = entities[idx]
-  return selectedEntity
+  return selectedEntity as Entity
 }
 
 const deleteEntityWithId = async (id: number) => {
@@ -95,9 +95,24 @@ const deleteEntityWithId = async (id: number) => {
     await window.myapi.connect()
     await window.myapi.execSQL(mysql3)
   }
-  
 }
 
+/**
+ * Checks if the given entity id exists in the Entities table.
+ * @param id the entity id being checked
+ * @returns true if the entity id exists otherwise false
+ */
+const entityIdExists = async (id: number) => {
+  const mySql = `SELECT * FROM Entities WHERE Entities.Id = ${id}`
+  await window.myapi.connect()
+  const ent = await window.myapi.selectAll(mySql)
+  if (ent.length == 0) {
+    return false
+  }
+  else {
+    return true
+  }
+}
 
 //
 // Members
@@ -197,8 +212,6 @@ const addGroup = async function (group: any) {
   return groupId[0].Id
 }
 
-
-
 /** Retrieve group record for given group id */
 const getGroupForId = async (id: number) => {
   const sql = `SELECT * FROM Groups WHERE Groups.Id = ${id};`
@@ -216,6 +229,23 @@ const getGroupForId = async (id: number) => {
   await window.myapi.connect()
   const mbrIds = await window.myapi.selectAll(sql)
   return mbrIds 
+}
+
+/**
+ * Checks if the given group id exists in the Groups table.
+ * @param id the group id
+ * @returns true if the group id exists otherwise false
+ */
+const groupIdExists = async (id: number) => {
+  const sql = `SELECT * FROM Groups WHERE Id = ${id}`
+  await window.myapi.connect()
+  const group = await window.myapi.selectAll(sql)
+  if (group.length == 0) {
+    return false
+  }
+  else {
+    return true
+  }
 }
 
 // 
@@ -284,8 +314,20 @@ const getSavedEntGroupId = async () => {
     // Get the saved state
     const sql = `SELECT EntityId, GroupId FROM State;`
     const ret = await window.myapi.selectAll(sql)
-    const entId = ret[0].EntityId as number
-    const grpId = ret[0].GroupId as number
+    let entId = ret[0].EntityId as number
+    let grpId = ret[0].GroupId as number
+    // Sanity check entId
+    const entExists = await entityIdExists(entId)
+    if (!entExists) {
+      const ent = await getEntityAtIdx(0)
+      entId = ent.Id 
+    }
+    // Sanity check grpId
+    const grpExists = await groupIdExists(grpId)
+    if (!grpExists) {
+      const grpIds = await getGroupIdsForEntityId(entId)
+      grpId = grpIds[0].Id
+    }
     return {entId: entId, grpId: grpId}
   }
 }
