@@ -107,12 +107,14 @@ button:disabled {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
-  max-width: 1500px;
+  max-width: 1420px;
 }
 
 #display-area {
   display: flex;
-  width: 500px;
+  min-width: 500px;
+  width: 40%;
+  max-width: 800px;
   height: 150px;
   margin-top: 20px;
   margin-left: 30px;
