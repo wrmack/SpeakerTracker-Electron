@@ -102,7 +102,7 @@ button:disabled {
 #top-bar-container {
   height: 180px;
   display: flex;
-  width: 87%;
+  width: 93%;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
@@ -111,16 +111,17 @@ button:disabled {
 }
 
 #display-area {
-    width: 500px;
-    height: 100px;
-    margin-top: 20px;
-    margin-left: 30px;
-    margin-bottom: 30px;
-    background-color: #999;
-    color: white;
-    border-radius: 10px;
-    padding-left: 20px;
-    float: left
+  display: flex;
+  width: 500px;
+  height: 150px;
+  margin-top: 20px;
+  margin-left: 30px;
+  margin-bottom: 30px;
+  background-color: #999;
+  color: white;
+  border-radius: 10px;
+  padding-left: 20px;
+  align-items: center;
 }
 
 #committee-name {
@@ -172,21 +173,21 @@ button:disabled {
 
 .icon-play {
   font-family: STFonts;
-  font-size: 100pt;
+  font-size: 90pt;
   margin-left: 60px;
   color: white;
 }
 
 .icon-pause {
   font-family: STFonts;
-  font-size: 100pt;
+  font-size: 90pt;
   color:white;
   margin-left: 36px;
 }
 
 .icon-stop {
   font-family: STFonts;
-  font-size: 100pt;
+  font-size: 90pt;
   color:white;
   margin-left: 50px;
 }

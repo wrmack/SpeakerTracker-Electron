@@ -2,6 +2,10 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
 
+/**
+ * Function for obtaining user and app paths.  Used for debugging purposes.
+ * @returns an object with keys userData:, appData:, logs:, appPath
+ */
 async function handleGetPaths() {
   const obj = {
     userData: app.getPath('userData'),
