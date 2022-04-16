@@ -122,6 +122,7 @@ button:disabled {
   border-radius: 10px;
   padding-left: 20px;
   align-items: center;
+  justify-content: space-between;
 }
 
 #committee-name {
