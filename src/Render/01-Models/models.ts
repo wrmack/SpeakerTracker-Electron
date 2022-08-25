@@ -49,7 +49,9 @@ const execSql = async function (mysql: string) {
 const getEntities = async function () {
   const sql = 'SELECT * FROM Entities ORDER BY EntName;'
   await window.myapi.connect()
-  return await window.myapi.selectAll(sql)
+  const rows = await window.myapi.selectAll(sql)
+  console.log('getEntities rows: ' + rows)
+  return rows
 }
 
 /** Get enity id using currently selected entity idx.

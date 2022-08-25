@@ -4,15 +4,16 @@
   "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./Main/main.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "warwickmcnaughton",
   "scripts": {
     "start": "electron ."
   },
   "dependencies": {
+    "sqlite3": "^5.0.11"
   },
   "devDependencies": {
-    "electron": "16.0.7",
+    "electron": "20.0.3",
     "eslint": "^8.7.0"
   }
 }

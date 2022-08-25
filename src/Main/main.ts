@@ -1,21 +1,14 @@
+import type { Database } from 'sqlite3'
+
+declare module 'sqlite3'
+
+
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require('electron')
-const path = require('path')
+import { app, BrowserWindow, ipcMain } from 'electron'
+import path = require('path')
+const sqlite3 = require('sqlite3').verbose()
 
-/**
- * Function for obtaining user and app paths.  Used for debugging purposes.
- * @returns an object with keys userData:, appData:, logs:, appPath
- */
-async function handleGetPaths() {
-  const obj = {
-    userData: app.getPath('userData'),
-    appData: app.getPath('appData'),
-    logs: app.getPath('logs'),
-    appPath: app.getAppPath()
-  }
-  return obj
-}
-
+let db: Database
 
 function createWindow () {
   // Create the browser window.
@@ -40,7 +33,7 @@ function createWindow () {
   mainWindow.loadFile(path.join(__dirname, '../index.html'))
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -52,7 +45,7 @@ app.whenReady().then(() => {
   console.log("appData: ",app.getPath('appData'))
   console.log("logs: ",app.getPath('logs'))
   console.log("getAppPath: ",app.getAppPath())
-  ipcMain.handle('getPaths', handleGetPaths)
+
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -69,3 +62,96 @@ app.on('window-all-closed', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+/**
+ * IPC Handlers
+ */
+
+/**
+ * Function for obtaining user and app paths.  Used for debugging purposes.
+ * @returns an object with keys userData:, appData:, logs:, appPath
+ */
+ipcMain.handle('getPaths', async () => {
+  const obj = {
+    userData: app.getPath('userData'),
+    appData: app.getPath('appData'),
+    logs: app.getPath('logs'),
+    appPath: app.getAppPath()
+  }
+  return obj
+})
+
+
+ipcMain.handle('dbConnect', async () => {
+  const userPath = app.getPath('userData')
+  const dbPath = path.join(userPath,'mydb.db')
+  db = new sqlite3.Database(dbPath, (err: Error) => {
+    if (err) {
+    console.log('Error coming up')
+    console.error(err.message)
+    }
+    else {
+    console.log('Connected to sqlite3, version ',sqlite3.VERSION)
+    }
+  })
+})
+
+
+ipcMain.handle('dbInit', async () => {
+  const sql = `
+  CREATE TABLE IF NOT EXISTS Entities (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntName TEXT);
+  CREATE TABLE IF NOT EXISTS Members (Id INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, FirstName TEXT, LastName TEXT, Entity INTEGER);
+  CREATE TABLE IF NOT EXISTS Groups (Id INTEGER PRIMARY KEY AUTOINCREMENT, GrpName TEXT, Entity INTEGER);
+  CREATE TABLE IF NOT EXISTS GroupMembers (Id INTEGER PRIMARY KEY AUTOINCREMENT, GroupId INTEGER, MemberId INTEGER);
+  CREATE TABLE IF NOT EXISTS State (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntityId INTEGER, GroupId INTEGER);
+  `
+
+  db.exec(sql, (err: Error | null) => {
+    if (err) {
+      return console.error(err.message);
+    }
+  })
+})
+
+
+ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
+  // db.serialize(function () {
+    console.log(sql)
+    db.exec(sql, (err) => {
+      if (err) {
+        return console.error(err.message)
+      }
+    })
+  // })
+  db.close()
+})
+
+
+ipcMain.handle('dbRun', async (ev: Event, sql: string, params: any) => {
+  db.run(sql, params, err => {
+    if (err) {
+      return console.error(err.message);
+    }
+  });
+})
+
+// db.all uses a callback therefore wrap whole thing in a Promise and return the Prommise
+ipcMain.handle('dbSelect', async (ev:Event, sql: string) => {
+  // db.serialize( () => {
+    console.log('db.all sql: ' + sql)
+    return new Promise((resolve, reject) => {
+      db.all(sql, (err, rows) => {
+        if (err) {
+          console.log('db.all error: ' + err)
+        }
+        console.log('db.all rows: ' + JSON.stringify(rows))
+        resolve (rows)
+      })
+    })
+  // })
+})
+
+
+ipcMain.handle('dbClose', async () => {
+  db.close()
+})

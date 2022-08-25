@@ -1,13 +1,31 @@
+// {
+//   "compilerOptions": {
+//     "rootDir": ".",
+//     "outDir": "../../build/Main",
+//     "allowJs": true,
+//     "target": "es2017",
+//     "strict": true,
+//     "moduleResolution": "node",
+//     "module": "commonjs",
+//     "composite": true
+//   },
+//   "files": ["./preload.ts","./main.ts" ],
+// }
+
 {
   "compilerOptions": {
-    "rootDir": ".",
-    "outDir": "../../build/Main",
     "allowJs": true,
-    "target": "es2017",
-    "strict": true,
-    "moduleResolution": "node",
     "module": "commonjs",
-    "composite": true
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "outDir": "../../build/Main",
+    "composite": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "paths": {
+      "*": ["node_modules/*"]
+    }
   },
   "files": ["./preload.ts","./main.ts" ],
 }
