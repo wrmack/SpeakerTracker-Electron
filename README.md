@@ -8,3 +8,5 @@ A desktop app to help with managing formal meetings where, in a debate:
 - there are meeting rules that limit speaking time and speeches need to be timed.
 
 It is ideal for local government meetings.
+
+<a href="https://www.microsoft.com/store/apps/9MSPGN6QPDSC"><img src="English_get it from MS_864X312.svg" width="300px"></a> 
