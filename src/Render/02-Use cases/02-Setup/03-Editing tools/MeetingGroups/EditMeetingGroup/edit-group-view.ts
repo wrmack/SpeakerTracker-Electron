@@ -52,7 +52,7 @@ const loadEditGroupSheet = async () => {
   for (let i = 0 ; i < members.length; ++i) {
     const member = await getMemberWithId(members[i].MemberId)
     mbrString += `${member.FirstName} ${member.LastName}`
-    if (i < memberIds.length - 1) {
+    if (i < members.length - 1) {
       mbrString += ', '
     }
   }
