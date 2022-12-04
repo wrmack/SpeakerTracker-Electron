@@ -7,7 +7,7 @@
   "version": "1.0.4",
   "author": "warwickmcnaughton",
   "scripts": {
-    "start": "cd ./build && electron-forge start",
+    "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
@@ -16,19 +16,25 @@
     "sqlite3": "latest"
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.0-beta.65",
-    "@electron-forge/maker-deb": "6.0.0-beta.65",
-    "@electron-forge/maker-dmg": "6.0.0-beta.65",
-    "@electron-forge/maker-rpm": "6.0.0-beta.65",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.65",
-    "@electron-forge/maker-zip": "6.0.0-beta.65",
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-dmg": "6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "@electron/rebuild": "^3.2.10",
+    "@types/keyv": "^4.2.0",
+    "@types/node": "^18.11.10",
+    "@types/node-abi": "^3.0.0",
     "@types/sqlite3": "^3.1.8",
-    "@typescript-eslint/eslint-plugin": "^5.35.1",
-    "@typescript-eslint/parser": "^5.35.1",
-    "electron": "20.1.0",
-    "electron-builder": "^23.4.0",
-    "eslint": "^8.22.0",
-    "source-map-support": "^0.5.21"
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "electron": "20.0.0",
+    "eslint": "^8.28.0",
+    "keyv": "^4.5.2",
+    "node-abi": "^3.30.0",
+    "source-map-support": "^0.5.21",
+    "typescript": "^4.9.3"
   },
   "config": {
     "forge": {

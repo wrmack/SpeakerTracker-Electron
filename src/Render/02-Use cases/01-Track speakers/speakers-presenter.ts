@@ -78,11 +78,14 @@ async function populateTables () {
     setSelectedGroupId(savedEntGpId.grpId)
   } 
   const group = await getGroupForId(selectedGroupId)
-  const memberIds = await getMembersForGroupId(selectedGroupId)
-  const groupName = group.GrpName
-  const comm = document.getElementById('committee-name')
-  if (comm) {
-    comm.innerHTML = groupName
+  let memberIds:any[] = []
+  if (group != undefined) {
+    memberIds = await getMembersForGroupId(selectedGroupId)
+    const groupName = group.GrpName
+    const comm = document.getElementById('committee-name')
+    if (comm) {
+      comm.innerHTML = groupName
+    }
   }
 
   // Initialise table model
@@ -94,11 +97,14 @@ async function populateTables () {
     table2 = []
 
     // Initialise table0 with all members
-    for (let i = 0; i < memberIds.length; ++i) {
-      const memberReturned = await getMemberWithId(memberIds[i].MemberId)
-      const member: Member = {id: memberReturned.Id, title: memberReturned.Title, firstName: memberReturned.FirstName, lastName: memberReturned.LastName}
-      table0.push(member)
+    if (memberIds != undefined) {
+      for (let i = 0; i < memberIds.length; ++i) {
+        const memberReturned = await getMemberWithId(memberIds[i].MemberId)
+        const member: Member = {id: memberReturned.Id, title: memberReturned.Title, firstName: memberReturned.FirstName, lastName: memberReturned.LastName}
+        table0.push(member)
+      }
     }
+ 
 
     // Initialise speaking table with empty section 
     const spkgList: SectionList = {
@@ -377,14 +383,22 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
 async function populateEntityDropdown() {
   let options = ''
   const entities = await getEntities()
-  entities.forEach( (entity) => {
-    if (entity.Id == selectedEntityId) {
-      options += `<option selected>${entity.EntName}</option>`
-    }
-    else {
-      options += `<option>${entity.EntName}</option>`
-    }
-  })
+  if (entities.length == 0) {
+    options += `<option disabled selected hidden>Go to Setup and create an Entity</option>`
+    const entEl = document.getElementById('mtgsetup-select-entity')
+    if (entEl) {entEl.classList.add("mtgsetup-prompt") }
+  }
+  else {
+    entities.forEach( (entity) => {
+      if (entity.Id == selectedEntityId) {
+        options += `<option selected>${entity.EntName}</option>`
+      }
+      else {
+        options += `<option>${entity.EntName}</option>`
+      }
+    })
+  }
+
   const ent = document.getElementById('mtgsetup-select-entity')
   if (ent) { ent.innerHTML = options} 
 }
@@ -403,15 +417,22 @@ async function entityChanged(newEntityIdx: number) {
 async function populateGroupDropdown() {
   let options = ''
   const groups = await getGroupsForEntityId(selectedEntityId)
+  if (groups.length == 0) {
+    options += `<option disabled selected hidden>Go to Setup and create a Meeting group</option>`
+    const entEl = document.getElementById('mtgsetup-select-group')
+    if (entEl) {entEl.classList.add("mtgsetup-prompt") }
+  }
+  else {
+    groups.forEach( async (group) => {
+      if (group.Id == selectedGroupId) {
+        options += `<option selected>${group.GrpName}</option>`
+      }
+      else {
+        options += `<option>${group.GrpName}</option>`
+      }
+    })
+  }
 
-  groups.forEach( async (group) => {
-    if (group.Id == selectedGroupId) {
-      options += `<option selected>${group.GrpName}</option>`
-    }
-    else {
-      options += `<option>${group.GrpName}</option>`
-    }
-  })
   const grp = document.getElementById('mtgsetup-select-group')
   if (grp) {grp.innerHTML = options}
 }

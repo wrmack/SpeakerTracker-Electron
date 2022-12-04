@@ -137,6 +137,7 @@ const setupSidebarListeners =  function () {
   })
   document.addEventListener('ent-saved', async (event) => {
     if (event instanceof CustomEvent) {
+      
       await showEntities()
     }
   })

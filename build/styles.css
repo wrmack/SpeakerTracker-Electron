@@ -337,6 +337,10 @@ select.mtgsetup-select {
   margin-bottom: 20px;
 }
 
+select.mtgsetup-prompt {
+  color:#aaa;
+}
+
 table {
   float: left;
   background-color: white;
@@ -768,6 +772,11 @@ div#selected-ent {
   transition-delay: 0s;
   overflow-x: hidden;
   white-space: nowrap;
+}
+
+#add-group-members {
+  background-color: #d5d5d5;
+  color: #000;
 }
 
 #editing-sheet-selectMembers {

@@ -1,24 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare interface MyAPI {
+  
   /** Connect to database */
   connect: () => Promise<void>
+  
   /** Initialise database with empty tables if they don't exist */
   initDb: () =>  Promise<void>
   close: () => void
+  
   /** Runs SQL statements (can be more than one) in a string with no results returned.
    * 
    * node-sqlite3 API: db.exec wrapped in db.serialize  */ 
   execSQL: (arg0: string) =>  Promise<void>
+  
   /** Runs the SQL query with the specified parameters and 
    * calls the callback afterwards if there is an error. 
    * 
    * node-sqlite3 API: db.run.*/
   runSQL: (sql: string, params: any) =>  Promise<void>
+
   /** Runs the SQL query with the specified parameters and calls 
    * the callback with all result rows afterwards. 
    * 
    * node-sqlite3 API: db.all wrapped in db.serialize.*/ 
   selectAll: (sql: string, val?: never[]) => Promise<any[]>
+
   getPaths: () => {userData: string, appData: string, logs: string, appPath: string }
 }
 
@@ -219,7 +225,7 @@ const getGroupForId = async (id: number) => {
   const sql = `SELECT * FROM Groups WHERE Groups.Id = ${id};`
   await window.myapi.connect()
   const group = await window.myapi.selectAll(sql)
-  return group[0]
+  return group == undefined ? undefined : group[0]
 }
 
 /** 
@@ -309,7 +315,13 @@ const getSavedEntGroupId = async () => {
     // No saved state exists so save first group of first entity
     const ent = await getEntityAtIdx(0) as Entity
     const grpIds = await getGroupIdsForEntityId(ent.Id)
-    const createRowSql = `INSERT INTO State (EntityId, GroupId) VALUES (${ent.Id}, ${grpIds[0].Id})` 
+    let createRowSql = ''
+    if (grpIds.length == 0) {
+      createRowSql = `INSERT INTO State (EntityId) VALUES (${ent.Id})`
+    }
+    else {
+      createRowSql = `INSERT INTO State (EntityId, GroupId) VALUES (${ent.Id}, ${grpIds[0].Id})` 
+    }
     await window.myapi.selectAll(createRowSql)
     return {entId: ent.Id, grpId: grpIds[0]}
   } else {
@@ -328,7 +340,9 @@ const getSavedEntGroupId = async () => {
     const grpExists = await groupIdExists(grpId)
     if (!grpExists) {
       const grpIds = await getGroupIdsForEntityId(entId)
-      grpId = grpIds[0].Id
+      if (grpIds.length > 0) {
+        grpId = grpIds[0].Id
+      }
     }
     return {entId: entId, grpId: grpId}
   }

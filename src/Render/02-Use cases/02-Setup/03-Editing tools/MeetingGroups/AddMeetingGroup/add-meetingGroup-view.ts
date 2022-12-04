@@ -16,7 +16,7 @@ const addGroupView = `
   </div>
   <div class='field-container'>
     <label class='input-label'>Members:</label>
-    <input type='text' size='100' placeholder='eg John' id='add-group-members'>
+    <input type='text' size='100' placeholder='Use > to select group members' id='add-group-members' disabled>
     <div><button  class="arrow" id='add-group-arrow'>&gt;</button></div>
   </div>
 `

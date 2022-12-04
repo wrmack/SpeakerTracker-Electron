@@ -2,7 +2,18 @@ import { getEntities } from '../../../../01-Models/models.js';
 
 async function loadEntities () {
   const entities = await getEntities()
-
+  if (entities.length == 0){
+    const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
+    if (mbrsBtn != null) {mbrsBtn.disabled = true}
+    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+    if (grpBtn != null) {grpBtn.disabled = true}
+  }
+  else {
+    const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
+    if (mbrsBtn != null) {mbrsBtn.disabled = false}
+    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+    if (grpBtn != null) {grpBtn.disabled = true}
+  }
   let tableRows = ''
   for (const i in entities) {
     const myId = 'en-r' + i

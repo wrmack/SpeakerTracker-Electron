@@ -10,9 +10,9 @@
               "--remote-debugging-port=9223",
               "."
           ],
-          "windows": {
-              "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
-          },
+        //   "windows": {
+        //       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+        //   },
           "program": "${workspaceFolder}/build",
           "localRoot": "${workspaceFolder}/build"
       },

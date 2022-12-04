@@ -23,6 +23,14 @@ async function loadDropdown() {
 
 async function loadMembers () {  
   const members = await getMembersForCurrentEntity()
+  if (members.length == 0) {
+    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+    if (grpBtn != null) {grpBtn.disabled = true}
+  }
+  else {
+    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+    if (grpBtn != null) {grpBtn.disabled = false}
+  }
   let tableRows = ''
   for (const i in members) {
     const myId = 'mr-r' + i
