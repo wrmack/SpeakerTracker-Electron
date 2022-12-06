@@ -12,7 +12,7 @@ async function loadEntities () {
     const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
     if (mbrsBtn != null) {mbrsBtn.disabled = false}
     const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
-    if (grpBtn != null) {grpBtn.disabled = true}
+    if (grpBtn != null) {grpBtn.disabled = false}
   }
   let tableRows = ''
   for (const i in entities) {

@@ -37,11 +37,22 @@ const setupAddMemberListeners = function () {
   const svBtn = document.getElementById('save-btn')
   if (!svBtn) {return}
   svBtn.addEventListener('click', handleSave)
+
+  // Last input field for member
+  const lastName = document.getElementById('member-last-name')
+  if (!lastName) {return}
+  lastName.addEventListener('keypress', handleKeyPress)
 }
 
 //
 // Handlers
 //
+
+function handleKeyPress(ev: KeyboardEvent) {
+  if (ev.key === 'Enter') {
+    handleSave()
+  }
+}
 
 function handleCancel() {
   const edSht = document.getElementById('editing-sheet') as HTMLElement

@@ -774,7 +774,7 @@ div#selected-ent {
   white-space: nowrap;
 }
 
-#add-group-members {
+#add-group-members, #edit-group-members {
   background-color: #d5d5d5;
   color: #000;
 }

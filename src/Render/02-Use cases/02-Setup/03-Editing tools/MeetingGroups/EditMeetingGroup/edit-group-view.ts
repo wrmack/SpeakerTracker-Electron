@@ -24,7 +24,7 @@ const editGroupView = `
   </div>
   <div class='field-container'>
     <label class='input-label'>Members:</label>
-    <input type='text' size='100' placeholder='eg John' id='edit-group-members'>
+    <input type='text' size='100' placeholder='Use > to edit group members' id='edit-group-members' disabled>
     <div><button  class="arrow" id='edit-group-arrow'>&gt;</button></div>
   </div>
 `
