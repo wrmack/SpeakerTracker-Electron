@@ -3,35 +3,41 @@
    xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
    xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
    xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  
   <Identity Name="5918WarwickMcNaughton.SpeakerTracker"
     ProcessorArchitecture="x64"
     Publisher="CN=14EFDD4D-6393-45C1-9098-784F9A3D8508"
     Version="1.0.7.0" />
+  
   <Properties>
     <DisplayName>Speaker Tracker</DisplayName>
     <PublisherDisplayName>Warwick McNaughton</PublisherDisplayName>
     <Description>An app to track speakers in a formal debate.</Description>
     <Logo>assets\StoreLogo.png</Logo>
   </Properties>
+  
   <Resources>
     <Resource Language="en-us" />
   </Resources>
+  
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14316.0" MaxVersionTested="10.0.22621.0" />
   </Dependencies>
+  
   <Capabilities>
     <rescap:Capability Name="runFullTrust"/>
   </Capabilities>
+  
   <Applications>
     <Application Id="SpeakerTracker" Executable="app\SpeakerTracker.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-       BackgroundColor="transparent"
-       DisplayName="SpeakerTracker"
-       Square150x150Logo="assets\Square150x150Logo.png"
-       Square44x44Logo="assets\Square44x44Logo.png"
-       Description="SpeakerTracker">
-        <uap:DefaultTile Wide310x150Logo="assets\Wide310x150Logo.scale-100.png" Square310x310Logo="assets\LargeTile.scale-100.png" Square71x71Logo="assets\SmallTile.scale-150.png" />
-	<uap:SplashScreen Image="assets\SplashScreen.scale-100.png" />
+        BackgroundColor="transparent"
+        DisplayName="SpeakerTracker"
+        Square150x150Logo="assets\Square150x150Logo.png"
+        Square44x44Logo="assets\Square44x44Logo.png"
+        Description="SpeakerTracker">
+        <uap:DefaultTile Wide310x150Logo="assets\Wide310x150Logo.png" Square310x310Logo="assets\LargeTile.png" Square71x71Logo="assets\SmallTile.png" />
+        <uap:SplashScreen Image="assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
   </Applications>

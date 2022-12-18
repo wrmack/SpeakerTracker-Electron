@@ -42,14 +42,7 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "./assets/SpeakerTracker48x48.ico",
-        "osxSign": {
-          "identity": "Developer ID Application: W McNaughton (C4XR3G25JL)",
-          "hardened-runtime": true,
-          "entitlements": "entitlements.plist",
-          "entitlements-inherit": "entitlements.plist",
-          "signature-flags": "library"
-        }
+        "icon": "./assets/SpeakerTracker48x48.ico"
       },
       "makers": [
         {
@@ -59,12 +52,13 @@
             "windowsKit": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22621.0\\x64",
             "devCert": "C:\\Users\\warwi\\AppData\\Roaming\\electron-windows-store\\14EFDD4D-6393-45C1-9098-784F9A3D8508\\14EFDD4D-6393-45C1-9098-784F9A3D8508.pfx",
             "certPass": "",
-            "assets": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\assets",
-            "manifest": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\AppXManifest.xml"
+            "assets": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\Assets",
+            "manifest": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\AppXManifest.xml",
+            "makePri": true
           }
         }
       ]
     }
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@3.3.0"
 }
