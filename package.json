@@ -19,25 +19,30 @@
     "@electron-forge/maker-appx": "^6.0.4",
     "@electron/rebuild": "^3.2.10",
     "@types/keyv": "^4.2.0",
-    "@types/node": "^18.11.10",
+    "@types/node": "^18.11.18",
     "@types/node-abi": "^3.0.0",
     "@types/sqlite3": "^3.1.8",
-    "@typescript-eslint/eslint-plugin": "^5.45.0",
-    "@typescript-eslint/parser": "^5.45.0",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
     "electron": "latest",
     "electron-windows-store": "^2.1.0",
-    "eslint": "^8.28.0",
+    "eslint": "^8.31.0",
     "got": "^12.5.3",
     "keyv": "^4.5.2",
     "node-abi": "^3.30.0",
     "source-map-support": "^0.5.21",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.4"
   },
   "config": {
     "forge": {
       "packagerConfig": {
         "icon": "./assets/SpeakerTracker48x48.ico",
-        "ignore": [".yarn",".vs",".vscode","src"]
+        "ignore": [
+          ".yarn",
+          ".vs",
+          ".vscode",
+          "src"
+        ]
       },
       "makers": [
         {

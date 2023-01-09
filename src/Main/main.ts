@@ -33,7 +33,22 @@ function createWindow () {
   mainWindow.loadFile(path.join(__dirname, '../index.html'))
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools({mode:'detach'})
+  mainWindow.webContents.openDevTools({mode:'detach'})
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    console.log("window url ", url)
+    if (url === 'about:blank#blocked') {
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          frame: true,
+          fullscreenable: false,
+          autoHideMenuBar: true
+        }
+      }
+    }
+    return { action: 'deny' }
+  })
 }
 
 // This method will be called when Electron has finished
