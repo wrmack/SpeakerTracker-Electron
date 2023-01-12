@@ -7,7 +7,8 @@ import {
   updateListMember,
   resetTables,
   handleMovingMember,
-  getTimeForMember 
+  getTimeForMember,
+  setTimerDisplay
 } from './speakers-presenter.js'
 import {infoText} from './info.js'
 import {setCurrentEntGroupId} from '../../01-Models/models.js'
@@ -117,22 +118,41 @@ const setupMeetingSheet = `
     </div>
     <div id='mtgsetup-group'>
       <div id='mtgsetup-group-dropdown-container'>
-      <label for="mtgsetup-select-group">Choose a meeting group:</label>
-      <select name="mtgsetup-select-group" class="mtgsetup-select" id="mtgsetup-select-group"></select>
+        <label for="mtgsetup-select-group">Choose a meeting group:</label>
+        <select name="mtgsetup-select-group" class="mtgsetup-select" id="mtgsetup-select-group"></select>
+      </div>
+    </div>
+    <div id='mtgsetup-times' class='switch_container'>
+      <p class='switch_text'>Show individual member times</p>
+      <label class="switch">
+        <input type="checkbox" id="timer_type">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div id='mtgsetup-record' class='switch_container'>
+      <p class='switch_text'>Create a record of speaking times for this meeting</p>
+      <label class="switch">
+        <input type="checkbox" id="create_record" disabled >
+        <span class="slider"></span>
+      </label>
     </div>
   </div>
 `
 
 /** 
- * Loads the meeting setup html into the DOM and adds a listener for 
- * the `change` event to the HTMLSelectElement. 
+ * Loads the meeting setup html into the DOM. Adds listeners for 
+ * the `change` event to the entity selector, show individual times toggle and create a record toggle. 
  */
 const loadSetupMeetingSheet = () => {
   const mtgsht = document.getElementById('mtgsetup-sheet')
   if (mtgsht) {mtgsht.innerHTML = setupMeetingSheet}
-  const el = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
-  if (el) {  
-    el.addEventListener('change', handleChangedSelection)
+  const ent = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
+  if (ent) {  
+    ent.addEventListener('change', handleChangedEntitySelection)
+  }
+  const timer = document.getElementById('timer_type') as HTMLSelectElement
+  if (timer) {  
+    timer.addEventListener('change', handleChangedTimerType)
   }
 }
 
@@ -325,14 +345,6 @@ function handleDrop(this: HTMLElement, ev: Event) {
   console.log("drop: ",this)
 }
 
-/**
- * Called when different entity is selected in meeting setup, emitting a `change` event.
- * Passes the index to `entityChanged` function in `speakers-presenter.js`.
- */
-async function handleChangedSelection(this: HTMLSelectElement) {
-  await entityChanged(this.selectedIndex)
-}
-
 async function handleRightArrowClick(this: HTMLElement) {
   const targt = this as HTMLButtonElement
   if (!targt) { return }
@@ -401,23 +413,6 @@ async function handleMeetingSetupButtonClick(this: HTMLElement) {
   isSetupSheetExpanded = !isSetupSheetExpanded
 }
 
-async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
-  const elEntSelect = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
-  const entIdx = elEntSelect.selectedIndex
-  const elGrpSelect = document.getElementById('mtgsetup-select-group') as HTMLSelectElement
-  const grpIdx = elGrpSelect.selectedIndex
-  const mtgSht = document.getElementById('mtgsetup-sheet')
-  if (!mtgSht) {return}
-  mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
-  if (!isSetupSheetExpanded) { populateEntityDropdown() }
-  isSetupSheetExpanded = !isSetupSheetExpanded
-  await setCurrentEntGroupId(entIdx,grpIdx)
-  await resetTables()
-  setupArrowButtonListeners()
-  setupMeetingSetupListeners()
-  setupResetListener()
-  setupSpeakingTableSectionChangeListener()
-}
 
 async function handleResetButtonClick(this: HTMLElement) {
   await resetTables()
@@ -656,6 +651,47 @@ function myTimer () {
   if (!ac) {return}
   ac.innerText = minuteStrg + ':' + secondStrg
 }
+
+// Meeting setup sheet handlers
+
+async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
+  const elEntSelect = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
+  const entIdx = elEntSelect.selectedIndex
+  const elGrpSelect = document.getElementById('mtgsetup-select-group') as HTMLSelectElement
+  const grpIdx = elGrpSelect.selectedIndex
+  const mtgSht = document.getElementById('mtgsetup-sheet')
+  if (!mtgSht) {return}
+  mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
+  if (!isSetupSheetExpanded) { populateEntityDropdown() }
+  isSetupSheetExpanded = !isSetupSheetExpanded
+  await setCurrentEntGroupId(entIdx,grpIdx)
+  await resetTables()
+  setupArrowButtonListeners()
+  setupMeetingSetupListeners()
+  setupResetListener()
+  setupSpeakingTableSectionChangeListener()
+}
+
+/**
+ * Called when different entity is selected in meeting setup, emitting a `change` event.
+ * Passes the index to `entityChanged` function in `speakers-presenter.js`.
+ */
+async function handleChangedEntitySelection(this: HTMLSelectElement) {
+  await entityChanged(this.selectedIndex)
+}
+
+async function handleChangedTimerType(this: HTMLInputElement) {
+  const rec = document.getElementById('create_record') as HTMLInputElement
+  if (this.checked) {
+    rec.disabled = false
+    setTimerDisplay(true)
+  }
+  else {
+    rec.disabled = true
+    setTimerDisplay(false)
+  }
+}
+
 
 export { 
   speaker_tracker, 

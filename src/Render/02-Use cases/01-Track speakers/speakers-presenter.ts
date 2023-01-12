@@ -14,7 +14,9 @@ import {
   SectionList,
   SectionType,
   getEntityAtIdx,
-  TimerButtonMode
+  TimerButtonMode,
+  showIndividualTimers,
+  setShowIndividualTimers
 } from "../../01-Models/models.js"
 
 let isInitialised = false
@@ -224,23 +226,25 @@ async function populateTables () {
                   tableRows2 += `<span class='spkg-table-cell-text' id='${myId}-n'>${mbr.firstName} ${mbr.lastName}</span>
                 </div>
                 <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
-                  if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
-                    tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
-                  }
-                  if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
-                    tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
-                  }
-                  if (listMbr.timerIsActive == true) {
-                    tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
-                  } else {
-                    tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
-                  }     
-                  if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                    tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
-                  }
-                  if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
-                    listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
-                    tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
+                  if(showIndividualTimers) {
+                    if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
+                      tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
+                    }
+                    if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
+                      tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                    }
+                    if (listMbr.timerIsActive == true) {
+                      tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
+                    } else {
+                      tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
+                    }     
+                    if (listMbr.timerButtonMode == TimerButtonMode.play) {
+                      tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
+                    }
+                    if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
+                      listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
+                      tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
+                    }
                   }
                   `
                 </div>
@@ -487,6 +491,9 @@ function getTimeForMember(section: number, row: number) {
   return seconds
 }
 
+function setTimerDisplay(showTimer: boolean) {
+  setShowIndividualTimers(showTimer)
+}
 
 // Reset button
 
@@ -538,5 +545,6 @@ export {
   updateWaitingTableAfterDragging,
   updateListMember,
   resetTables, 
-  getTimeForMember
+  getTimeForMember,
+  setTimerDisplay
 }

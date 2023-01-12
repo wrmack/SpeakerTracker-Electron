@@ -419,8 +419,11 @@ interface SpeakingTable {
   sectionLists: SectionList[]
 }
 
-
-
+/** Whether members on speaking table have individual timers */
+let showIndividualTimers = false
+function setShowIndividualTimers(showTimer: boolean) {
+  showIndividualTimers = showTimer
+}
 
 
 export {
@@ -453,5 +456,7 @@ export {
   SectionList,
   SpeakingTable,
   Member,
-  ListMember
+  ListMember,
+  showIndividualTimers,
+  setShowIndividualTimers
 }
