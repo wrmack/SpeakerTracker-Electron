@@ -1,3 +1,6 @@
+/* 
+Element styles
+*/
 
 html {
   height: 100%;
@@ -8,10 +11,6 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     min-height: 100%;
     margin:0
-}
-
-.spacer {
-  height: 5px;
 }
 
 h1 {
@@ -28,6 +27,76 @@ button {
 
 button:disabled {
   opacity: 0.6;
+}
+
+table {
+  float: left;
+  background-color: white;
+  border-spacing: 0px;
+  border-collapse: collapse;
+}
+
+thead {
+    background-color: black;
+    color: white;
+}
+
+tbody {
+  text-align: left;
+}
+
+td {
+width: 300px;
+font-size: 10pt;
+}
+
+input[type="text"] {
+  margin-left: 20px;
+  border-radius: 10px;
+  width: 60%;
+  height: 40px;
+  display: inline;
+  padding-left: 10px;
+}
+
+input[disabled] {
+  color: white;
+}
+
+hr {
+  margin-left: 5px;
+  margin-right: 5px;
+  color: lightgray;
+}
+
+[draggable] {
+  opacity: 0.5;
+  cursor: pointer;
+  background-color: #eee;
+}
+
+@font-face {
+  font-family: "STFonts";
+  src: url("fonts/Font1.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+
+/* Utilities */
+.spacer {
+  visibility: hidden;
+  width: 25px;
+  height: 5px;
+}
+
+/* 
+Content 
+*/
+
+#content-container {
+  height: 83vh;
+  width: 100%;  
 }
 
 #titlebar {
@@ -94,10 +163,9 @@ button:disabled {
   color: white;
 }
 
-#content-container {
-  height: 83vh;
-  width: 100%;  
-}
+/*
+Speakers view
+*/
 
 #top-bar-container {
   height: 180px;
@@ -211,12 +279,6 @@ button:disabled {
   /* margin-left: 20px; */
 }
 
-[draggable] {
-  opacity: 0.5;
-  cursor: pointer;
-  background-color: #eee;
-}
-
 div#bottom-container {
   display: flex;
   flex-direction: row;
@@ -287,74 +349,6 @@ button#sidebar-info-btn {
   margin-top: 60px;
 }
 
-div#mtgsetup-sheet {
-  position: fixed;
-  top: 0px;
-  z-index: 1;
-  width: 300px;
-  height: 100%;
-  left: -300px;
-  transition-property: left;
-  transition-duration: 1s;
-  transition-delay: 0s;
-  overflow-x: hidden;
-  background-color: rgb(66 66 66);
-  border: 1px solid #282828;
-  color: white;
-}
-
-div#mtgsetup-container {
-  margin: 20px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-
-
-div#mtgsetup-heading {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: center;
-}
-
-div#mtgsetup-done {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-button#mtgsetup-done-btn {
-  color: white;
-  /* background-color: antiquewhite; */
-}
-
-select.mtgsetup-select {
-  width: 250px;
-  border-radius: 6px;
-  height: 25px;
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-select.mtgsetup-prompt {
-  color:#aaa;
-}
-
-table {
-  float: left;
-  background-color: white;
-  /* width: 300px; */
-  /* height: 100%; */
-  border-spacing: 0px;
-  border-collapse: collapse;
-}
-
-thead {
-    background-color: black;
-    color: white;
-}
-
 .div-header {
   background-color: black;
   color: white;
@@ -384,31 +378,6 @@ thead {
   align-items: center;
   justify-content: space-between;
 }
-
-.spacer {
-  visibility: hidden;
-  width: 25px;
-}
-
-tbody {
-    /* width: 300px; */
-    /* display: block; */
-    text-align: left;
-}
-
-/* tr {
-    height: 0px; 
-} */
-
-td {
-  /* padding-top: 5px; */
-  width: 300px;
-  font-size: 10pt;
-}
-
-/* .spkg-table-row {
-  border-bottom: 1px solid lightgray;
-} */
 
 .spkg-table-row-header {
   display: flex;
@@ -516,7 +485,6 @@ hr.spkg-table-cell-rule {
   border-top: 1px solid lightgray;
 }
 
-
 .cell-text {
   position: relative;
   top: 10px;
@@ -544,12 +512,6 @@ hr.spkg-table-cell-rule {
     font-family: STFonts;
 }
 
-hr {
-    margin-left: 5px;
-    margin-right: 5px;
-    color: lightgray;
-}
-
 #context-menu {
   z-index: 1;
   background-color: #c9c9c9;
@@ -568,6 +530,187 @@ hr {
   border-radius: 5px;
 }
 
+
+/* 
+Meeting setup slide-out sheet 
+*/
+
+div#mtgsetup-sheet {
+  position: fixed;
+  top: 0px;
+  z-index: 1;
+  width: 300px;
+  height: 100%;
+  left: -300px;
+  transition-property: left;
+  transition-duration: 1s;
+  transition-delay: 0s;
+  overflow-x: hidden;
+  background-color: rgb(66 66 66);
+  border: 1px solid #282828;
+  color: white;
+}
+
+div#mtgsetup-container {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+div#mtgsetup-heading {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
+div#mtgsetup-done {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+button#mtgsetup-done-btn {
+  color: white;
+  /* background-color: antiquewhite; */
+}
+
+select.mtgsetup-select {
+  width: 250px;
+  border-radius: 6px;
+  height: 25px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+select.mtgsetup-prompt {
+  color:#aaa;
+}
+
+.sheet-info {
+  position: fixed;
+  top: 15px;
+  z-index: 1;
+  width: 315px;
+  left: 60px;
+  background-color: rgb(255, 255, 255);
+  border: 1px solid #282828;
+  color: rgb(51, 51, 51);
+  border-radius: 6px;
+}
+
+#mtgsetup-info-display {
+  visibility: hidden;
+}
+
+#mtgsetup-info-timer-display {
+  visibility: hidden;
+}
+
+#mtgsetup-info-record-display {
+  visibility: hidden;
+}
+
+#mtgsetup-info-done {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.info-container {
+  padding-left: 10px;
+  padding-right: 10px;
+  font-size: 10pt;
+}
+
+.info-btn {
+  font-family: STFonts;
+  font-size: 20pt;
+  color: white;
+  padding-top: 12px;
+  padding-left: 0px;
+  text-align: left;
+}
+
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:disabled + .slider {
+  opacity: 0.3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+.switch_text {
+  width: 150px;
+}
+
+.switch_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11pt;
+  width: 250px;
+  height: 75px;
+}
+
+
+/* 
+Setup
+*/
 #setup-topbar-container {
   width: 100%;
   height: 50px;
@@ -757,7 +900,6 @@ div#selected-ent {
   justify-content: flex-end;
 }
 
-
 #editing-sheet {
   position: fixed;
   top: 128px;
@@ -837,19 +979,6 @@ div#edit-selection-list {
   display: inline;
 }
 
-input[type="text"] {
-  margin-left: 20px;
-  border-radius: 10px;
-  width: 60%;
-  height: 40px;
-  display: inline;
-  padding-left: 10px;
-}
-
-input[disabled] {
-  color: white;
-}
-
 .delete {
   color: red
 }
@@ -878,101 +1007,4 @@ input[type="checkbox"] {
   left: 100px;
   background-color: white;
   width: 500px;
-}
-
-
-
-/* @font-face {
-    font-family: "photon-entypo";
-    src: url("fonts/photon-entypo.eot");
-    src: url("fonts/photon-entypo.eot?#iefix") format("eot"), url("fonts/photon-entypo.woff") format("woff"), url("fonts/photon-entypo.ttf") format("truetype");
-    font-weight: bold;
-    font-style: normal;
-}
-@font-face {
-  font-family: "untitled1-webfont";
-  src: url("fonts/untitled1-webfont.woff") format("woff"),
-  url("fonts/untitled1-webfont.woff2") format("woff2");
-  font-weight: bold;
-  font-style: normal;
-} */
-
-
-
-@font-face {
-  font-family: "STFonts";
-  src: url("fonts/Font1.woff") format("woff");
-  font-weight: bold;
-  font-style: normal;
-}
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input { 
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:disabled + .slider {
-  opacity: 0.3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-.switch_text {
-  width: 150px;
-}
-
-.switch_container {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11pt;
-  width: 250px;
-  height: 75px;
 }
