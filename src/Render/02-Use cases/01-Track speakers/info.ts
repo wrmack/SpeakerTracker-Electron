@@ -3,7 +3,7 @@ const infoText = `
 <head>
 <title>Speaker Tracker Info</title>
 </head>
-<link href="./helpstyles.css" rel="stylesheet">
+<link href="css/info.css" rel="stylesheet">
 
 <body>
   <div class="help-large-title">Help</div>
