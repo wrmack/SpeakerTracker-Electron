@@ -1,14 +1,13 @@
 import type { Database } from 'sqlite3'
-
-declare module 'sqlite3'
-
-
-// Modules to control application life and create native browser window
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path = require('path')
 const sqlite3 = require('sqlite3').verbose()
 
+import flatpickr from 'flatpickr'
+
+
 let db: Database
+
 
 function createWindow () {
   // Create the browser window.
@@ -170,3 +169,5 @@ ipcMain.handle('dbSelect', async (ev:Event, sql: string) => {
 ipcMain.handle('dbClose', async () => {
   db.close()
 })
+
+

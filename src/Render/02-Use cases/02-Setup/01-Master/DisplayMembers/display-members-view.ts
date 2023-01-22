@@ -1,7 +1,7 @@
 import { entityChanged } from "./display-members-presenter.js"
 
 const displayMembers = `
-<div id='dropdown-container'>
+<div class='dropdown-container'>
   <label for="mbrs-select-entities">Choose an entity:</label>
   <select name="mbrs-select-entities" class="select-entities" id="mbrs-select-entities"> </select>
 </div>

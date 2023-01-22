@@ -1,6 +1,6 @@
-import { getEntities, getGroupsForCurrentEntity, setSelectedEntityId, selectedEntityId } from '../../../../01-Models/models.js'
+import { getEntities, getGroupsForCurrentEntity, setSelectedEntityId, selectedEntityId, selectedGroupId } from '../../../../01-Models/models.js'
 
-async function loadEntitiesDropdownForGroups () {
+async function loadEntitiesDropdownForEvents () {
   const entities = await getEntities()
   if (selectedEntityId == 0 || selectedEntityId == undefined) {
     await setSelectedEntityId(entities[0].Id)
@@ -14,12 +14,31 @@ async function loadEntitiesDropdownForGroups () {
       options += `<option>${entity.EntName}</option>`
     }
   })
-  const ent = document.getElementById('groups-select-entities')
+  const ent = document.getElementById('events-select-entities')
   if (!ent) {return}
   ent.innerHTML = options
 }
 
-async function loadGroups () {
+async function loadGroupsDropdownForEvents () {
+  const groups = await getGroupsForCurrentEntity()
+  // if (selectedEntityId == 0 || selectedEntityId == undefined) {
+  //   await setSelectedEntityId(entities[0].Id)
+  // }
+  let options = ''
+  groups.forEach( (group) => {
+    if (group.Id == selectedGroupId) {
+      options += `<option selected>${group.GrpName}</option>`
+    }
+    else {
+      options += `<option>${group.GrpName}</option>`
+    }
+  })
+  const grp = document.getElementById('events-select-groups')
+  if (!grp) {return}
+  grp.innerHTML = options
+}
+  
+async function loadEvents () {
   const groups = await getGroupsForCurrentEntity()
   let tableRows = ''
   for (const i in groups) {
@@ -64,11 +83,11 @@ function handleSelection(this: HTMLElement)  {
   }
 }
 
-async function entityChanged(idx: number) {
+async function eventsEntityChanged(idx: number) {
   const ents = await getEntities()
   const ent = ents[idx]
   setSelectedEntityId(ent.Id)
-  loadGroups()
+  loadEvents()
 }
 
-export { loadEntitiesDropdownForGroups, loadGroups, entityChanged }
+export { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents, eventsEntityChanged }

@@ -1,7 +1,7 @@
 import { entityChanged } from "./display-groups-presenter.js"
 
 const displayGroups = `
-<div id='dropdown-container'>
+<div class='dropdown-container'>
   <label for="groups-select-entities">Choose an entity:</label>
   <select name="groups-select-entities" class="select-entities" id="groups-select-entities"></select>
 </div>
@@ -14,7 +14,7 @@ const displayGroups = `
 </div>
 `
 
-const setupGroupsDropdownListeners = function () {
+const setupGroupsEntitiesDropdownListeners = function () {
   const el = document.getElementById('groups-select-entities') as HTMLSelectElement
   if (el) {
     // el.addEventListener('click', handleDropDownEvent)
@@ -27,4 +27,4 @@ function handleDropDownEvent(this: HTMLElement) {
   entityChanged(el.selectedIndex)
 }
 
-export { displayGroups, setupGroupsDropdownListeners }
+export { displayGroups, setupGroupsEntitiesDropdownListeners }

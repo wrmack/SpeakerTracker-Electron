@@ -1946,6 +1946,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"flatpickr@npm:^4.6.13":
+  version: 4.6.13
+  resolution: "flatpickr@npm:4.6.13"
+  checksum: 2cca1b8dc974e7673b51174ee3f0679ae3a6b79525a0c53bf49b87455ef358354e64acfd60b312e44cef208aab9750a1a48df32a0914046a53de6d9403742304
+  languageName: node
+  linkType: hard
+
 "flatted@npm:^3.1.0":
   version: 3.2.7
   resolution: "flatted@npm:3.2.7"
@@ -4325,6 +4332,7 @@ __metadata:
     electron: latest
     electron-windows-store: ^2.1.0
     eslint: ^8.31.0
+    flatpickr: ^4.6.13
     got: ^12.5.3
     keyv: ^4.5.2
     node-abi: ^3.30.0

@@ -6,18 +6,22 @@ import { loadDeleteEntitySheet, setupDeleteEntityListeners } from './03-Editing 
 import { loadEditEntitySheet, setupEditEntityListeners } from './03-Editing tools/Entities/EditEntity/edit-entity-view.js'
 
 import { displayMembers, setupDropdownListeners } from './01-Master/DisplayMembers/display-members-view.js'
-import { loadDropdown, loadMembers } from './01-Master/DisplayMembers/display-members-presenter.js'
+import { loadEntitiesDropdownForMembers, loadMembers } from './01-Master/DisplayMembers/display-members-presenter.js'
 import { displaySelectedMember, setupMemberDetailListeners } from './02-Detail/DisplaySelectedMember/display-selected-member-view.js'
 import { loadAddMemberSheet, setupAddMemberListeners } from './03-Editing tools/Members/AddMember/add-member-view.js'
 import { loadDeleteMemberSheet, setupDeleteMemberListeners } from './03-Editing tools/Members/DeleteMember/delete-member-view.js'
 import { loadEditMemberSheet, setupEditMemberListeners } from './03-Editing tools/Members/EditMember/edit-member-view.js'
 
-import { displayGroups, setupGroupsDropdownListeners } from './01-Master/DisplayMeetingGroups/display-groups-view.js'
-import { loadGroupsDropdown, loadGroups } from './01-Master/DisplayMeetingGroups/display-groups-presenter.js'
+import { displayGroups, setupGroupsEntitiesDropdownListeners } from './01-Master/DisplayMeetingGroups/display-groups-view.js'
+import { loadEntitiesDropdownForGroups, loadGroups } from './01-Master/DisplayMeetingGroups/display-groups-presenter.js'
 import { displaySelectedGroup, setupGroupDetailListeners } from './02-Detail/DisplaySelectedGroup/display-selected-group-view.js'
 import { loadAddGroupSheet, setupAddGroupListeners } from './03-Editing tools/MeetingGroups/AddMeetingGroup/add-meetingGroup-view.js'
 import { loadDeleteGroupSheet, setupDeleteGroupListeners } from './03-Editing tools/MeetingGroups/DeleteMeetingGroup/delete-meeting-group.js'
 import { loadEditGroupSheet, setupEditGroupListeners } from './03-Editing tools/MeetingGroups/EditMeetingGroup/edit-group-view.js'
+
+import { displayEvents } from './01-Master/DisplayEvents/display-events-view.js'
+import { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents } from './01-Master/DisplayEvents/display-events-presenter.js'
+import { loadAddEventSheet, setupAddEventListeners } from './03-Editing tools/Events/AddEvent/add-event-view.js' 
 
 
 const sideBarSelection = { name: 'entities' }
@@ -34,14 +38,13 @@ const setupView = `
     <button class="setup-sidebar-btn" id='setup-sidebar-ent-btn'>Entities</button>
     <button class="setup-sidebar-btn" id='setup-sidebar-mbrs-btn'>Members</button>
     <button class="setup-sidebar-btn" id='setup-sidebar-groups-btn'>Meeting groups</button>
-    <!-- <button class="setup-sidebar-btn">Events</button> -->
+    <button class="setup-sidebar-btn" id='setup-sidebar-events-btn'>Events</button>
   </div>
   <div id="setup-master"></div>
   <div id="setup-detail"></div>
 </div>
 <div id='editing-sheet'></div>
 <div id='editing-sheet-selectMembers'></div>
-
 `
 
 //
@@ -72,6 +75,9 @@ const setupEditItemListeners = function () {
         loadAddGroupSheet()
         setupAddGroupListeners()
         break
+      case 'events':
+        await loadAddEventSheet()
+        setupAddEventListeners()
     }
   })
 
@@ -171,6 +177,21 @@ const setupSidebarListeners =  function () {
       await showGroups()
     }
   })
+
+  // Events button
+  const sideevt = document.getElementById('setup-sidebar-events-btn');
+  if (!sideevt) {return}
+  sideevt.addEventListener('click', () => {
+    showEvents()
+    removeSelectedClass()
+    sideevt.classList.add('setup-sidebar-btn-selected')
+    sideBarSelection.name = 'events'
+  })
+  document.addEventListener('evt-saved', async (event) => {
+    if (event instanceof CustomEvent) {
+      await showEvents()
+    }
+  })
 }
 
 //
@@ -194,7 +215,7 @@ const showMembers = async () => {
   const head = document.getElementById('setup-topbar-heading') as HTMLElement
   head.innerHTML = 'Members'
   setupMemberDetailListeners()
-  await loadDropdown()
+  await loadEntitiesDropdownForMembers()
   setupDropdownListeners()
   await loadMembers()
   const det = document.getElementById('setup-detail') as HTMLElement
@@ -207,12 +228,27 @@ const showGroups = async () => {
   const head = document.getElementById('setup-topbar-heading') as HTMLElement
   head.innerHTML = 'Meeting groups'
   setupGroupDetailListeners()
-  await loadGroupsDropdown()
-  setupGroupsDropdownListeners()
+  await loadEntitiesDropdownForGroups()
+  setupGroupsEntitiesDropdownListeners()
   await loadGroups()
   const det = document.getElementById('setup-detail') as HTMLElement
   det.innerHTML = displaySelectedGroup
 }
+
+const showEvents = async () => {
+  const mast = document.getElementById('setup-master') as HTMLElement
+  mast.innerHTML = displayEvents
+  const head = document.getElementById('setup-topbar-heading') as HTMLElement
+  head.innerHTML = 'Events'
+  // setupGroupDetailListeners()
+  await loadEntitiesDropdownForEvents()
+  await loadGroupsDropdownForEvents()
+  // setupEventsEntitiesDropdownListeners()
+  await loadEvents()
+  // const det = document.getElementById('setup-detail') as HTMLElement
+  // det.innerHTML = displaySelectedEvent
+}
+
 
 // Helpers
 

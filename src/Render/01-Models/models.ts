@@ -1,31 +1,34 @@
+
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare interface MyAPI {
   
   /** Connect to database */
-  connect: () => Promise<void>
+  connect: () => Promise<void>;
   
   /** Initialise database with empty tables if they don't exist */
-  initDb: () =>  Promise<void>
-  close: () => void
+  initDb: () =>  Promise<void>;
+  close: () => void;
   
   /** Runs SQL statements (can be more than one) in a string with no results returned.
    * 
    * node-sqlite3 API: db.exec wrapped in db.serialize  */ 
-  execSQL: (arg0: string) =>  Promise<void>
+  execSQL: (arg0: string) =>  Promise<void>;
   
   /** Runs the SQL query with the specified parameters and 
    * calls the callback afterwards if there is an error. 
    * 
    * node-sqlite3 API: db.run.*/
-  runSQL: (sql: string, params: any) =>  Promise<void>
+  runSQL: (sql: string, params: any) =>  Promise<void>;
 
   /** Runs the SQL query with the specified parameters and calls 
    * the callback with all result rows afterwards. 
    * 
    * node-sqlite3 API: db.all wrapped in db.serialize.*/ 
-  selectAll: (sql: string, val?: never[]) => Promise<any[]>
+  selectAll: (sql: string, val?: never[]) => Promise<any[]>;
 
-  getPaths: () => {userData: string, appData: string, logs: string, appPath: string }
+  getPaths: () => {userData: string, appData: string, logs: string, appPath: string };
+
 }
 
 declare global {
@@ -60,7 +63,7 @@ const getEntities = async function () {
   return rows
 }
 
-/** Get enity id using currently selected entity idx.
+/** Get entity id using currently selected entity idx.
  * 
 */ 
 // const getSelectedEntityId = async function () {
@@ -256,6 +259,14 @@ const groupIdExists = async (id: number) => {
   }
 }
 
+//
+// Events
+//
+
+const addEvent = async (event: any) => {
+  console.log("addEvent called ", event)
+}
+
 // 
 // State
 // 
@@ -304,7 +315,6 @@ let masterRowIdx = 0
 const setMasterRowIdx = (idx: number) => {
   masterRowIdx = idx
 }
-
 
 const getSavedEntGroupId = async () => {
   // Check there is saved state in database
@@ -357,8 +367,18 @@ const setCurrentEntGroupId = async (entIdx: number, grpIdx: number) => {
   await window.myapi.selectAll(sql)
 }
 
+let selectedEventDate = new Date()
+
+const setSelectedEventDate = (date: Date) => {
+  selectedEventDate = date
+}
+
+const getSelectedEventDate = () => {
+  return selectedEventDate
+}
+ 
 //
-// Models for entity, group, member
+// Models for entity, group, member, event
 //
 
 // Property labels uppercase consistent with database field names
@@ -378,6 +398,12 @@ interface Member {
 interface Group {
   Id: number,
   GrpName: string
+}
+
+interface Event {
+  Id: number,
+  Date: number,
+  Time: number
 }
 
 //
@@ -444,6 +470,7 @@ export {
   getMembersForEntityId,
   addMember,
   addGroup,
+  addEvent,
   getMembersForGroupId,
   getGroupAtIdx,
   getGroupForId,
@@ -458,5 +485,7 @@ export {
   Member,
   ListMember,
   showIndividualTimers,
-  setShowIndividualTimers
+  setShowIndividualTimers,
+  setSelectedEventDate,
+  getSelectedEventDate
 }

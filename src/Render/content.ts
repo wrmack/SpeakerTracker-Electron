@@ -17,6 +17,9 @@ import {
   setupSidebarListeners, 
   showEntities 
 } from './02-Use cases/02-Setup/setup-view.js'
+import {
+  reportsView
+} from './02-Use cases/03-Reports/reports-view.js'
 
 
 // Initialise database
@@ -53,6 +56,16 @@ if (setupbtn) {
   })
 }
 
+const reportsbtn = document.getElementById('reports-btn')
+if (reportsbtn) {
+  reportsbtn.addEventListener('click', () => {
+    removeActiveClasses()
+    reportsbtn.classList.add('active')
+    loadReportsView()
+  })
+}
+
+
 //
 // Handlers for navigation button events
 //
@@ -86,6 +99,12 @@ async function loadSetupView () {
   const sident = document.getElementById('setup-sidebar-ent-btn')
   if (!sident) {return}
   sident.classList.add('setup-sidebar-btn-selected')
+}
+
+// Load template and listeners for reports view
+async function loadReportsView () {
+  const container = document.getElementById('content-container') 
+  if (container) {  container.innerHTML = reportsView}
 }
 
 // Helpers

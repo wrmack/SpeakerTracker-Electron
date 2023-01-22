@@ -784,7 +784,7 @@ async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
 function handleMtgshtInfoBtnClick(this: HTMLButtonElement) {
   const mtgshtInfo = document.getElementById('mtgsetup-info-display') as HTMLDivElement
   if (mtgshtInfo) {
-    const vis = window.getComputedStyle(mtgshtInfo).visibility;
+    const vis = window.getComputedStyle(mtgshtInfo).visibility;  // Note that because next line starts with brackets it is necessary to use a semi-colon
     (vis == 'hidden') ? mtgshtInfo.style.visibility = 'visible' : mtgshtInfo.style.visibility = 'hidden'
   }
 }

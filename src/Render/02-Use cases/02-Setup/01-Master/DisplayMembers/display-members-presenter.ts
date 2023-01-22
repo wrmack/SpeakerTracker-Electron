@@ -1,7 +1,7 @@
 import { getEntities, getMembersForCurrentEntity, setSelectedEntityId, selectedEntityId } from '../../../../01-Models/models.js'
 
 
-async function loadDropdown() {
+async function loadEntitiesDropdownForMembers() {
   const entities = await getEntities()
   let options = ''
   if (selectedEntityId == 0 || selectedEntityId == undefined) {
@@ -81,4 +81,4 @@ async function entityChanged(idx: number) {
   loadMembers()
 }
 
-export { loadDropdown, loadMembers, entityChanged }
+export { loadEntitiesDropdownForMembers, loadMembers, entityChanged }

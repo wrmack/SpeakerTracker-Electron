@@ -143,7 +143,7 @@ Setup
     background-color: rgb(0, 128, 255);
   }
   
-  #dropdown-container {
+  .dropdown-container {
     margin-top: 10px;
     margin-bottom: 10px;
     margin-left: auto;

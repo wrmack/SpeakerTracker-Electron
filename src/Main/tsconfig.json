@@ -23,6 +23,7 @@
     "composite": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "paths": {
       "*": ["node_modules/*"]
     }

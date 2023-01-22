@@ -1,18 +1,21 @@
-export interface MyAPI {
-  connect: () => Promise<void>,
-  initDb: () =>  Promise<void>,
-  close: () => void,
-  execSQL: (arg0: string) =>  Promise<void>,
-  runSQL: (sql: string, params: any) =>  Promise<void>,
-  selectAll: (ev:Event,sql: string) =>  Promise<unknown>
-  getPaths: () => {userData: string, appData: string, logs: string, appPath: string }
-}
+// export interface MyAPI {
+//   connect: () => Promise<void>,
+//   initDb: () =>  Promise<void>,
+//   close: () => void,
+//   execSQL: (arg0: string) =>  Promise<void>,
+//   runSQL: (sql: string, params: any) =>  Promise<void>,
+//   selectAll: (ev:Event,sql: string) =>  Promise<unknown>,
+//   getPaths: () => {userData: string, appData: string, logs: string, appPath: string },
+//   myFlatpickr: () => void
+// }
 
-declare global {
-  interface Window {
-    myapi: MyAPI
-  }
-}
+
+
+// declare global {
+//   interface Window {
+//     myapi: MyAPI,
+//   }
+// }
 
 import { contextBridge, ipcRenderer } from 'electron'
 
@@ -34,7 +37,18 @@ contextBridge.exposeInMainWorld('myapi', {
   execSQL: (sql: string) => ipcRenderer.invoke('dbExec',sql),
   runSQL: (sql: string, params: any) => ipcRenderer.invoke('dbRun',sql,params),
   selectAll: (sql: string) => ipcRenderer.invoke('dbSelect',sql),
-  close: () => ipcRenderer.invoke('dbClose')
+  close: () => ipcRenderer.invoke('dbClose'),
 })
 
+// contextBridge.exposeInMainWorld(
+//   "flatpickr", {
+//       flatpickr: (element: any, w: any) =>{
+//           flatpickr(element, {
+//               enableTime: true,
+//               dateFormat: "Y-m-d H:i",
+//               }
+//           );
+//       }
+//   }
+// );
 // module.exports = {}
