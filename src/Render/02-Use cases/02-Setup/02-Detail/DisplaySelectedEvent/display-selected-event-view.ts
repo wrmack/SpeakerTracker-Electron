@@ -1,39 +1,56 @@
-import { getGroupAtIdx, setMasterRowIdx, getMembersForGroupId, getMemberWithId } from '../../../../01-Models/models.js'
+import { getEventAtIdx, setMasterRowIdx, getGroupForId, getEntityWithId } from '../../../../01-Models/models.js'
+import { formatIsoDate } from '../../../../Utils/utils.js'
 
 const displaySelectedEvent = `
   <div id='selected-event'>
     <div class='detail-row'>
-      <span class='detail-key'>Name:</span><span class='detail-value' id='event-name'></span>
+      <span class='detail-key'>Entity:</span><span class='detail-value' id='event-entity'></span>
     </div>
     <div class='detail-row'>
-      <span class='detail-key'>Date:</span><span class='detail-value' id='event-date'></span>
+      <span class='detail-key'>Meeting group:</span><span class='detail-value' id='event-group'></span>
+    </div>
+    <div class='detail-row'>
+      <span class='detail-key'>Event date:</span><span class='detail-value' id='event-date'></span>
     </div>
   </div>
 `
+// Listens for the 'event-selected' event
 const setupEventDetailListeners = function () {
   document.addEventListener('event-selected', handleEventSelected)
 }
 
 async function handleEventSelected (ev: Event) {
   if (ev instanceof CustomEvent) {
+    // Get row index
     const rowStrg = ev.detail.id.slice(4)
     const rowNumber = parseInt(rowStrg)
-    const group = await getGroupAtIdx(rowNumber)
-    const groupMemberIds = await getMembersForGroupId(group.Id)
-    let mbrStrg = ""
-    for (let i = 0; i < groupMemberIds.length; ++i) {
-      const member = await getMemberWithId(groupMemberIds[i].MemberId)
-      mbrStrg += `${member.FirstName} ${member.LastName}`
-      if (i < groupMemberIds.length - 1) {
-        mbrStrg += ", "
-      }
+
+    // Get event on that row
+    const event = await getEventAtIdx(rowNumber)
+    const eventDate = event.EventDate
+    const dateString = formatIsoDate(eventDate)
+
+    // Get group from event and entity from group
+    const group = await getGroupForId(event.GroupId)
+    let groupName = ""
+    let entityName = ""
+    if (group) {
+      groupName = group.GrpName 
+      const entity = await getEntityWithId(group.Entity)
+      entityName = entity.EntName
     }
-    const gnam = document.getElementById('group-name');
-    if (!gnam) {return}
-    gnam.innerHTML = group.GrpName
-    const gmem = document.getElementById('group-members');
-    if (!gmem) {return}
-    gmem.innerHTML = mbrStrg
+
+    // Inject into html
+    const evEnt = document.getElementById('event-entity')
+    if (!evEnt) {return}
+    evEnt.innerHTML = entityName
+    const evGrp= document.getElementById('event-group');
+    if (!evGrp) {return}
+    evGrp.innerHTML = groupName
+    const evDate = document.getElementById('event-date');
+    if (!evDate) {return}
+    evDate.innerHTML = dateString
+    
     setMasterRowIdx(rowNumber)
   }
 }

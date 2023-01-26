@@ -1,3 +1,4 @@
+import { DiffieHellmanGroup } from "crypto";
 
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -84,6 +85,13 @@ const getEntityAtIdx = async (idx: number) => {
   const entities = await getEntities()
   const selectedEntity = entities[idx]
   return selectedEntity as Entity
+}
+
+const getEntityWithId = async (id: number) => {
+  const sql = `SELECT * FROM Entities WHERE Entities.Id = ${id};`
+  await window.myapi.connect()
+  const ent = await window.myapi.selectAll(sql)
+  return ent[0] as Entity
 }
 
 const deleteEntityWithId = async (id: number) => {
@@ -228,7 +236,7 @@ const getGroupForId = async (id: number) => {
   const sql = `SELECT * FROM Groups WHERE Groups.Id = ${id};`
   await window.myapi.connect()
   const group = await window.myapi.selectAll(sql)
-  return group == undefined ? undefined : group[0]
+  return group == undefined ? undefined : group[0] as Group
 }
 
 /** 
@@ -263,9 +271,25 @@ const groupIdExists = async (id: number) => {
 // Events
 //
 
-const addEvent = async (event: any) => {
-  console.log("addEvent called ", event)
+const addEvent = async (eventDate: string, groupId: number) => {
+  const sql = 'INSERT INTO Events (GroupId, EventDate) VALUES ($groupId, $eventDate);'
+  await window.myapi.connect()
+  await window.myapi.runSQL(sql, {$groupId: groupId, $eventDate: eventDate})
 }
+
+const getEventsForCurrentGroup = async () => {
+  const groupId = selectedGroupId
+  const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE Events.GroupId = ${groupId} ORDER BY EventDate;`
+  await window.myapi.connect()
+  return await window.myapi.selectAll(sql) as [GroupEvent]
+}
+
+const getEventAtIdx = async (idx: number) => {
+  const events = await getEventsForCurrentGroup() 
+  const selectedEvent = events[idx]
+  return selectedEvent 
+}
+
 
 // 
 // State
@@ -367,9 +391,9 @@ const setCurrentEntGroupId = async (entIdx: number, grpIdx: number) => {
   await window.myapi.selectAll(sql)
 }
 
-let selectedEventDate = new Date()
+let selectedEventDate = ""
 
-const setSelectedEventDate = (date: Date) => {
+const setSelectedEventDate = (date: string) => {
   selectedEventDate = date
 }
 
@@ -397,13 +421,14 @@ interface Member {
 
 interface Group {
   Id: number,
-  GrpName: string
+  GrpName: string,
+  Entity: number
 }
 
-interface Event {
+interface GroupEvent {
   Id: number,
-  Date: number,
-  Time: number
+  GroupId: number,
+  EventDate: string
 }
 
 //
@@ -463,6 +488,7 @@ export {
   setCurrentEntGroupId,
   getEntities,
   getEntityAtIdx,
+  getEntityWithId,
   deleteEntityWithId,
   getMembersForCurrentEntity,
   getMemberAtIdx,
@@ -487,5 +513,7 @@ export {
   showIndividualTimers,
   setShowIndividualTimers,
   setSelectedEventDate,
-  getSelectedEventDate
+  getSelectedEventDate,
+  getEventsForCurrentGroup,
+  getEventAtIdx
 }

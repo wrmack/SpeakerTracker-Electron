@@ -21,7 +21,10 @@ import { loadEditGroupSheet, setupEditGroupListeners } from './03-Editing tools/
 
 import { displayEvents } from './01-Master/DisplayEvents/display-events-view.js'
 import { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents } from './01-Master/DisplayEvents/display-events-presenter.js'
+import { displaySelectedEvent, setupEventDetailListeners } from './02-Detail/DisplaySelectedEvent/display-selected-event-view.js'
 import { loadAddEventSheet, setupAddEventListeners } from './03-Editing tools/Events/AddEvent/add-event-view.js' 
+import { loadEditEventSheet, setupEditEventListeners } from './03-Editing tools/Events/EditEvent/edit-event-view.js'
+import { loadDeleteEventSheet, setupDeleteEventListeners } from './03-Editing tools/Events/DeleteEvent/delete-event-view.js'
 
 
 const sideBarSelection = { name: 'entities' }
@@ -102,6 +105,10 @@ const setupEditItemListeners = function () {
       case 'groups':
         loadDeleteGroupSheet()
         setupDeleteGroupListeners()
+        break
+      case 'events':
+        loadDeleteEventSheet()
+        setupDeleteEventListeners()
     }
   })
 
@@ -126,6 +133,10 @@ const setupEditItemListeners = function () {
       case 'groups':
         loadEditGroupSheet()
         setupEditGroupListeners()
+        break
+      case 'events':
+        loadEditEventSheet()
+        setupEditEventListeners()
     }
   })
 
@@ -240,13 +251,13 @@ const showEvents = async () => {
   mast.innerHTML = displayEvents
   const head = document.getElementById('setup-topbar-heading') as HTMLElement
   head.innerHTML = 'Events'
-  // setupGroupDetailListeners()
+  setupEventDetailListeners()
   await loadEntitiesDropdownForEvents()
   await loadGroupsDropdownForEvents()
   // setupEventsEntitiesDropdownListeners()
   await loadEvents()
-  // const det = document.getElementById('setup-detail') as HTMLElement
-  // det.innerHTML = displaySelectedEvent
+  const det = document.getElementById('setup-detail') as HTMLElement
+  det.innerHTML = displaySelectedEvent
 }
 
 

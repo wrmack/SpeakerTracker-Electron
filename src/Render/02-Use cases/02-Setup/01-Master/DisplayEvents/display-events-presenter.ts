@@ -1,4 +1,13 @@
-import { getEntities, getGroupsForCurrentEntity, setSelectedEntityId, selectedEntityId, selectedGroupId } from '../../../../01-Models/models.js'
+import { 
+  getEntities, 
+  getGroupsForCurrentEntity, 
+  getEventsForCurrentGroup, 
+  setSelectedEntityId, 
+  setSelectedGroupId, 
+  selectedEntityId, 
+  selectedGroupId 
+} from '../../../../01-Models/models.js'
+import { formatIsoDate } from '../../../../Utils/utils.js'
 
 async function loadEntitiesDropdownForEvents () {
   const entities = await getEntities()
@@ -39,28 +48,30 @@ async function loadGroupsDropdownForEvents () {
 }
   
 async function loadEvents () {
-  const groups = await getGroupsForCurrentEntity()
+  const events = await getEventsForCurrentGroup()
   let tableRows = ''
-  for (const i in groups) {
-    const myId = 'gp-r' + i
+  for (const i in events) {
+    const isoDateStr = events[i].EventDate
+    const fullString = formatIsoDate(isoDateStr)
+    const myId = 'ev-r' + i
     tableRows += '<tr>'
-    tableRows += "<td><button class='group-cell-text master-cell-btn' id=" + myId + ' >' + groups[i].GrpName + '</button> </td>'
+    tableRows += "<td><button class='evt-cell-text master-cell-btn' id=" + myId + ' >' + fullString + '</button> </td>'
     tableRows += '</tr>'
   }
-  const cont = document.getElementById('master-groups-content')
+  const cont = document.getElementById('master-events-content')
   if (!cont) { return}
   cont.innerHTML = tableRows
 
   // Create custom event whenever a cell is clicked so that the detail view
   // can know which member to display.  Bubble up and add event listener to document
   // in display-selected-member-view.  Pass the id of the element clicked.
-  const cells = document.querySelectorAll('.group-cell-text')
+  const cells = document.querySelectorAll('.evt-cell-text')
   cells.forEach(el => { el.addEventListener('click', handleSelection )})
 
-  // When entities are loaded, select the first cell
+  // When events are loaded, select the first cell
   if (cells.length > 0) {
     cells[0].classList.add('master-cell-btn-selected')
-    cells[0].dispatchEvent(new CustomEvent('group-selected', {
+    cells[0].dispatchEvent(new CustomEvent('event-selected', {
       bubbles: true,
       cancelable: false,
       detail: { id: cells[0].id }
@@ -69,7 +80,7 @@ async function loadEvents () {
 }
 
 function handleSelection(this: HTMLElement)  {
-  this.dispatchEvent(new CustomEvent('group-selected', {
+  this.dispatchEvent(new CustomEvent('event-selected', {
     bubbles: true,
     cancelable: false,
     detail: { id: this.id }
@@ -83,11 +94,11 @@ function handleSelection(this: HTMLElement)  {
   }
 }
 
-async function eventsEntityChanged(idx: number) {
-  const ents = await getEntities()
-  const ent = ents[idx]
-  setSelectedEntityId(ent.Id)
+async function eventsGroupChanged(idx: number) {
+  const grps = await getGroupsForCurrentEntity()
+  const grp = grps[idx]
+  setSelectedGroupId(grp.Id)
   loadEvents()
 }
 
-export { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents, eventsEntityChanged }
+export { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents, eventsGroupChanged }

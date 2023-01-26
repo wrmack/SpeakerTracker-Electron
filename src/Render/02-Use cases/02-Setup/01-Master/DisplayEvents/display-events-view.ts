@@ -1,4 +1,4 @@
-import { eventsEntityChanged } from "./display-events-presenter.js"
+import { eventsGroupChanged } from "./display-events-presenter.js"
 
 const displayEvents = `
 <div class='dropdown-container'>
@@ -28,7 +28,7 @@ const setupEventsDropdownListeners = function () {
   
   function handleDropDownEvent(this: HTMLElement) {
     const el = this as HTMLSelectElement
-    eventsEntityChanged(el.selectedIndex)
+    eventsGroupChanged(el.selectedIndex)
   }
   
   export { displayEvents, setupEventsDropdownListeners }
