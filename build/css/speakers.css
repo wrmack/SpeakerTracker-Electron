@@ -463,6 +463,10 @@ Speakers view
     align-items: center;
     margin-bottom: 30px;
   }
+
+  #mtgsetup-event-dropdown-container {
+    visibility: hidden;
+  }
   
   .info-container {
     padding-left: 10px;

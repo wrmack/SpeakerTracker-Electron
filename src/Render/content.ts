@@ -1,4 +1,4 @@
-import  { populateTables } from './02-Use cases/01-Track speakers/speakers-presenter.js'
+import  { populateTables } from './01-Use cases/01-Track speakers/speakers-presenter.js'
 import { 
   speaker_tracker, 
   loadSetupMeetingSheet, 
@@ -10,16 +10,16 @@ import {
   setupSpeakingTableSectionChangeListener,
   setupWaitingTableMenuListener, 
   setupClockExpandListener
-} from './02-Use cases/01-Track speakers/speakers-view.js'
+} from './01-Use cases/01-Track speakers/speakers-view.js'
 import { 
   setupView, 
   setupEditItemListeners, 
   setupSidebarListeners, 
   showEntities 
-} from './02-Use cases/02-Setup/setup-view.js'
+} from './01-Use cases/02-Setup/setup-view.js'
 import {
   reportsView
-} from './02-Use cases/03-Reports/reports-view.js'
+} from './01-Use cases/03-Reports/reports-view.js'
 
 
 // Initialise database
