@@ -3,8 +3,6 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import path = require('path')
 const sqlite3 = require('sqlite3').verbose()
 
-import flatpickr from 'flatpickr'
-
 
 let db: Database
 
@@ -117,16 +115,16 @@ ipcMain.handle('dbInit', async () => {
   CREATE TABLE IF NOT EXISTS Members (Id INTEGER PRIMARY KEY AUTOINCREMENT, Title TEXT, FirstName TEXT, LastName TEXT, Entity INTEGER);
   CREATE TABLE IF NOT EXISTS Groups (Id INTEGER PRIMARY KEY AUTOINCREMENT, GrpName TEXT, Entity INTEGER);
   CREATE TABLE IF NOT EXISTS GroupMembers (Id INTEGER PRIMARY KEY AUTOINCREMENT, GroupId INTEGER, MemberId INTEGER);
-  CREATE TABLE IF NOT EXISTS Events (Id INTEGER PRIMARY KEY AUTOINCREMENT, GroupId INTEGER, EventDate TEXT);
-  CREATE TABLE IF NOT EXISTS DebateSpeeches (Id INTEGER PRIMARY KEY AUTOINCREMENT, MemberId INTEGER, StartTime TEXT, Seconds INTEGER, SectionId INTEGER);
-  CREATE TABLE IF NOT EXISTS DebateSections (Id INTEGER PRIMARY KEY AUTOINCREMENT, SectionName TEXT, DebateId INTEGER);
-  CREATE TABLE IF NOT EXISTS Debates (Id INTEGER PRIMARY KEY AUTOINCREMENT, EventId INTEGER, Note TEXT);
+  CREATE TABLE IF NOT EXISTS Events (Id INTEGER PRIMARY KEY AUTOINCREMENT, GroupId INTEGER, EventDate TEXT, Closed INTEGER);
+  CREATE TABLE IF NOT EXISTS DebateSpeeches (Id INTEGER PRIMARY KEY AUTOINCREMENT, EventId INTEGER, DebateNumber INTEGER, SectionNumber INTEGER, MemberId INTEGER, StartTime TEXT, Seconds INTEGER);
+  CREATE TABLE IF NOT EXISTS DebateSections (Id INTEGER PRIMARY KEY AUTOINCREMENT,  EventId INTEGER, DebateNumber INTEGER, SectionNumber INTEGER, SectionName TEXT);
+  CREATE TABLE IF NOT EXISTS Debates (Id INTEGER PRIMARY KEY AUTOINCREMENT, EventId INTEGER, DebateNumber INTEGER, Note TEXT);
   CREATE TABLE IF NOT EXISTS State (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntityId INTEGER, GroupId INTEGER, EventId INTEGER);
   `
 
   db.exec(sql, (err: Error | null) => {
     if (err) {
-      return console.error(err.message);
+      return console.error("------->> ",err.message);
     }
   })
 })
@@ -137,7 +135,7 @@ ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
     console.log(sql)
     db.exec(sql, (err) => {
       if (err) {
-        return console.error(err.message)
+        return console.error("------->> ",err.message)
       }
     })
   // })
@@ -148,7 +146,7 @@ ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
 ipcMain.handle('dbRun', async (ev: Event, sql: string, params: any) => {
   db.run(sql, params, err => {
     if (err) {
-      return console.error(err.message);
+      return console.error("------->> ",err.message);
     }
   });
 })
@@ -160,7 +158,7 @@ ipcMain.handle('dbSelect', async (ev:Event, sql: string) => {
     return new Promise((resolve, reject) => {
       db.all(sql, (err, rows) => {
         if (err) {
-          console.log('db.all error: ' + err)
+          console.log('------->> db.all error: ' + err)
         }
         console.log('db.all rows: ' + JSON.stringify(rows))
         resolve (rows)

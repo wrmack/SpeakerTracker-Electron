@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "typeRoots": [
+      "./types"
+    ]
   },
   "exclude": ["build", "node_modules","./src", "out" ],
   "references": [

@@ -10,10 +10,10 @@ import {
   resetTables,
   handleMovingMember,
   getTimeForMember,
-  setTimerDisplay
+  setTimerDisplay,
+  updateState
 } from './speakers-presenter.js'
 import {infoText} from './info.js'
-import {setCurrentEntGroupEvtId} from '../../03-State/state.js'
 import { eventsGroupChanged } from '../02-Setup/01-Master/DisplayEvents/display-events-presenter.js'
 
 let totalSeconds = 0
@@ -24,6 +24,7 @@ let isSetupSheetExpanded = false
 let isDragging = false
 let draggedRow: HTMLTableRowElement
 let isClockVisible = false
+let meetingIsBeingRecorded = false
 
 /** The html for the main speaker tracker page. */
 const speaker_tracker = `
@@ -802,7 +803,7 @@ async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
   mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
   if (!isSetupSheetExpanded) { populateEntityDropdown() }
   isSetupSheetExpanded = !isSetupSheetExpanded
-  await setCurrentEntGroupEvtId(entIdx,grpIdx,evtIdx)
+  await updateState(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
   await resetTables()
   setupArrowButtonListeners()
   setupMeetingSetupListeners()
@@ -881,8 +882,11 @@ async function handleChangedRecordEvent(this: HTMLInputElement) {
   const event = document.getElementById('mtgsetup-event-dropdown-container') as HTMLDivElement
   if (this.checked) {
     event.style.visibility = 'visible'
+    meetingIsBeingRecorded = true
   }
-  else { event.style.visibility = 'hidden'}
+  else { event.style.visibility = 'hidden'
+    meetingIsBeingRecorded = false
+  }
 }
 
 async function handleChangedEventDate(this: HTMLSelectElement) {

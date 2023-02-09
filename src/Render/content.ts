@@ -18,7 +18,8 @@ import {
   showEntities 
 } from './01-Use cases/02-Setup/setup-view.js'
 import {
-  reportsView
+  reportsView, 
+  setupReports
 } from './01-Use cases/03-Reports/reports-view.js'
 
 
@@ -105,14 +106,17 @@ async function loadSetupView () {
 async function loadReportsView () {
   const container = document.getElementById('content-container') 
   if (container) {  container.innerHTML = reportsView}
+  setupReports()
 }
 
 // Helpers
 function removeActiveClasses() {
   const speakersbtn = document.getElementById('speakers-btn')
   const setupbtn = document.getElementById('setup-btn')
+  const reportsbtn = document.getElementById('reports-btn')
   speakersbtn?.classList.remove('active')
   setupbtn?.classList.remove('active')
+  reportsbtn?.classList.remove('active')
 }
 
 // Start by calling initialise

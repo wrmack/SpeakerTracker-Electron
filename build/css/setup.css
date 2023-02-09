@@ -2,285 +2,285 @@
 Setup
 */
 #setup-topbar-container {
-    width: 100%;
-    height: 50px;
-    /* display: flex; */
-    background-color: #333;
-    color: white;
-    align-items: end;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #aaa;
-  }
+  width: 100%;
+  height: 50px;
+  /* display: flex; */
+  background-color: #333;
+  color: white;
+  align-items: end;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #aaa;
+}
   
-  .setup-topbar-item {
-    float: left;
-    margin-top: 30px;
-    font-size: 16pt;
-    /* border: 1px solid; */
-    color: white;
-  }
+.setup-topbar-item {
+  float: left;
+  margin-top: 30px;
+  font-size: 16pt;
+  /* border: 1px solid; */
+  color: white;
+}
   
-  #setup-topbar-heading {
-    position: relative;
-    left: 100px;
-    width: 300px;
-    text-align: center;
-  }
-  
-  #setup-topbar-add {
-    position: relative;
-    left: 141px;
-  }
-  
-  #setup-topbar-trash::before {
-    position: absolute;
-    left: 80%;
-    font-family: STFonts;
-    content: 'e';
-    font-size: 20pt;
-    color: red;
-    margin-top: -7px;
-  }
-  
-  #setup-topbar-edit {
-    position: absolute;
-    left: 90%;
-  }
-  
-  div#setup-content-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    height: 100%;
-    width: 100%;
-  }
-  
-  #setup-sidebar {
-    width: 100px;
-    height: 100%;
-    background-color: rgb(80, 80, 80);
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: center;
-    flex-shrink: 0;
-    border-bottom: 1px solid rgb(80,80,80);
-  }
-  
-  .setup-sidebar-btn {
-    display: block;
-    height: 80px;
-    width: 100%;
-    background: none;
-    color: white;
-    text-align: center;
-    font-size:12pt;
-  }
-  
-  .setup-sidebar-btn-selected {
-    background-color: rgb(70,70,70);
-  }
-  
-  #setup-master {
-    width: 300px;
-    height: 100%;
-    background-color: #333;
-    color: white;
-    float: left;
-    border: 1px solid #444;
-    border-collapse: collapse;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    flex-shrink: 0;
-  }
-  
-  .master-div-table {
-    background-color: #333;
-    width: 260px;
-    height: 530px;
-    overflow-y: auto;
-    margin-left: 20px;
-  }
-  
-  #setup-detail {
-    height: 100%;
-    background-color: #333;
-    float: none;
-    border: 1px solid #444;
-    color: white;
-    border-collapse: collapse;
-    width: 100%;
-  }
-  
-  #master-entities {
-    background-color: #333;
-    margin-top: 20px;
-  }
-  .master {
-    background-color: #333;
-  }
-  
-  .master-table {
-    background-color: #333;
-    width: 260px;
-  }
-  
-  .master-cell-btn {
-    border-radius: 6px;
-    width: 248px;
-    height: 40px;
-    /* margin-left: auto; */
-    /* margin-right: auto; */
-    color: rgb(230, 230, 230);
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-  
-  .master-cell-btn-selected {
-    background-color: rgb(0, 128, 255);
-  }
-  
-  .dropdown-container {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    float: none;
-    display: block;
-    width: 260px;
-  }
-  
-  .select-entities {
-    width: 250px;
-    float: none;
-    border-radius: 6px;
-    height: 25px;
-    margin-top:10px;
-    margin-bottom: 20px;
-  }
-  
-  div#selected-ent {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .detail-row {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  
-  .detail-key {
-    color: #aaa;
-    margin-left: 20px;
-  }
-  
-  .detail-value {
-    width: 60%;
-    margin-right: 20px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-  }
-  
-  #editing-sheet {
-    position: fixed;
-    top: 128px;
-    z-index: 1;
-    height: inherit;
-    left: 100%;
-    right: 0px;
-    /* right: 0px; */
-    background-color: #444;
-    transition-property: left;
-    transition-duration: 1s;
-    transition-delay: 0s;
-    overflow-x: hidden;
-    white-space: nowrap;
-  }
-  
-  #add-group-members, #edit-group-members {
-    background-color: #d5d5d5;
-    color: #000;
-  }
-  
-  #editing-sheet-selectMembers {
-    position: fixed;
-    display: flex;
-    top: 128px;
-    z-index: 2;
-    height: inherit;
-    left: 100%;
-    background-color: #444;
-    transition-property: left;
-    transition-duration: 1s;
-    transition-delay: 0s;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-  
-  div#edit-selection-list {
-    /* height: initial; */
-    overflow-y: auto;
-  }
-  
-  .editing-btn-container {
-    display: flex;
-    margin-left: 50px;
-    margin-right: 50px;
-    /* width: 100%; */
-    margin-top: 30px;
-    margin-bottom: 50px;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-  }
-  
-  .sheet-btn {
-    color: white;
-    font-size: 14pt;
-  }
-  
-  .save-btn {
-    float: right;
-  }
-  
-  .field-container {
-    display: flex;
-    margin-bottom: 20px;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-  }
-  
-  .input-label {
-    color: white;
-    margin-left: 20px;
-    width: 100px;
-    display: inline;
-  }
-  
-  .delete {
-    color: red
-  }
-  
-  .arrow {
-    margin-left: 20px;
-    color: white;
-    font-size: 25pt;
-  }
-  
-  .cbitem {
-    line-height: 20pt;
-    color: white;
-  }
-  
+#setup-topbar-heading {
+  position: relative;
+  left: 100px;
+  width: 300px;
+  text-align: center;
+}
+
+#setup-topbar-add {
+  position: relative;
+  left: 141px;
+}
+
+#setup-topbar-trash::before {
+  position: absolute;
+  left: 80%;
+  font-family: STFonts;
+  content: 'e';
+  font-size: 20pt;
+  color: red;
+  margin-top: -7px;
+}
+
+#setup-topbar-edit {
+  position: absolute;
+  left: 90%;
+}
+
+div#setup-content-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+}
+
+#setup-sidebar {
+  width: 100px;
+  height: 100%;
+  background-color: rgb(80, 80, 80);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgb(80,80,80);
+}
+
+.setup-sidebar-btn {
+  display: block;
+  height: 80px;
+  width: 100%;
+  background: none;
+  color: white;
+  text-align: center;
+  font-size:12pt;
+}
+
+.setup-sidebar-btn-selected {
+  background-color: rgb(70,70,70);
+}
+
+#setup-master {
+  width: 300px;
+  height: 100%;
+  background-color: #333;
+  color: white;
+  float: left;
+  border: 1px solid #444;
+  border-collapse: collapse;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.master-div-table {
+  background-color: #333;
+  width: 260px;
+  height: 530px;
+  overflow-y: auto;
+  margin-left: 20px;
+}
+
+#setup-detail {
+  height: 100%;
+  background-color: #333;
+  float: none;
+  border: 1px solid #444;
+  color: white;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#master-entities {
+  background-color: #333;
+  margin-top: 20px;
+}
+.master {
+  background-color: #333;
+}
+
+.master-table {
+  background-color: #333;
+  width: 260px;
+}
+
+.master-cell-btn {
+  border-radius: 6px;
+  width: 248px;
+  height: 40px;
+  /* margin-left: auto; */
+  /* margin-right: auto; */
+  color: rgb(230, 230, 230);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.master-cell-btn-selected {
+  background-color: rgb(0, 128, 255);
+}
+
+.dropdown-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+  display: block;
+  width: 260px;
+}
+
+.select-entities {
+  width: 250px;
+  float: none;
+  border-radius: 6px;
+  height: 25px;
+  margin-top:10px;
+  margin-bottom: 20px;
+}
+
+div#selected-ent {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.detail-key {
+  color: #aaa;
+  margin-left: 20px;
+}
+
+.detail-value {
+  width: 60%;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+#editing-sheet {
+  position: fixed;
+  top: 128px;
+  z-index: 1;
+  height: inherit;
+  left: 100%;
+  right: 0px;
+  /* right: 0px; */
+  background-color: #444;
+  transition-property: left;
+  transition-duration: 1s;
+  transition-delay: 0s;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+#add-group-members, #edit-group-members {
+  background-color: #d5d5d5;
+  color: #000;
+}
+
+#editing-sheet-selectMembers {
+  position: fixed;
+  display: flex;
+  top: 128px;
+  z-index: 2;
+  height: inherit;
+  left: 100%;
+  background-color: #444;
+  transition-property: left;
+  transition-duration: 1s;
+  transition-delay: 0s;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+div#edit-selection-list {
+  /* height: initial; */
+  overflow-y: auto;
+}
+
+.editing-btn-container {
+  display: flex;
+  margin-left: 50px;
+  margin-right: 50px;
+  /* width: 100%; */
+  margin-top: 30px;
+  margin-bottom: 50px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.sheet-btn {
+  color: white;
+  font-size: 14pt;
+}
+
+.save-btn {
+  float: right;
+}
+
+.field-container {
+  display: flex;
+  margin-bottom: 20px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.input-label {
+  color: white;
+  margin-left: 20px;
+  width: 100px;
+  display: inline;
+}
+
+.delete {
+  color: red
+}
+
+.arrow {
+  margin-left: 20px;
+  color: white;
+  font-size: 25pt;
+}
+
+.cbitem {
+  line-height: 20pt;
+  color: white;
+}
+

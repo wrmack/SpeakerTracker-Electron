@@ -3,10 +3,18 @@
   <head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!-- jsPDF and PDFObject require policies for object, frame and style sources -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self'; 
+      object-src 'self' data: blob: ; 
+      frame-src 'self' data: blob: ; 
+      style-src 'self' 'unsafe-inline';
+    ">
     <link href="css/main.css" rel="stylesheet">
     <link href="css/speakers.css" rel="stylesheet">
     <link href="css/setup.css" rel="stylesheet">
+    <link href="css/reports.css" rel="stylesheet">    
     <link href="css/dark.css" rel="stylesheet">
     <title>Speaker Tracker</title>
   </head>
@@ -26,8 +34,9 @@
 
     <div id="content-container"></div>
 
-
     <!-- You can also require other files to run in this process -->
     <script type="module" src="./Render/content.js"></script>
+    <script type="module" src="./scripts/jspdf.umd.js"></script>
+    <!-- <script src="./scripts/pdfobject.min.js"></script> -->
   </body>
 </html>

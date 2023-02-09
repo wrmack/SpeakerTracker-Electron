@@ -1,35 +1,5 @@
 import { selectedEntityId, selectedGroupId } from "../03-State/state.js";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-declare interface MyAPI {
-  
-  /** Connect to database */
-  connect: () => Promise<void>;
-  
-  /** Initialise database with empty tables if they don't exist */
-  initDb: () =>  Promise<void>;
-  close: () => void;
-  
-  /** Runs SQL statements (can be more than one) in a string with no results returned.
-   * 
-   * node-sqlite3 API: db.exec wrapped in db.serialize  */ 
-  execSQL: (arg0: string) =>  Promise<void>;
-  
-  /** Runs the SQL query with the specified parameters and 
-   * calls the callback afterwards if there is an error. 
-   * 
-   * node-sqlite3 API: db.run.*/
-  runSQL: (sql: string, params: any) =>  Promise<void>;
-
-  /** Runs the SQL query with the specified parameters and calls 
-   * the callback with all result rows afterwards. 
-   * 
-   * node-sqlite3 API: db.all wrapped in db.serialize.*/ 
-  selectAll: (sql: string, val?: never[]) => Promise<any[]>;
-
-  getPaths: () => {userData: string, appData: string, logs: string, appPath: string };
-
-}
+import { MyAPI, Entity, Group, GroupEvent, DebateSection } from "../../types/interfaces"
 
 declare global {
   interface Window {
@@ -186,7 +156,7 @@ const addMember = async function (member: any) {
 //
 
 /** Retrieve all meeting groups for currently selected entity */ 
-const getGroupsForCurrentEntity = async function () {
+const getGroupsForCurrentEntity = async function (): Promise<Group[]> {
   const entityId = selectedEntityId
   const sql = `SELECT Id, GrpName FROM Groups WHERE Groups.Entity = ${entityId} ORDER BY GrpName;`
   console.log('getGroups sql: ' + sql)
@@ -269,27 +239,51 @@ const groupIdExists = async (id: number) => {
 //
 // Events
 //
-// An event's data are:
-// - Id
-// - meeting group (relationship one-to-many: an event can belong to only 1 group; a group can have many events )
-// - date of event
-// - debates (relationship)
-// A debate's data are 
-// - debate number
-// - text note
-// - debate sections (relationship)
-// A debate section's data are 
-// - section name (main, amendment)
-// - section number
-// - debate (relationship) 
-// - speech events (relationship)
-// A speech event's data are 
-// - start time
-// - elapsed minutes
-// - elapsed seconds
-// - member (relationship)
-// - debate section (relationship one-to-one)
 
+/**
+    Sqlite does not allow arrays.
+
+    An event's data are:
+    - id                                        (event unique identifier)
+    - meeting group id                          (data)
+    - date of event                             (data)
+    - whether closed (meeting has happened)     (data)
+    
+    A debate's data are 
+    - id                                        (not used)
+    - event id                                  (required for locating debate)
+    - debate number                             (for ordering debates consecutively and for identifying children of debate)
+    - text note                                 (data)
+    
+    A debate section's data are
+    - id                                        (not used) 
+    - event id                                  (required for locating debate)
+    - debate number                             (required for locating section in debate)
+    - section number                            (for ordering sections consecutively and for identifying children of section)
+    - section name (main, amendment)
+    
+    A speech event's data are 
+    - id                                        (not used)
+    - event id                                  (required for locating debate)
+    - debate number                             (required for locating section in debate)
+    - section number                            (required for locating speech in section)
+    - speech number                             (for ordering speeches consecutively)
+    - start time                                (data)
+    - elapsed seconds                           (data)
+    - member id                                 (data)
+
+    Each event id is unique.
+    For a given event, each debate number is unique to that debate (not used by any other debate for that event)
+    For a given debate, each debate section number is unique.
+
+    Debate, section and speech numbers start at 0
+    
+    To get all events for a meeting group
+    - query database for events with that group id
+    - for each returned event query db for debates with that event id
+    - for each returned debate query db for debate sections with that event id and debate number
+    - for each returned debate section query db for speech events with that event id, debate number, and section number
+*/
 
 const addEvent = async (eventDate: string, groupId: number) => {
   const sql = 'INSERT INTO Events (GroupId, EventDate) VALUES ($groupId, $eventDate);'
@@ -310,52 +304,49 @@ const getEventAtIdx = async (idx: number) => {
   return selectedEvent 
 }
 
-const addDebateSpeech = async (memberId: number, startTime: string, seconds: number, sectionId: number) => {
- const sql = `INSERT INTO DebateSpeeches (MemberId, StartTime, Seconds, SectionId) VALUES (${memberId}, ${startTime}, ${seconds}, ${sectionId});`
- await window.myapi.connect()
- await window.myapi.selectAll(sql)
+const getEventWithId = async (eventId: number) => {
+  const sql = `SELECT GroupId, EventDate FROM Events WHERE Events.Id = ${eventId};`
+  await window.myapi.connect()
+  const evts = await window.myapi.selectAll(sql) 
+  return evts[0] as GroupEvent
 }
 
-
- 
-//
-// Models for entity, group, member, event which mirror database
-//
-
-// Property labels uppercase consistent with database field names
-interface Entity {
-  Id: number,
-  EntName: string
+const addDebate = async (eventId: number, debateNumber: number, note: string) =>  {
+  const sql = `INSERT INTO Debates (EventId, DebateNumber, Note ) VALUES (${eventId}, ${debateNumber}, '${note}');`
+  await window.myapi.connect()
+  await window.myapi.selectAll(sql)
 }
 
-// Property labels lowercase - legacy
-interface Member {
-  id: number,
-  title: string,
-  firstName: string,
-  lastName: string
+const getDebatesForEventId = async (eventId: number) => {
+  const sql = `SELECT EventId, DebateNumber, Note FROM Debates WHERE Debates.EventId = ${eventId};`
+  await window.myapi.connect()
+  return await window.myapi.selectAll(sql)
 }
 
-interface Group {
-  Id: number,
-  GrpName: string,
-  Entity: number
+const addDebateSection = async (eventId: number,  debateNumber: number, sectionNumber: number, sectionName: string) => {
+  const sql = `INSERT INTO DebateSections (EventId, DebateNumber, SectionNumber, SectionName ) VALUES (${eventId}, ${debateNumber}, ${sectionNumber}, '${sectionName}' );`
+  await window.myapi.connect()
+  await window.myapi.selectAll(sql)
 }
 
-// Use GroupEvent to avoid clash with in-built Event
-interface GroupEvent {
-  Id: number,
-  GroupId: number,
-  EventDate: string
+const getDebateSections = async (eventId: number, debateNumber: number) => {
+  const sql = `SELECT SectionNumber, SectionName FROM DebateSections WHERE DebateSections.EventId = ${eventId} AND DebateSections.DebateNumber = ${debateNumber}; `
+  await window.myapi.connect()
+  return await window.myapi.selectAll(sql) as DebateSection[]
 }
 
-interface DebateSpeech {
-  Id: number,
-  StartTime: string,
-  Seconds: number,
-  SectionId: number,
-  MemberId: number
+const addDebateSpeech = async (eventId: number, debateNumber: number, sectionNumber: number, memberId: number, startTime: string, seconds: number ) => {
+  const sql = `INSERT INTO DebateSpeeches (EventId, DebateNumber, SectionNumber, MemberId, StartTime, Seconds) VALUES (${eventId}, ${debateNumber}, ${sectionNumber}, ${memberId}, '${startTime}', ${seconds} );`
+  await window.myapi.connect()
+  await window.myapi.selectAll(sql)
 }
+
+const getDebateSectionSpeeches = async (eventId: number, debateNumber: number, sectionNumber: number) => {
+  const sql = `SELECT MemberID, StartTime, Seconds FROM DebateSpeeches WHERE DebateSpeeches.EventId = ${eventId} AND DebateSpeeches.DebateNumber = ${debateNumber} AND DebateSpeeches.SectionNumber = ${sectionNumber};`
+  await window.myapi.connect()
+  return await window.myapi.selectAll(sql)
+}
+
 
 //
 // Model for managing data for speaking table - does not mirror database
@@ -375,30 +366,6 @@ enum SectionType {
   off
 }
 
-interface ListMember {
-  row: number,
-  member: Member,
-  startTime: Date | null,
-  speakingTime: number,
-  timerButtonMode: TimerButtonMode,
-  timerIsActive: boolean
-}
-
-interface SectionList {
-  sectionNumber: number,
-  sectionType: SectionType,
-  sectionHeader: string,
-  sectionMembers: ListMember[]
-}
-
-interface SpeakingTable {
-  id: number,
-  sectionLists: SectionList[]
-}
-
-
-
-
 export {
   execSql,
   getEntities,
@@ -412,6 +379,8 @@ export {
   addMember,
   addGroup,
   addEvent,
+  addDebate,
+  addDebateSection,
   addDebateSpeech,
   getMembersForGroupId,
   getGroupAtIdx,
@@ -423,14 +392,10 @@ export {
   entityIdExists,
   getEventsForCurrentGroup,
   getEventAtIdx,
-  TimerButtonMode,
+  getEventWithId,
+  getDebatesForEventId,
+  getDebateSections,
+  getDebateSectionSpeeches,
   SectionType,
-  SectionList,
-  SpeakingTable,
-  ListMember,
-  Entity,
-  Member,
-  Group,
-  GroupEvent,
-  DebateSpeech
+  TimerButtonMode
 }

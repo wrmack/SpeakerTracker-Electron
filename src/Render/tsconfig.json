@@ -2,12 +2,11 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "../../build/Render",
-    "allowJs": true,
     "target": "es2020",
     "strict": true,
     "composite": true,
     "moduleResolution": "node",
     "esModuleInterop": true
   },
-  "include": ["./**/**/*"],
+  "include": ["./**/**/*", "../../build/scripts/jspdf.umd.js"],
 }

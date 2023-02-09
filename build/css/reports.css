@@ -1,0 +1,95 @@
+#reports-topbar-container {
+    width: 100%;
+    height: 52px;
+    display: flex;
+    background-color: #333;
+    color: white;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #aaa;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#reports-topbar-heading {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding-top: 5px;
+}
+
+.reports-topbar-item {
+    float: left;
+    margin-top: 5px;
+    font-size: 16pt;
+    /* border: 1px solid; */
+    color: white;
+    width: 300px;
+    text-align: center;
+}
+
+#reports-content-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
+}
+
+#reports-master {
+    width: 300px;
+    height: 100%;
+    background-color: #333;
+    color: white;
+    float: left;
+    border: 1px solid #444;
+    border-collapse: collapse;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+#reports-detail {
+    height: 100%;
+    background-color: #333;
+    float: none;
+    border: 1px solid #444;
+    color: white;
+    border-collapse: collapse;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.report-card {
+    height: 200px;
+    width: 160px;
+    background-color: white;
+    color: black;
+    margin-left: 96px;
+    margin-top: 50px;
+}
+
+#pdf-viewer {
+    position: fixed;
+    top: 15px;
+    z-index: 1;
+    width: 640px;
+    height: 740px;
+    left: 60px;
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #282828;
+    color: rgb(51, 51, 51);
+    border-radius: 6px;
+    visibility: hidden;
+}
+/* Style for the embedded iframe for pdfObject */
+.pdfobject {
+    border: none;
+    width: 100%;
+    height: 100%;
+}

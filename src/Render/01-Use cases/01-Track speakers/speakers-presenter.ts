@@ -6,12 +6,12 @@ import {
   getMembersForGroupId, 
   getMemberWithId,
   getEventsForCurrentGroup,
-  Member,
-  ListMember,
-  SectionList,
+  addDebate,
+  addDebateSection,
+  addDebateSpeech,
   SectionType,
   TimerButtonMode,
-  addDebateSpeech
+  getEventAtIdx
 } from "../../02-Models/models.js"
 
 import {
@@ -20,9 +20,23 @@ import {
   setSelectedEntityId,
   selectedGroupId,
   setSelectedGroupId,
+  selectedEventId,
+  setSelectedEventId,
   showIndividualTimers,
   setShowIndividualTimers,
+  meetingIsBeingRecorded,
+  currentDebateNumber,
+  setCurrentDebateNumber,
+  setCurrentEntGroupEvtId,
+  setMeetingIsBeingRecorded,
+  currentDebateSectionNumber
 } from "../../03-State/state.js"
+
+import {
+  ListMember,
+  Member,
+  SectionList
+} from "../../../types/interfaces"
 
 let isInitialised = false
 
@@ -494,13 +508,22 @@ async function updateListMember(section: number, row: number, target: string, se
   if (target == 'spkg-table-cell-timer-play') {
     mbr.timerButtonMode = TimerButtonMode.pause_stop
     mbr.timerIsActive = true
+    mbr.startTime = new Date()
   }
   if (target == 'spkg-table-cell-timer-stop') {
     mbr.timerButtonMode = TimerButtonMode.off
     mbr.timerIsActive = false
     mbr.speakingTime = seconds as number
-    if (mbr.startTime) {
-      await addDebateSpeech(mbr.member.id, mbr.startTime.toISOString(), mbr.speakingTime, 1)
+    if (mbr.startTime && meetingIsBeingRecorded == true) {
+      const eventEl = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
+      if (!eventEl) { return} 
+      const eventIdx = eventEl.options.selectedIndex
+      const evt = await getEventAtIdx(eventIdx)
+      setSelectedEventId(evt.Id)
+      const debateNum = currentDebateNumber
+      setCurrentDebateNumber(debateNum)
+      
+      await addDebateSpeech(evt.Id, debateNum, sect.sectionNumber, mbr.member.id, mbr.startTime.toISOString(), mbr.speakingTime )
     }
   }
   if (target == 'spkg-table-cell-timer-pause') {
@@ -514,6 +537,17 @@ async function updateListMember(section: number, row: number, target: string, se
     // mbr.speakingTime = seconds as number
   }
   await populateTables()
+}
+
+async function updateState(entityIdx: number, groupIdx: number, eventIdx: number, isRecorded: boolean ) {
+  await setCurrentEntGroupEvtId(entityIdx,groupIdx,eventIdx)
+  if (meetingIsBeingRecorded == false && isRecorded == true) {
+    // Recording has just been switched on
+    setCurrentDebateNumber(0)
+    await addDebate(selectedEventId, 0, "This is a note")
+    await addDebateSection(selectedEventId,0,0,"Main")
+  }
+  setMeetingIsBeingRecorded(isRecorded)
 }
 
 function getTimeForMember(section: number, row: number) {
@@ -582,6 +616,7 @@ export {
   populateEventsDropdown,
   updateWaitingTableAfterDragging,
   updateListMember,
+  updateState,
   resetTables, 
   getTimeForMember,
   setTimerDisplay

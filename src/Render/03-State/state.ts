@@ -5,17 +5,29 @@ import {
     groupIdExists, 
     entityIdExists, 
     getEventAtIdx, 
-    Entity,
-    Group,
-    GroupEvent 
 } from "../02-Models/models.js"
+import {
+  Entity,
+  Member,
+  Group,
+  GroupEvent,
+  DebateSpeech
+} from "../../types/interfaces"
 
 // 
 // State
 // 
 
+/**
+ * Terminology
+ * id: is unique and usually corresponds to id field in database record
+ * num: not unique - as in SectionNumber (each debate starts with SectionNumber set to 0)
+ * idx: is index in array (or row in a table list)
+ */
 
 // In-memory state
+
+/** ---------------- Selected Entity, Group, Event -------------------- */
 
 /** Holds the id of the selected entity.
  *  This is exported and is the source of truth for
@@ -30,16 +42,32 @@ let selectedEntityId = 0
 let selectedGroupId = 0
 
 let selectedEventId = 0
+
 let selectedEventDate = ""
+
+/** ---------------------- Setup ------------------------------- */
 
 /** Store idx of selected master row */
 let masterRowIdx = 0
 
+
+/** ------------------ Recording meetings ---------------------- */
+
+let currentDebateNumber: number
+let currentDebateSectionNumber: number
+// let currentDebateSpeechNumber = 0
+
+
+/** --------------- Meeting setup sheet -------------------- */
+
 /** Whether members on speaking table have individual timers */
 let showIndividualTimers = false
 
+/** Whether meeting is being recorded */
+let meetingIsBeingRecorded = false
 
-// Getters and setters
+
+/**  ------- Getters and setters: selected Entity, Group, Event ---------------- */ 
 
 /** Sets `selectedEntityId` as well as storing it in the 
  *  the database's state table.
@@ -69,10 +97,6 @@ const setSelectedEventId = async (id: number) => {
   const sql = `UPDATE State SET EventId = ${id};`
   await window.myapi.connect()
   await window.myapi.selectAll(sql)
-}
-
-const setMasterRowIdx = (idx: number) => {
-  masterRowIdx = idx
 }
 
 const getSavedEntGroupId = async () => {
@@ -117,6 +141,12 @@ const getSavedEntGroupId = async () => {
   }
 }
 
+/**
+ * Sets selectedEntityId, selectedGroupId, selectedEventId 
+ * with values retrieved from database 
+ * using the indexes passed in.
+ * Updates state in database.
+ */
 const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: number) => {
   const ent = await getEntityAtIdx(entIdx) as Entity
   selectedEntityId = ent.Id
@@ -136,11 +166,27 @@ const getSelectedEventDate = () => {
   return selectedEventDate
 }
 
+/**  ------- Getters and setters: recording meetings ---------------- */ 
+
+const setCurrentDebateNumber = (num: number) => {
+  currentDebateNumber = num
+}
+
+/**  ------- Getters and setters: setup ---------------- */ 
+
+const setMasterRowIdx = (idx: number) => {
+  masterRowIdx = idx
+}
+
+/**  ------- Getters and setters: meeting setup sheet ---------------- */ 
 
 function setShowIndividualTimers(showTimer: boolean) {
   showIndividualTimers = showTimer
 }
 
+function setMeetingIsBeingRecorded(on: boolean) {
+  meetingIsBeingRecorded = on ? true : false
+}
 
 export {
     masterRowIdx,
@@ -155,4 +201,11 @@ export {
     getSelectedEventDate,
     setShowIndividualTimers,
     showIndividualTimers,
+    meetingIsBeingRecorded,
+    setMeetingIsBeingRecorded,
+    selectedEventId,
+    setSelectedEventId,
+    currentDebateNumber,
+    setCurrentDebateNumber,
+    currentDebateSectionNumber
 }

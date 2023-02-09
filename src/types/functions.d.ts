@@ -1,3 +1,6 @@
+/// <reference path="./interfaces.d.ts" />
+
+import { Entity, Group, GroupEvent } from './interfaces'
 
 export function execSql(mysql: string): Promise<void>;
 export function getEntities(): Promise<any>;
@@ -26,55 +29,5 @@ export function getGroupIdsForEntityId(id: number): Promise<any>;
 export function getGroupsForEntityId(id: number): Promise<any>;
 export function groupIdExists(id: number): Promise<boolean>;
 export function entityIdExists(id: number): Promise<boolean>;
-export enum TimerButtonMode {
-    play = 0,
-    pause_stop = 1,
-    play_stop = 2,
-    off = 3
-}
-export enum SectionType {
-    mainDebate = 0,
-    amendment = 1,
-    off = 2
-}
-export interface SectionList {
-    sectionNumber: number;
-    sectionType: SectionType;
-    sectionHeader: string;
-    sectionMembers: ListMember[];
-}
-export interface SpeakingTable {
-    id: number;
-    sectionLists: SectionList[];
-}
-export interface Member {
-    id: number;
-    title: string;
-    firstName: string;
-    lastName: string;
-}
-export interface ListMember {
-    row: number;
-    member: Member;
-    startTime: Date | null;
-    speakingTime: number;
-    timerButtonMode: TimerButtonMode;
-    timerIsActive: boolean;
-}
 export function getEventsForCurrentGroup(): Promise<GroupEvent[]>;
 export function getEventAtIdx(idx: number): Promise<GroupEvent>;
-export interface Entity {
-    Id: number;
-    EntName: string;
-}
-interface Group {
-    Id: number;
-    GrpName: string;
-    Entity: number;
-}
-interface GroupEvent {
-    Id: number;
-    GroupId: number;
-    EventDate: string;
-}
-export {};
