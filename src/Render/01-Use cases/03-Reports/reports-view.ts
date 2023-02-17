@@ -7,6 +7,8 @@ import {
  } from "./reports-presenter.js"
  
 import { jsPDF } from "../../../types/jspdf"
+import { DebateSectionViewModel, DebateSpeechViewModel, DebateViewModel } from "../../../types/interfaces.js"
+import { formatIsoDate } from "../../04-Utils/utils.js"
 
 const reportsView = `
 <div id='reports-topbar-container'>
@@ -30,26 +32,6 @@ const reportsView = `
   
   </div>
 </div>
-`
-const reportCard = `
-<div class='report-card'>
-  <p>Test card</p>
-  <p>Test card</p>
-</div>
-`
-const pdfViewerWindow = `
-<html>
-<head>
-<title>Speaker Tracker Info</title>
-</head>
-<link href="css/info.css" rel="stylesheet">
-
-<body>
-<div id="pdf-viewer"></div>
-</body>
-<script src="./scripts/pdfobject.min.js"></script>
-</html>
-
 `
 
 
@@ -104,10 +86,20 @@ const handleReportGroupSelected = async (event: Event) => {
   // Create html for cards
   let cardsHtml = ""
   reports.forEach((report) => {
+    const fulldate = formatIsoDate(report.Date)
+    const split = fulldate.split(" ")
+    const time = split[0]
+    const ampm = split[1]
+    const weekday = split[2]
+    const date = split[3]
+    const month = split[4]
+    const year = split[5]
     const cardStrg = `
     <div class='report-card' id='evtid-${report.EventId.toString()}'>
       <p>${report.GroupName}</p>
-      <p>${report.Date}</p>
+      <p>${time} ${ampm}</p>
+      <p>${weekday}</p>
+      <p>${date} ${month} ${year}</p>
     </div>
     `
     cardsHtml = cardsHtml + cardStrg
@@ -133,34 +125,66 @@ const handleReportCardClick = async function (this: HTMLElement, ev: Event)  {
   const eventId = parseInt(reportId.slice(6))
   const rptDetails = await getReportDetailsForEventId(eventId)
 
-  const childWindow = window.open('', 'modal')
-  if (childWindow) {
-    childWindow.document.write(pdfViewerWindow)
-  }
-
   const jsPDF = window.jspdf.jsPDF
   // Default export is a4 paper, portrait, using millimeters for units
   const doc: jsPDF = new jsPDF()
+  doc.setDisplayMode("50%")
+  
+  let y = 0
+  // Meeting group name
+  y = 20
+  doc.setFont('helvetica','bold')
+  doc.setFontSize(14)
+  
   if (!rptDetails?.MeetingGroupName) {return}
-  doc.text(rptDetails.MeetingGroupName, 10, 10)
-  doc.text(rptDetails.Date, 10, 50)
-  doc.output("dataurlnewwindow")
+  doc.text(rptDetails.MeetingGroupName, 105, y, {"align":"center"})
+  
+  // Meeting date
+  y += 15
+  doc.setFontSize(12)
+  const fullDate = formatIsoDate(rptDetails.Date)
+  doc.text(`${fullDate}`, 105, y, {"align":"center"})
 
-  // PDFObject options: need to force iFrame to avoid error message "Not allowed to navigate top frame to data url"
-  // omitInlineStyles removes inline styles from PDFObject but jsPDF still uses them so still need content security policy for style-src in index.html
-  const options = {
-    forceIframe: true,
-    omitInlineStyles: true
-  }
-  if (childWindow)  {
-    // childWindow.PDFObject = window.PDFObject
-    // childWindow.PDFObject.embed(doc.output("datauristring"), "#pdf-viewer", options)
+  // Heading - debates
+  y += 15
+  doc.text("Debates", 10, y)
 
-    const pdfViewer =childWindow.document.getElementById('pdf-viewer')
-    if (pdfViewer) {
-      pdfViewer.style.visibility = 'visible'
-    }
-  }
+  // Debates
+  doc.setFont('helvetica','normal')
+  doc.setFontSize(10)
+
+  let debateNum = 0
+
+  rptDetails.Debates.forEach((item) => {
+    y += 10
+    debateNum += 1
+    doc.text(('Debate ' + debateNum.toString()),10,y)
+    const debate = item as DebateViewModel
+    doc.text(debate.DebateNote,40,y)
+    //Sections
+    const sections = debate.DebateSections
+    sections.forEach((item) => {
+      const section = item as DebateSectionViewModel
+      y += 10
+      doc.text(section.SectionName,20,y)
+      // Speeches
+      const speeches = section.DebateSpeeches
+      speeches.forEach((item) => {
+        y += 5
+        const speech = item as DebateSpeechViewModel
+        const fullDate = formatIsoDate(speech.StartTime)
+        const start = fullDate.split(" ")[0]
+        doc.text(speech.MemberName,30,y)
+        doc.text(start,80,y)
+        doc.text(speech.SpeakingTime, 100, y)
+      })
+    })
+
+  })
+  doc.setProperties({
+    title: "Meeting report"
+  });
+  doc.output("dataurlnewwindow",{'filename':'Report.pdf'})
 }
 
 export {

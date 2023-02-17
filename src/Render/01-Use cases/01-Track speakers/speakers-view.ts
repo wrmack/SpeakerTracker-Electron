@@ -11,10 +11,15 @@ import {
   handleMovingMember,
   getTimeForMember,
   setTimerDisplay,
-  updateState
+  updateDataForNewMeeting,
+  updateDataAfterSaveDebate,
+  setNoteForCurrentDebate
 } from './speakers-presenter.js'
 import {infoText} from './info.js'
 import { eventsGroupChanged } from '../02-Setup/01-Master/DisplayEvents/display-events-presenter.js'
+import { currentDebateNumber } from '../../03-State/state.js'
+import { getEventAtIdx } from '../../02-Models/models.js'
+import { formatIsoDate } from '../../04-Utils/utils.js'
 
 let totalSeconds = 0
 let timer: number
@@ -38,6 +43,7 @@ const speaker_tracker = `
       00:00
     </div>
   </div>
+  <div id="meeting-event"></div>
   <div id="controls">
     <button id="btn-play">
       <span class="icon-play">a</span>
@@ -98,9 +104,13 @@ const speaker_tracker = `
   <!-- Right side-bar  -->
   <div id='right-sidebar'>
     <button id='sidebar-clock-btn'></button>
-    <button id='sidebar-reset-btn'><span>Reset</span></button>
-    <button id='sidebar-meeting-setup-btn'><span>Meeting setup</span></button>
-    <button id='sidebar-info-btn'><span>d</span></button>
+    <button id='sidebar-reset-btn' class='sidebar-norm'><span>Reset</span></button>
+    <button id='sidebar-meeting-setup-btn' class='sidebar-norm'><span>Meeting setup</span></button>
+    <button id='sidebar-info-btn' class='sidebar-norm'><span>d</span></button>
+    <button id='sidebar-savedebate-btn' class='sidebar-recording'><span>Save this debate</span></button>
+    <button id='sidebar-endmeeting-btn' class='sidebar-recording'><span>End this meeting</span></button>
+    <div id='sidebar-recordon-stop' class='sidebar-recording'><img id='sidebar-recordon-img' src='./images/red-circle.svg' /></div>
+    <div id='sidebar-recordon' class='sidebar-recording'>Recording on</div>
   </div>
 
 </div>
@@ -251,7 +261,7 @@ const loadSetupMeetingSheet = () => {
     mtgshtTimerInfo.innerHTML = mtgSetupInfoTimer 
   }
 
-  // Info button and display for setting record on 
+  // Info button and display for setting "record on" 
   const mtgshtInfoRecordBtn = document.getElementById('mtgsetup-info-record-btn') as HTMLButtonElement
   if (mtgshtInfoRecordBtn) {
     mtgshtInfoRecordBtn.addEventListener('click', handleMtgshtInfoRecordBtnClick)
@@ -357,6 +367,16 @@ const setupResetListener = () => {
   rst.addEventListener('click', handleResetButtonClick)
 }
 
+const setupMeetingEventListeners = () => {
+  const debateEnd = document.getElementById('sidebar-savedebate-btn') as HTMLButtonElement
+  debateEnd.addEventListener('click', async () => {
+    await updateDataAfterSaveDebate()
+    await resetAll()
+  })
+  const meetingEnd = document.getElementById('sidebar-endmeeting-btn')
+  meetingEnd?.addEventListener('click', handleEndMeetingButtonClick)
+}
+
 /** 
  * Add `click` event listener for info button in right side-bar.
  */
@@ -406,6 +426,9 @@ const setupSpeakingTableTimerListeners = () => {
 // Handlers
 //
 
+/**
+ * Handles clicking the hamburger button at top of Waiting Table.
+ */
 async function handleMenuClick() {
   const waitingRows = document.querySelectorAll('.waiting-row')
   if (!isDragging) {
@@ -433,13 +456,18 @@ async function handleMenuClick() {
     setupSpeakingTableMemberListeners()
     setupSpeakingTableTimerListeners()
   }
-
 }
 
+/**
+ * Called by the 'dragstart' Event listener
+ * Sets the 'draggedRow' variable
+ * @param ev The 'dragstart' Event as passed in
+ */
 function handleDragStart(ev: Event) {
   draggedRow = (ev.target as HTMLTableRowElement)
   console.log("dragstart: row: ", draggedRow)
 }
+
 
 function handleDragOver(ev: Event) {
   ev.preventDefault()
@@ -508,6 +536,9 @@ async function handleLeftArrowClick(this: HTMLElement) {
   setupSpeakingTableMemberListeners()
 }
 
+/**
+ * Handles display of the context menu
+ */
 function handleSpeakingTableMemberClick(this: HTMLElement, ev: Event) {
   const contextMenu = document.getElementById('context-menu')
   if (!contextMenu) {return}
@@ -524,6 +555,10 @@ function handleSpeakingTableMemberClick(this: HTMLElement, ev: Event) {
   }
 }
 
+/**
+ * Resets listeners and handles display of the context menu
+ * @param this not used
+ */
 function handleSpeakingTableSectionChange(this: HTMLElement) {
   setupArrowButtonListeners()
   setupSpeakingTableMemberListeners()
@@ -545,15 +580,29 @@ async function handleMeetingSetupButtonClick(this: HTMLElement) {
   isSetupSheetExpanded = !isSetupSheetExpanded
 }
 
+async function handleEndMeetingButtonClick(this: HTMLElement) {
+  // Handle display of sidebar buttons
+  const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+  for (let i = 0; i < sidebarBtns.length; i++) {
+    sidebarBtns[i].style["display"] = "block"
+  }
+  const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+  for (let i = 0; i < sidebarRecordBtns.length; i++) {
+    sidebarRecordBtns[i].style["display"] = "none"
+  }
+  const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+  sidebarRecordCircle.style["display"] = "none"
+  // Meeting date in top container
+  const mtgEvt = document.getElementById('meeting-event') as HTMLDivElement
+  mtgEvt.style["display"] = "none"
+  
+  // Reset other
+  meetingIsBeingRecorded = false
+  await resetAll()
+}
 
 async function handleResetButtonClick(this: HTMLElement) {
-  await resetTables()
-  setupArrowButtonListeners()
-  setupMeetingSetupListeners()
-  setupSpeakingTableSectionChangeListener()
-  const clk = document.getElementById('clock-display')
-  if (!clk) {return} 
-  clk.innerHTML = '00:00' 
+  await resetAll()
 }
 
 function handleInfoButtonClick() {
@@ -748,46 +797,6 @@ function handleClockExpand(this: HTMLElement) {
   isClockVisible = isClockVisible == false ? true : false
 }
 
-// Timer functions
-function startTimer () {
-  // Don't start another timer if one is running
-  if (isTimerOn == true) {return}
-  if (isPaused == false) {
-    totalSeconds = 0
-  }
-  else {
-    isPaused = false
-  }
-  
-  timer = setInterval(myTimer as TimerHandler, 1000)
-  console.log("timer: ",timer)
-  isTimerOn = true
-}
-
-function stopTimer () {
-  clearInterval(timer)
-  isTimerOn = false
-  isPaused = false
-}
-
-function myTimer () {
-  ++totalSeconds
-  let minuteStrg = ''
-  let secondStrg = ''
-  const minute = Math.floor((totalSeconds) / 60)
-  const seconds = totalSeconds - (minute * 60)
-  if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
-  if (seconds < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
-  const clk = document.getElementById('clock-display')
-  if (!clk) {return} 
-  clk.innerHTML = minuteStrg + ':' + secondStrg
-  const largeClk = document.getElementById('large-clock-display')
-  if (!largeClk) {return}
-  largeClk.innerHTML = minuteStrg + ':' + secondStrg
-  const ac = document.getElementById('timer-active-cell') 
-  if (!ac) {return}
-  ac.innerText = minuteStrg + ':' + secondStrg
-}
 
 // Meeting setup sheet handlers
 
@@ -803,12 +812,76 @@ async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
   mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
   if (!isSetupSheetExpanded) { populateEntityDropdown() }
   isSetupSheetExpanded = !isSetupSheetExpanded
-  await updateState(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
+  await updateDataForNewMeeting(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
   await resetTables()
   setupArrowButtonListeners()
   setupMeetingSetupListeners()
   setupResetListener()
   setupSpeakingTableSectionChangeListener()
+  if (meetingIsBeingRecorded) {
+    const noteBtn = document.getElementById('note-button') as HTMLButtonElement
+    noteBtn.addEventListener('click', handleNoteClicked)
+  }
+  const mtgEvent = document.getElementById('meeting-event') as HTMLDivElement
+  const evt = await getEventAtIdx(evtIdx)
+  const evtDate = formatIsoDate(evt.EventDate)
+  mtgEvent.innerHTML = evtDate
+  mtgEvent.style.display = 'block'
+}
+
+function handleNoteClicked() {
+  const noteWindowHtml = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8">
+    </head>
+    <body>
+      <style>
+        body {
+          background-color: #ccc;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        #textarea-label {
+          color: white;
+        }
+        #textarea-container {
+        margin-left: 30px;
+        margin-top: 30px;
+        }
+        #debate-note {
+        border-radius: 6px;
+        }
+        #save-btn {
+          background-color: #444;
+          color: white;
+          border-radius: 6px;
+        }
+        #title {
+          margin-left: 30px;
+          font-weight: bold:
+        }
+      </style>
+      <div id='title'><p>Attach a note to this debate</p></div>
+      <div id='textarea-container'>
+        <label for='debate-note' id='textarea-label'></label>
+        <textarea type='text' rows='10' cols='50' placeholder='Agenda item...' id='debate-note'></textarea>
+        <div><button id='save-btn'>Save</button></div>
+      </div>
+    </body>
+  </html>
+  ` 
+  const childWindow = window.open('', 'Note', 'width=600,height=300')
+  if (childWindow) {
+    childWindow.document.write(noteWindowHtml)
+    const saveBtn = childWindow.document.getElementById('save-btn') as HTMLButtonElement
+    saveBtn.addEventListener('click', () => {
+      const txtArea = childWindow.document.getElementById('debate-note') as HTMLTextAreaElement
+      const note = txtArea.value
+      setNoteForCurrentDebate(note)
+      childWindow.close()
+    })
+  }
 }
 
 function handleMtgshtInfoBtnClick(this: HTMLButtonElement) {
@@ -883,14 +956,85 @@ async function handleChangedRecordEvent(this: HTMLInputElement) {
   if (this.checked) {
     event.style.visibility = 'visible'
     meetingIsBeingRecorded = true
+    const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarBtns.length; i++) {
+      sidebarBtns[i].style["display"] = "none"
+    }
+    const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarRecordBtns.length; i++) {
+      sidebarRecordBtns[i].style["display"] = "block"
+    }
+    const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+    sidebarRecordCircle.style["display"] = "flex"
   }
   else { event.style.visibility = 'hidden'
     meetingIsBeingRecorded = false
+    const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarBtns.length; i++) {
+      sidebarBtns[i].style["display"] = "block"
+    }
+    const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarRecordBtns.length; i++) {
+      sidebarRecordBtns[i].style["display"] = "none"
+    }
+    const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+    sidebarRecordCircle.style["display"] = "none"
   }
 }
 
 async function handleChangedEventDate(this: HTMLSelectElement) {
   await eventDateChanged(this.selectedIndex)
+}
+
+async function resetAll() {
+  await resetTables()
+  setupArrowButtonListeners()
+  setupMeetingSetupListeners()
+  setupSpeakingTableSectionChangeListener()
+  const clk = document.getElementById('clock-display')
+  if (!clk) {return} 
+  clk.innerHTML = '00:00' 
+}
+
+// Timer functions
+function startTimer () {
+  // Don't start another timer if one is running
+  if (isTimerOn == true) {return}
+  if (isPaused == false) {
+    totalSeconds = 0
+  }
+  else {
+    isPaused = false
+  }
+  
+  timer = setInterval(myTimer as TimerHandler, 1000)
+  console.log("timer: ",timer)
+  isTimerOn = true
+}
+
+function stopTimer () {
+  clearInterval(timer)
+  isTimerOn = false
+  isPaused = false
+}
+
+function myTimer () {
+  ++totalSeconds
+  let minuteStrg = ''
+  let secondStrg = ''
+  const minute = Math.floor((totalSeconds) / 60)
+  const seconds = totalSeconds - (minute * 60)
+  if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
+  if (seconds < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
+  const clk = document.getElementById('clock-display')
+  if (!clk) {return} 
+  clk.innerHTML = minuteStrg + ':' + secondStrg
+  const largeClk = document.getElementById('large-clock-display')
+  if (!largeClk) {return}
+  largeClk.innerHTML = minuteStrg + ':' + secondStrg
+  const ac = document.getElementById('timer-active-cell') 
+  if (!ac) {return}
+  ac.innerText = minuteStrg + ':' + secondStrg
 }
 
 export { 
@@ -903,5 +1047,7 @@ export {
   setupInfoListener,
   setupClockExpandListener,
   setupSpeakingTableSectionChangeListener,
-  setupWaitingTableMenuListener 
+  setupWaitingTableMenuListener,
+  setupMeetingEventListeners,
+  handleInfoButtonClick
 }

@@ -38,6 +38,15 @@ Speakers view
     float:left;
 }
 
+#meeting-event {
+  display: none;
+  position: absolute;
+  color: white;
+  left: 50px;
+  top: 200px;
+  font-size: 10pt;
+}
+
 #clock-display {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 70pt;
@@ -183,6 +192,35 @@ button#sidebar-info-btn {
   font-size: 40pt;
   color: white;
   margin-top: 60px;
+}
+
+.sidebar-norm {
+  display:block;
+}
+
+.sidebar-recording {
+  display: none;
+  color: white;
+  font-size: 14pt;
+  font-weight: bold;
+  width: 100px;
+  margin-top: 60px;
+}
+
+/* Set display to flex, not block, to display it */
+#sidebar-recordon-stop {
+  display: none;  
+  justify-content: center;
+}
+
+#sidebar-recordon-img {
+  width:50px;
+}
+
+#sidebar-recordon {
+  font-size: 10pt;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .div-header {
@@ -553,4 +591,9 @@ input:checked + .slider:before {
   font-size: 11pt;
   width: 250px;
   height: 75px;
+}
+
+#textarea-container {
+  background-color: #444;
+  font-family: Arial, Helvetica, sans-serif;
 }

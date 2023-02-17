@@ -1,15 +1,15 @@
 import { getEntities, getMembersForCurrentEntity } from '../../../../02-Models/models.js'
-import { setSelectedEntityId, selectedEntityId } from '../../../../03-State/state.js'
+import { setCurrentEntityId, currentEntityId } from '../../../../03-State/state.js'
 
 
 async function loadEntitiesDropdownForMembers() {
   const entities = await getEntities()
   let options = ''
-  if (selectedEntityId == 0 || selectedEntityId == undefined) {
-    await setSelectedEntityId(entities[0].Id)
+  if (currentEntityId == 0 || currentEntityId == undefined) {
+    await setCurrentEntityId(entities[0].Id)
   }
   entities.forEach( (entity) => {
-    if (entity.Id == selectedEntityId) {
+    if (entity.Id == currentEntityId) {
       options += `<option selected>${entity.EntName}</option>`
     }
     else {
@@ -78,7 +78,7 @@ function handleSelection(this: HTMLElement)  {
 async function entityChanged(idx: number) {
   const ents = await getEntities()
   const ent = ents[idx]
-  setSelectedEntityId(ent.Id)
+  setCurrentEntityId(ent.Id)
   loadMembers()
 }
 

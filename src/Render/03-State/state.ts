@@ -14,36 +14,39 @@ import {
   DebateSpeech
 } from "../../types/interfaces"
 
-// 
-// State
-// 
+
+/**
+ * ----------------- State ------------------
+ * 
+ * Variables which hold in-memory state.
+ * 
+ */
 
 /**
  * Terminology
  * id: is unique and usually corresponds to id field in database record
- * num: not unique - as in SectionNumber (each debate starts with SectionNumber set to 0)
+ * num: not unique - as in SectionNumber (each debate starts with DebateNumber and SectionNumber set to 0)
  * idx: is index in array (or row in a table list)
  */
 
-// In-memory state
 
 /** ---------------- Selected Entity, Group, Event -------------------- */
 
-/** Holds the id of the selected entity.
+/** Holds the id of the current entity.
  *  This is exported and is the source of truth for
  *  the id of the entity that is currently selected.
  */
-let selectedEntityId = 0
+let currentEntityId = 0
 
-/** Holds the id of the selected group.
+/** Holds the id of the current group.
  *  This is exported and is the source of truth for
  *  the id of the group that is currently selected.
  */
-let selectedGroupId = 0
+let currentGroupId = 0
 
-let selectedEventId = 0
+let currentEventId = 0
 
-let selectedEventDate = ""
+let currentEventDate = ""
 
 /** ---------------------- Setup ------------------------------- */
 
@@ -73,8 +76,8 @@ let meetingIsBeingRecorded = false
  *  the database's state table.
  * @param {number} id The entity's id.
  */
-const setSelectedEntityId = async (id: number) => {
-  selectedEntityId = id
+const setCurrentEntityId = async (id: number) => {
+  currentEntityId = id
   const sql = `UPDATE State SET EntityId = ${id};`
   await window.myapi.connect()
   await window.myapi.selectAll(sql)
@@ -85,15 +88,15 @@ const setSelectedEntityId = async (id: number) => {
  *  the database's state table.
  * @param {number} id The group's id.
  */
-const setSelectedGroupId = async (id: number) => {
-  selectedGroupId = id
+const setCurrentGroupId = async (id: number) => {
+  currentGroupId = id
   const sql = `UPDATE State SET GroupId = ${id};`
   await window.myapi.connect()
   await window.myapi.selectAll(sql)
 }
 
-const setSelectedEventId = async (id: number) => {
-  selectedEventId = id
+const setCurrentEventId = async (id: number) => {
+  currentEventId = id
   const sql = `UPDATE State SET EventId = ${id};`
   await window.myapi.connect()
   await window.myapi.selectAll(sql)
@@ -142,34 +145,43 @@ const getSavedEntGroupId = async () => {
 }
 
 /**
- * Sets selectedEntityId, selectedGroupId, selectedEventId 
+ * Sets currentEntityId, currentGroupId, currentEventId 
  * with values retrieved from database 
  * using the indexes passed in.
  * Updates state in database.
  */
 const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: number) => {
   const ent = await getEntityAtIdx(entIdx) as Entity
-  selectedEntityId = ent.Id
+  currentEntityId = ent.Id
   const grp = await getGroupAtIdx(grpIdx) as Group
-  selectedGroupId = grp.Id
+  currentGroupId = grp.Id
   const evt = await getEventAtIdx(evtIdx) as GroupEvent
-  selectedEventId = evt.Id
+  currentEventId = evt.Id
   const sql = `UPDATE State SET EntityId = ${ent.Id}, GroupId = ${grp.Id}, EventId = ${evt.Id};`
   await window.myapi.selectAll(sql)
 }
 
-const setSelectedEventDate = (date: string) => {
-  selectedEventDate = date
+const setCurrentEventDate = (date: string) => {
+  currentEventDate = date
 }
 
-const getSelectedEventDate = () => {
-  return selectedEventDate
+const getCurrentEventDate = () => {
+  return currentEventDate
 }
 
 /**  ------- Getters and setters: recording meetings ---------------- */ 
 
+/**
+ * Sets the currentDebateNumber variable.
+ * Debate numbers start at 0.
+ * @param num the current debate number
+ */
 const setCurrentDebateNumber = (num: number) => {
   currentDebateNumber = num
+}
+
+const setCurrentDebateSectionNumber = (sectionNum: number) => {
+  currentDebateSectionNumber = sectionNum
 }
 
 /**  ------- Getters and setters: setup ---------------- */ 
@@ -191,21 +203,22 @@ function setMeetingIsBeingRecorded(on: boolean) {
 export {
     masterRowIdx,
     setMasterRowIdx,
-    selectedEntityId,
-    setSelectedEntityId,
-    selectedGroupId,
-    setSelectedGroupId,
+    currentEntityId,
+    setCurrentEntityId,
+    currentGroupId,
+    setCurrentGroupId,
     setCurrentEntGroupEvtId,
-    setSelectedEventDate,
+    setCurrentEventDate,
     getSavedEntGroupId,
-    getSelectedEventDate,
+    getCurrentEventDate,
     setShowIndividualTimers,
     showIndividualTimers,
     meetingIsBeingRecorded,
     setMeetingIsBeingRecorded,
-    selectedEventId,
-    setSelectedEventId,
+    currentEventId,
+    setCurrentEventId,
     currentDebateNumber,
     setCurrentDebateNumber,
+    setCurrentDebateSectionNumber,
     currentDebateSectionNumber
 }

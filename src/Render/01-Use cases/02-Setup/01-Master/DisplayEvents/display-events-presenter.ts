@@ -4,21 +4,21 @@ import {
   getEventsForCurrentGroup,  
 } from '../../../../02-Models/models.js'
 import { 
-  setSelectedEntityId,  
-  setSelectedGroupId, 
-  selectedEntityId, 
-  selectedGroupId  
+  setCurrentEntityId,  
+  setCurrentGroupId, 
+  currentEntityId, 
+  currentGroupId  
 } from '../../../../03-State/state.js'
 import { formatIsoDate } from '../../../../04-Utils/utils.js'
 
 async function loadEntitiesDropdownForEvents () {
   const entities = await getEntities()
-  if (selectedEntityId == 0 || selectedEntityId == undefined) {
-    await setSelectedEntityId(entities[0].Id)
+  if (currentEntityId == 0 || currentEntityId == undefined) {
+    await setCurrentEntityId(entities[0].Id)
   }
   let options = ''
   entities.forEach( (entity) => {
-    if (entity.Id == selectedEntityId) {
+    if (entity.Id == currentEntityId) {
       options += `<option selected>${entity.EntName}</option>`
     }
     else {
@@ -37,7 +37,7 @@ async function loadGroupsDropdownForEvents () {
   // }
   let options = ''
   groups.forEach( (group) => {
-    if (group.Id == selectedGroupId) {
+    if (group.Id == currentGroupId) {
       options += `<option selected>${group.GrpName}</option>`
     }
     else {
@@ -99,7 +99,7 @@ function handleSelection(this: HTMLElement)  {
 async function eventsGroupChanged(idx: number) {
   const grps = await getGroupsForCurrentEntity()
   const grp = grps[idx]
-  setSelectedGroupId(grp.Id)
+  setCurrentGroupId(grp.Id)
   loadEvents()
 }
 

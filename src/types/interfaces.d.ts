@@ -158,19 +158,32 @@ interface ReportDetailsViewModel {
   Debates: DebateViewModel[],
 }
 
-// Each debate has a note and an array of sections
+/**
+ * Each debate has a note and an array of sections
+ * @property {string} DebateNote
+ * @property {DebateSectionViewModel[]} DebateSections
+ *  */ 
 interface DebateViewModel {
   DebateNote: string,
   DebateSections: DebateSectionViewModel[]
 }
 
-// Each section has a name and an array of speeches
+/**
+ * Each section has a name and an array of speeches
+ * @property {string} SectionName
+ * @property {DebateSpeechViewModel[]} DebateSpeeches
+ *  */ 
 interface DebateSectionViewModel {
   SectionName: string,
   DebateSpeeches: DebateSpeechViewModel[]
 }
 
-// Each speech has the member's name, start time and speaking time 
+/**
+ * Each speech has the member's name, start time and speaking time 
+ * @property {string} MemberName
+ * @property {string} StartTime
+ * @property {string} SpeakingTime
+ *  */ 
 interface DebateSpeechViewModel {
   MemberName: string,
   StartTime: string,

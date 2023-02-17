@@ -1,4 +1,4 @@
-import { selectedEntityId, selectedGroupId } from "../03-State/state.js";
+import { currentEntityId, currentGroupId } from "../03-State/state.js";
 import { MyAPI, Entity, Group, GroupEvent, DebateSection } from "../../types/interfaces"
 
 declare global {
@@ -123,7 +123,7 @@ const getMemberWithId = async (id: number): Promise<{ Id: number; Title: string;
 
 // Retrieve all members for currently selected entity
 const getMembersForCurrentEntity = async function () {
-  const entityId = selectedEntityId
+  const entityId = currentEntityId
   const sql = 'SELECT Id, Title, FirstName, LastName FROM Members WHERE Members.Entity = ' + entityId.toString() + ';'
   console.log('getMembers sql: ' + sql)
   await window.myapi.connect()
@@ -157,7 +157,7 @@ const addMember = async function (member: any) {
 
 /** Retrieve all meeting groups for currently selected entity */ 
 const getGroupsForCurrentEntity = async function (): Promise<Group[]> {
-  const entityId = selectedEntityId
+  const entityId = currentEntityId
   const sql = `SELECT Id, GrpName FROM Groups WHERE Groups.Entity = ${entityId} ORDER BY GrpName;`
   console.log('getGroups sql: ' + sql)
   await window.myapi.connect()
@@ -292,12 +292,18 @@ const addEvent = async (eventDate: string, groupId: number) => {
 }
 
 const getEventsForCurrentGroup = async () => {
-  const groupId = selectedGroupId
+  const groupId = currentGroupId
   const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE Events.GroupId = ${groupId} ORDER BY EventDate;`
   await window.myapi.connect()
   return await window.myapi.selectAll(sql) as GroupEvent[]
 }
 
+/**
+ * Gets the event corresponding to the idx of the event 
+ * in terms of events for the current group.
+ * @param idx the idx of the event for the current group
+ * @returns promise of the group event
+ */
 const getEventAtIdx = async (idx: number) => {
   const events = await getEventsForCurrentGroup() 
   const selectedEvent = events[idx]
@@ -311,12 +317,17 @@ const getEventWithId = async (eventId: number) => {
   return evts[0] as GroupEvent
 }
 
-const addDebate = async (eventId: number, debateNumber: number, note: string) =>  {
+const addDebate = async (eventId: number, debateNumber: number, note?: string) =>  {
   const sql = `INSERT INTO Debates (EventId, DebateNumber, Note ) VALUES (${eventId}, ${debateNumber}, '${note}');`
   await window.myapi.connect()
   await window.myapi.selectAll(sql)
 }
 
+const updateDebateNote = async (eventId: number, debateNumber: number, note: string) => {
+  const sql = `UPDATE Debates SET Note = '${note}' WHERE EventId = ${eventId} AND DebateNumber = ${debateNumber};`
+  await window.myapi.connect()
+  await window.myapi.selectAll(sql)
+}
 const getDebatesForEventId = async (eventId: number) => {
   const sql = `SELECT EventId, DebateNumber, Note FROM Debates WHERE Debates.EventId = ${eventId};`
   await window.myapi.connect()
@@ -380,6 +391,7 @@ export {
   addGroup,
   addEvent,
   addDebate,
+  updateDebateNote,
   addDebateSection,
   addDebateSpeech,
   getMembersForGroupId,

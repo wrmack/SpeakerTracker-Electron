@@ -10223,7 +10223,7 @@
      * @typedef {Object} RGBAData
      * @property {Uint8ClampedArray} data - Single dimensional array of RGBA values. For example from canvas getImageData.
      * @property {number} width - Image width as the data does not carry this information in itself.
-     * @property {number} height - Image height as the data does not carry this information in itself.
+     *  {number} height - Image height as the data does not carry this information in itself.
      */
 
     /**

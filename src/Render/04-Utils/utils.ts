@@ -1,3 +1,8 @@
+/**
+ * Converts an iso date string into hh:mm am/pm dd month yyyy
+ * @param {string} iso the date in iso form
+ * @returns {string} formatted into hh:mm am/pm dd month yyyy
+ */
 const formatIsoDate = (iso: string): string => {
     let ampm = "AM"
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]

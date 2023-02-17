@@ -1,5 +1,5 @@
 import { addEvent, execSql } from '../../../../../02-Models/models.js'
-import { selectedGroupId, setSelectedEventDate, getSelectedEventDate } from '../../../../../03-State/state.js'
+import { currentGroupId, setCurrentEventDate, getCurrentEventDate } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 import flatpickr from '../../../../../04-Utils/Flatpickr/index.js'
 import { Instance } from 'flatpickr/dist/types/instance.js'
@@ -28,7 +28,7 @@ const loadAddEventSheet = async function () {
     pickrInstance.config.onChange.push(function() {
       const selDate = pickrInstance.selectedDates[0]
       const isoDate = pickrInstance.formatDate(selDate,'Z')
-      setSelectedEventDate(isoDate)
+      setCurrentEventDate(isoDate)
     })
 }
   
@@ -57,8 +57,8 @@ function handleCancel() {
 async function handleSave() {
 
   // Save to database
-  const selDate = getSelectedEventDate()
-  const selGrpId = selectedGroupId
+  const selDate = getCurrentEventDate()
+  const selGrpId = currentGroupId
   await addEvent(selDate, selGrpId)
 
   // Close the panel

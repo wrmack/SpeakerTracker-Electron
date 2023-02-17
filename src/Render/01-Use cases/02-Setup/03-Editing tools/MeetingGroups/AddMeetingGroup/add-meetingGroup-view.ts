@@ -1,5 +1,5 @@
 import { getMembersForCurrentEntity, addGroup, execSql } from '../../../../../02-Models/models.js'
-import { selectedEntityId } from '../../../../../03-State/state.js'
+import { currentEntityId } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 
 let memberIds: number[] = []
@@ -145,7 +145,7 @@ async function handleSave() {
   const newGroupName = gpnam.value
 
   // Save to database
-  const entityId = selectedEntityId
+  const entityId = currentEntityId
   const group = {
     name: newGroupName,
     entity: entityId

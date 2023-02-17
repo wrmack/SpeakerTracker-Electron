@@ -4,11 +4,11 @@ const infoText = `
 <title>Speaker Tracker Info</title>
 </head>
 <link href="css/info.css" rel="stylesheet">
-
 <body>
   <div class="help-large-title">Help</div>
 
   <div class="help-title">First time using the app</div>
+
   <div class="help-text">
     <p>Go to setup and create an entity.  Then create members and meeting groups for that entity.</p>
 
@@ -16,6 +16,10 @@ const infoText = `
     Entity:  My council<br>
     Members:  Cr Member One, Cr Member Two, Cr Member Three<br>
     Meeting groups:  Full council, Committee One, Committee Two</p>
+
+    <p>Optional: Create events if you wish to keep a record of speaking times for each meeting event</p>
+    
+    <p id='i-para'>You can display this help again by pressing<span id='i-symbol'>d</span>on the Speaker Tracker main window.</p>
   </div>
 
   <div class="help-title">Main screen</div>

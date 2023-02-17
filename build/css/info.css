@@ -26,3 +26,22 @@ body {
   color: rgb(0,0,0);
 }
 
+@font-face {
+  font-family: "STFonts";
+  src: url("../fonts/Font1.woff") format("woff");
+  font-weight: bold;
+  font-style: normal;
+}
+
+#i-para{
+  overflow: clip;
+  max-height: 25px;
+}
+
+#i-symbol{
+  font-family: STFonts;
+  font-size:30pt;
+  color: black;
+  vertical-align: -35%;
+}
+

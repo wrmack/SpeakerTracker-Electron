@@ -9,6 +9,7 @@ let db: Database
 
 function createWindow () {
   // Create the browser window.
+  // titleBarOverlay causes enableblinkfeatures error in devtools - https://github.com/electron/electron/issues/36948
   const mainWindow = new BrowserWindow({
     minWidth: 1120,
     minHeight: 780,

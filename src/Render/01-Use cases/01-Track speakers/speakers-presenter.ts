@@ -7,6 +7,7 @@ import {
   getMemberWithId,
   getEventsForCurrentGroup,
   addDebate,
+  updateDebateNote,
   addDebateSection,
   addDebateSpeech,
   SectionType,
@@ -16,12 +17,12 @@ import {
 
 import {
   getSavedEntGroupId,
-  selectedEntityId,
-  setSelectedEntityId,
-  selectedGroupId,
-  setSelectedGroupId,
-  selectedEventId,
-  setSelectedEventId,
+  currentEntityId,
+  setCurrentEntityId,
+  currentGroupId,
+  setCurrentGroupId,
+  currentEventId,
+  setCurrentEventId,
   showIndividualTimers,
   setShowIndividualTimers,
   meetingIsBeingRecorded,
@@ -29,7 +30,8 @@ import {
   setCurrentDebateNumber,
   setCurrentEntGroupEvtId,
   setMeetingIsBeingRecorded,
-  currentDebateSectionNumber
+  currentDebateSectionNumber,
+  setCurrentDebateSectionNumber
 } from "../../03-State/state.js"
 
 import {
@@ -37,6 +39,7 @@ import {
   Member,
   SectionList
 } from "../../../types/interfaces"
+import { formatIsoDate } from "../../04-Utils/utils.js"
 
 let isInitialised = false
 
@@ -48,65 +51,29 @@ let table1: Member[] = []
 let table2: SectionList[] = []
 
 
-async function handleMovingMember(sourceTable: number, sourceRow: number, destinationTable: number, sectionNumber?: number) {
-  
-  if (sourceTable == 0 && destinationTable == 1) {
-    const memberToMove: Member[] = table0.splice(sourceRow, 1)
-    table1.push(memberToMove[0])
-  }
-  else if (sourceTable == 1 && destinationTable == 0) {
-    const memberToMove: Member[] = table1.splice(sourceRow, 1) 
-    table0.push(memberToMove[0])
-  }
-   // Moving from Waiting Table to Speaking Table
-  else if (sourceTable == 1 && destinationTable == 2) {
-    // The member to move - an array of one
-    const memberToMove: Member[] = table1.splice(sourceRow, 1) 
-    // The last section of the table
-    const lastSection: SectionList = table2[table2.length - 1]
-    // Construct a ListMember
-    const listMbr: ListMember = {
-      row: lastSection.sectionMembers.length, 
-      member: memberToMove[0], 
-      startTime: null,
-      speakingTime: 0,
-      timerButtonMode: 0,
-      timerIsActive: false
-    }
-    // Add the ListMember to the table section
-    lastSection.sectionMembers.push(listMbr)
-  }
-  // Moving from Speaking Table to Waiting Table
-  else if (sourceTable == 2 && destinationTable == 1) {
-    // Remove member from table
-    if (sectionNumber == undefined) {sectionNumber = 0}
-    const secList = table2[sectionNumber]
-    const listMemberToMove = secList.sectionMembers.splice(sourceRow,1)
-    // Push onto destination table
-    table1.push(listMemberToMove[0].member)
-  }
-  await populateTables()
-}
-
 async function populateTables () {
   // If no entities set up - return
   const ents = await getEntities()
-  if (ents.length == 0) { return}
+  if (ents.length == 0) { 
+    return true
+  }
+
   // Get saved entity and group ids, if any.
   const savedEntGpId = await getSavedEntGroupId()
   if (savedEntGpId != undefined) {
-    setSelectedEntityId(savedEntGpId.entId)
-    setSelectedGroupId(savedEntGpId.grpId)
+    setCurrentEntityId(savedEntGpId.entId)
+    setCurrentGroupId(savedEntGpId.grpId)
   } 
-  const group = await getGroupForId(selectedGroupId)
+  const group = await getGroupForId(currentGroupId)
   let memberIds:any[] = []
   if (group != undefined) {
-    memberIds = await getMembersForGroupId(selectedGroupId)
+    memberIds = await getMembersForGroupId(currentGroupId)
     const groupName = group.GrpName
     const comm = document.getElementById('committee-name')
     if (comm) {
       comm.innerHTML = groupName
     }
+    return false
   }
 
   // Initialise table model
@@ -215,8 +182,12 @@ async function populateTables () {
     else {
       tableRows2 += `<th>
         <div class='spkg-table-row-header'>
-          ${section.sectionHeader}
-        </div>
+          ${section.sectionHeader}`
+          if (meetingIsBeingRecorded && sectionIdx === 0) {
+            tableRows2 += `<span id='note'><button id='note-button'>Note</button></span>`
+          }
+        tableRows2 +=
+        `</div>
           <hr class='spkg-table-cell-rule'>
         </th>`
     }
@@ -287,6 +258,7 @@ async function populateTables () {
       const hdr = tb.querySelector('.spkg-table-row-header')
       hdr?.addEventListener('click', handleCollapsibleClick)
     }
+
     // Scroll to entry
     const tableDiv = tabl2.parentElement
     if (tableDiv) {
@@ -319,17 +291,20 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
     if (!amendBtn) {return}
     amendBtn.addEventListener('click', async () => {
       // Create new amendment section and add to table
+      const newSectionNumber = sectionNumber + 1
       const sectList = {
-        sectionNumber: sectionNumber + 1,
+        sectionNumber: newSectionNumber,
         sectionType: SectionType.amendment,
         sectionHeader: "Amendment",
         sectionMembers: []
       }
       table2.push(sectList)
+      // Add to database
+      await addDebateSection(currentEventId,currentDebateNumber,newSectionNumber,"Amendment")
       // Reset Remaining table with all other members
       const currentSpkrId = lastMember.member.id
       table0 = []
-      const memberIds = await getMembersForGroupId(selectedGroupId)
+      const memberIds = await getMembersForGroupId(currentGroupId)
       for (let i = 0; i < memberIds.length; ++i) {
         if (memberIds[i].MemberId != currentSpkrId) {
           const memberReturned = await getMemberWithId(memberIds[i].MemberId)
@@ -370,6 +345,7 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         sectionMembers: []
       }
       table2.push(sectList)
+      await addDebateSection(currentEventId, currentDebateNumber, (sectionNumber + 1), "Main debate")
       // Reset Remaining table with all other members
       table0 = []
       table1 = []
@@ -383,7 +359,7 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         }
       }
       // Put all other members into remaining table
-      const memberIds = await getMembersForGroupId(selectedGroupId)
+      const memberIds = await getMembersForGroupId(currentGroupId)
       for (let i = 0; i < memberIds.length; ++i) {
         if (!spokenIds.includes(memberIds[i].MemberId)) {
           const memberReturned = await getMemberWithId(memberIds[i].MemberId)
@@ -413,7 +389,7 @@ async function populateEntityDropdown() {
   }
   else {
     entities.forEach( (entity) => {
-      if (entity.Id == selectedEntityId) {
+      if (entity.Id == currentEntityId) {
         options += `<option selected>${entity.EntName}</option>`
       }
       else {
@@ -421,19 +397,18 @@ async function populateEntityDropdown() {
       }
     })
   }
-
   const ent = document.getElementById('mtgsetup-select-entity')
   if (ent) { ent.innerHTML = options} 
 }
  /**
   * Gets the entity id given the index passed in.
-  * Sets the global `selectedEntityId` then causes the group
+  * Sets the global `currentEntityId` then causes the group
   * dropdown to be repopulated.
-  * @param newEntityIdx The index of the selected entity.
+  * @param newEntityIdx The index of the current entity.
   */
 async function entityChanged(newEntityIdx: number) {
   const ent = await getEntityAtIdx(newEntityIdx)
-  await setSelectedEntityId(ent.Id)
+  await setCurrentEntityId(ent.Id)
   await populateGroupDropdown()
   await populateEventsDropdown()
 }
@@ -444,7 +419,7 @@ async function eventDateChanged(newEventIdx: number) {
 
 async function populateGroupDropdown() {
   let options = ''
-  const groups = await getGroupsForEntityId(selectedEntityId)
+  const groups = await getGroupsForEntityId(currentEntityId)
   if (groups.length == 0) {
     options += `<option disabled selected hidden>Go to Setup and create a Meeting group</option>`
     const entEl = document.getElementById('mtgsetup-select-group')
@@ -452,7 +427,7 @@ async function populateGroupDropdown() {
   }
   else {
     groups.forEach( async (group) => {
-      if (group.Id == selectedGroupId) {
+      if (group.Id == currentGroupId) {
         options += `<option selected>${group.GrpName}</option>`
       }
       else {
@@ -474,12 +449,16 @@ async function populateEventsDropdown() {
     if (entEl) {entEl.classList.add("mtgsetup-prompt") }
   }
   else {
+    let idx = 0
     events.forEach( async (event) => {
-      if (event.Id == selectedGroupId) {
-        options += `<option selected>${event.EventDate}</option>`
+      const date = formatIsoDate(event.EventDate)
+      // Select the first event
+      if (idx == 0) {
+        options += `<option selected>${date}</option>`
+        idx += 1
       }
       else {
-        options += `<option>${event.EventDate}</option>`
+        options += `<option>${date}</option>`
       }
     })
   }
@@ -519,7 +498,7 @@ async function updateListMember(section: number, row: number, target: string, se
       if (!eventEl) { return} 
       const eventIdx = eventEl.options.selectedIndex
       const evt = await getEventAtIdx(eventIdx)
-      setSelectedEventId(evt.Id)
+      setCurrentEventId(evt.Id)
       const debateNum = currentDebateNumber
       setCurrentDebateNumber(debateNum)
       
@@ -539,15 +518,36 @@ async function updateListMember(section: number, row: number, target: string, se
   await populateTables()
 }
 
-async function updateState(entityIdx: number, groupIdx: number, eventIdx: number, isRecorded: boolean ) {
+/**
+ * Called after a new meeting is created in meeting setup.
+ * @param entityIdx 
+ * @param groupIdx 
+ * @param eventIdx 
+ * @param isRecorded 
+ */
+async function updateDataForNewMeeting(entityIdx: number, groupIdx: number, eventIdx: number, isRecorded: boolean ) {
   await setCurrentEntGroupEvtId(entityIdx,groupIdx,eventIdx)
-  if (meetingIsBeingRecorded == false && isRecorded == true) {
-    // Recording has just been switched on
-    setCurrentDebateNumber(0)
-    await addDebate(selectedEventId, 0, "This is a note")
-    await addDebateSection(selectedEventId,0,0,"Main")
-  }
+  setCurrentDebateNumber(0)
+  await addDebate(currentEventId, 0)
+  await addDebateSection(currentEventId,0,0, "Main debate")
   setMeetingIsBeingRecorded(isRecorded)
+}
+
+/**
+ * Called after "Save this debate" button is clicked. 
+ * Increases the debate number for next debate.
+ * Creates a new debate in the database. 
+ */
+async function updateDataAfterSaveDebate() {
+  const newDebateNum = currentDebateNumber + 1
+  setCurrentDebateNumber(newDebateNum)
+  setCurrentDebateSectionNumber(0)
+  await addDebate(currentEventId, newDebateNum)
+  await addDebateSection(currentEventId,newDebateNum,0,"Main debate")
+}
+
+async function setNoteForCurrentDebate(note:string) {
+  await updateDebateNote(currentEventId, currentDebateNumber, note)
 }
 
 function getTimeForMember(section: number, row: number) {
@@ -574,6 +574,47 @@ async function resetTables() {
 }
 
 // Handlers
+
+async function handleMovingMember(sourceTable: number, sourceRow: number, destinationTable: number, sectionNumber?: number) {
+  
+  if (sourceTable == 0 && destinationTable == 1) {
+    const memberToMove: Member[] = table0.splice(sourceRow, 1)
+    table1.push(memberToMove[0])
+  }
+  else if (sourceTable == 1 && destinationTable == 0) {
+    const memberToMove: Member[] = table1.splice(sourceRow, 1) 
+    table0.push(memberToMove[0])
+  }
+   // Moving from Waiting Table to Speaking Table
+  else if (sourceTable == 1 && destinationTable == 2) {
+    // The member to move - an array of one
+    const memberToMove: Member[] = table1.splice(sourceRow, 1) 
+    // The last section of the table
+    const lastSection: SectionList = table2[table2.length - 1]
+    // Construct a ListMember
+    const listMbr: ListMember = {
+      row: lastSection.sectionMembers.length, 
+      member: memberToMove[0], 
+      startTime: null,
+      speakingTime: 0,
+      timerButtonMode: 0,
+      timerIsActive: false
+    }
+    // Add the ListMember to the table section
+    lastSection.sectionMembers.push(listMbr)
+  }
+  // Moving from Speaking Table to Waiting Table
+  else if (sourceTable == 2 && destinationTable == 1) {
+    // Remove member from table
+    if (sectionNumber == undefined) {sectionNumber = 0}
+    const secList = table2[sectionNumber]
+    const listMemberToMove = secList.sectionMembers.splice(sourceRow,1)
+    // Push onto destination table
+    table1.push(listMemberToMove[0].member)
+  }
+  await populateTables()
+}
+
 
 function handleCollapsibleClick (this: Element) {
   const bdy = this.parentNode?.parentNode?.parentNode
@@ -616,8 +657,10 @@ export {
   populateEventsDropdown,
   updateWaitingTableAfterDragging,
   updateListMember,
-  updateState,
+  updateDataForNewMeeting,
+  updateDataAfterSaveDebate,
   resetTables, 
   getTimeForMember,
-  setTimerDisplay
+  setTimerDisplay,
+  setNoteForCurrentDebate
 }

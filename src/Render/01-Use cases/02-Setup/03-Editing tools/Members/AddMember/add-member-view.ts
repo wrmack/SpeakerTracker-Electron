@@ -1,5 +1,5 @@
 import { addMember } from '../../../../../02-Models/models.js'
-import { selectedEntityId } from '../../../../../03-State/state.js'
+import { currentEntityId } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 
 // Inserted into sheet
@@ -70,7 +70,7 @@ async function handleSave() {
   const newMemberLastName = mbrLN.value
 
   // Save to database
-  const entityId = selectedEntityId
+  const entityId = currentEntityId
   const member = {
     title: newMemberTitle,
     firstName: newMemberFirstName,

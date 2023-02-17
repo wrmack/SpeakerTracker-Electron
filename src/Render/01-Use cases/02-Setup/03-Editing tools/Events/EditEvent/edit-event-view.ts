@@ -1,5 +1,5 @@
 import { getEventsForCurrentGroup, execSql } from '../../../../../02-Models/models.js'
-import {masterRowIdx, setSelectedEventDate,getSelectedEventDate } from '../../../../../03-State/state.js'
+import {masterRowIdx, setCurrentEventDate,getCurrentEventDate } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 import flatpickr from '../../../../../04-Utils/Flatpickr/index.js'
 import { Instance } from 'flatpickr/dist/types/instance.js'
@@ -26,7 +26,7 @@ const loadEditEventSheet = async function () {
   pickrInstance.config.onChange.push(function() {
     const selDate = pickrInstance.selectedDates[0]
     const isoDate = pickrInstance.formatDate(selDate,'Z')
-    setSelectedEventDate(isoDate)
+    setCurrentEventDate(isoDate)
   })
 }
 
@@ -56,7 +56,7 @@ async function handleSave() {
   const event = events[masterRowIdx]
 
   // Save to database
-  const selDate = getSelectedEventDate()
+  const selDate = getCurrentEventDate()
   const sql = `UPDATE Events SET EventDate = '${selDate}' WHERE Events.Id = '${event.Id}';`
   await execSql(sql)
 

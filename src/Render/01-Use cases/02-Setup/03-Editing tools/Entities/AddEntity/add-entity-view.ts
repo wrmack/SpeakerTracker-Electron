@@ -8,8 +8,8 @@ const addEntityView = `
     <button class='sheet-btn save-btn' id='add-entity-save-btn'><span>Save</span></button>
   </div>
   <h1>Add a new entity</h1>
-  <label class='input-label'>Name:</name>
-  <input type='text' size='100' placeholder='eg Some City Council' id='entity-name'></input>
+  <label class='input-label'>Name:</label>
+  <input type='text' size='100' placeholder='eg Some City Council' id='entity-name'>
 `
 export const loadAddEntitySheet = function () {
   const ed = document.getElementById('editing-sheet');

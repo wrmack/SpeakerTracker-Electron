@@ -1,5 +1,5 @@
 import { getEntityAtIdx, deleteEntityWithId,  execSql } from '../../../../../02-Models/models.js'
-import { masterRowIdx, setSelectedEntityId, setSelectedGroupId } from '../../../../../03-State/state.js'
+import { masterRowIdx, setCurrentEntityId, setCurrentGroupId } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 
 const deleteEntityView = `
@@ -50,8 +50,8 @@ async function handleDelete() {
     // Delete in database
     const entity = await getEntityAtIdx(masterRowIdx)
     await deleteEntityWithId(entity.Id)
-    await setSelectedEntityId(0)
-    await setSelectedGroupId(0)
+    await setCurrentEntityId(0)
+    await setCurrentGroupId(0)
 
 
     // Close the panel

@@ -9,7 +9,9 @@ import {
   setupInfoListener,
   setupSpeakingTableSectionChangeListener,
   setupWaitingTableMenuListener, 
-  setupClockExpandListener
+  setupClockExpandListener,
+  setupMeetingEventListeners,
+  handleInfoButtonClick
 } from './01-Use cases/01-Track speakers/speakers-view.js'
 import { 
   setupView, 
@@ -23,7 +25,9 @@ import {
 } from './01-Use cases/03-Reports/reports-view.js'
 
 
-// Initialise database
+/**
+ * Initialise the database and load the speakers view.
+ *  */ 
 async function initialise() {
   const paths = await window.myapi.getPaths()
   console.log("App paths: ",paths)
@@ -77,7 +81,7 @@ async function loadSpeakersView () {
   if (container) {
     container.innerHTML = speaker_tracker
   }
-  await populateTables()
+  const isFirstTime = await populateTables()
   setupArrowButtonListeners()
   setupTimerControlListeners()
   loadSetupMeetingSheet()
@@ -87,6 +91,10 @@ async function loadSpeakersView () {
   setupClockExpandListener()
   setupSpeakingTableSectionChangeListener()
   setupWaitingTableMenuListener()
+  setupMeetingEventListeners()
+  if (isFirstTime) {
+    handleInfoButtonClick()
+  }
 }
 
 // Load template and listeners for setup view

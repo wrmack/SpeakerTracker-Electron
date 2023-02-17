@@ -1,6 +1,6 @@
 import { report } from 'process'
 import { Group, Debate, ReportDetailsViewModel, ReportEventViewModel, DebateViewModel, DebateSection, DebateSectionViewModel, DebateSpeechViewModel, DebateSpeech } from '../../../types/interfaces.js'
-import { setSelectedEntityId,  selectedEntityId, setSelectedGroupId } from '../../03-State/state.js'
+import { setCurrentEntityId,  currentEntityId, setCurrentGroupId } from '../../03-State/state.js'
 import { 
   getEntities, 
   getEntityWithId, 
@@ -20,12 +20,12 @@ import {
 
 async function loadEntitiesDropdownForGroups () {
   const entities = await getEntities()
-  if (selectedEntityId == 0 || selectedEntityId == undefined) {
-    await setSelectedEntityId(entities[0].Id)
+  if (currentEntityId == 0 || currentEntityId == undefined) {
+    await setCurrentEntityId(entities[0].Id)
   }
   let options = ''
   entities.forEach( (entity) => {
-    if (entity.Id == selectedEntityId) {
+    if (entity.Id == currentEntityId) {
       options += `<option selected>${entity.EntName}</option>`
     }
     else {
@@ -85,7 +85,7 @@ function handleSelection(this: HTMLElement)  {
 async function entityChanged(idx: number) {
   const ents = await getEntities()
   const ent = ents[idx]
-  setSelectedEntityId(ent.Id)
+  setCurrentEntityId(ent.Id)
   loadGroups()
 }
 
@@ -94,7 +94,7 @@ async function entityChanged(idx: number) {
 const getReportsForGroupAtIdx = async (idx: number) => {
   // Get the group
   const group = await getGroupAtIdx(idx) 
-  setSelectedGroupId(group.Id)
+  setCurrentGroupId(group.Id)
 
   // Get the events for the group
   // Each Event has Event.ID, GroupID, EventDate
@@ -123,29 +123,53 @@ const getReportDetailsForEventId = async (eventId: number) => {
   const debates = await getDebatesForEventId(eventId) as Debate[]
 
   // Get the sections in each debate
-  debates.forEach( async (debate) => {
+  for (const debate of debates) {
     const debateSections = await getDebateSections(debate.EventId, debate.DebateNumber) 
     let sectionsForDebate: DebateSectionViewModel[] = []
 
-    // Get the speeches in each section
-    debateSections.forEach( async (section) => {
+    for (const section of debateSections) {
       const sectionName = section.SectionName
       const speeches = await getDebateSectionSpeeches(debate.EventId, debate.DebateNumber, section.SectionNumber) as DebateSpeech[]
       let speechesArray: DebateSpeechViewModel[] = []
-      speeches.forEach( async (speech) => {
+
+      for (const speech of speeches) {
         const member = await getMemberWithId(speech.MemberId)
         const memberName = member.FirstName + " " + member.LastName
-        const speechViewModel = {MemberName: memberName, StartTime: speech.StartTime, SpeakingTime: speech.Seconds.toString() } as DebateSpeechViewModel
-        speechesArray.push(speechViewModel)
-      })
-      
-      const sectionViewModel = {SectionName: sectionName, DebateSpeeches: speechesArray} as DebateSectionViewModel
+        const speechViewModel = { MemberName: memberName, StartTime: speech.StartTime, SpeakingTime: speech.Seconds.toString() } as DebateSpeechViewModel
+        speechesArray.push(speechViewModel)        
+      }
+      const sectionViewModel = { SectionName: sectionName, DebateSpeeches: speechesArray } as DebateSectionViewModel
       sectionsForDebate.push(sectionViewModel)
-    })
-
+    }
     const debateViewModel = {DebateNote: debate.Note, DebateSections: sectionsForDebate} as DebateViewModel
     debatesForReport.push(debateViewModel)
-  })
+  }
+
+
+
+  // debates.forEach( async (debate) => {
+  //   const debateSections = await getDebateSections(debate.EventId, debate.DebateNumber) 
+  //   let sectionsForDebate: DebateSectionViewModel[] = []
+
+  //   // Get the speeches in each section
+  //   debateSections.forEach(async (section) => {
+  //     const sectionName = section.SectionName
+  //     const speeches = await getDebateSectionSpeeches(debate.EventId, debate.DebateNumber, section.SectionNumber) as DebateSpeech[]
+  //     let speechesArray: DebateSpeechViewModel[] = []
+  //     speeches.forEach(async (speech) => {
+  //       const member = await getMemberWithId(speech.MemberId)
+  //       const memberName = member.FirstName + " " + member.LastName
+  //       const speechViewModel = { MemberName: memberName, StartTime: speech.StartTime, SpeakingTime: speech.Seconds.toString() } as DebateSpeechViewModel
+  //       speechesArray.push(speechViewModel)
+  //     })
+
+  //     const sectionViewModel = { SectionName: sectionName, DebateSpeeches: speechesArray } as DebateSectionViewModel
+  //     sectionsForDebate.push(sectionViewModel)
+  //   })
+
+  //   const debateViewModel = {DebateNote: debate.Note, DebateSections: sectionsForDebate} as DebateViewModel
+  //   debatesForReport.push(debateViewModel)
+  // })
 
   // Build the final ReportDetailsViewModel
   const evt = await getEventWithId(eventId)
