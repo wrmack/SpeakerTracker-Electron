@@ -39,7 +39,8 @@ import {
   Member,
   SectionList
 } from "../../../types/interfaces"
-import { formatIsoDate } from "../../04-Utils/utils.js"
+
+import { formatIsoDate, getTimeStringFromSeconds } from "../../04-Utils/utils.js"
 
 let isInitialised = false
 
@@ -73,7 +74,6 @@ async function populateTables () {
     if (comm) {
       comm.innerHTML = groupName
     }
-    return false
   }
 
   // Initialise table model
@@ -194,8 +194,12 @@ async function populateTables () {
 
     tableRows2 += '</tr>'
 
+    // Iterate through members in this section
     const listMbrs = section.sectionMembers
     idx = 0
+    // timerActiveInCell set to true when a member is rendered who is speaking; any subsequent members will have play buttons disabled
+    let timerActiveInCell = false
+    
     for (const listMbr of listMbrs) {
       let spkgTime = listMbr.speakingTime
       if (spkgTime == undefined) {spkgTime = 0}
@@ -210,26 +214,34 @@ async function populateTables () {
             <div class='spkg-table-cell-container'> 
               <div class='spkg-table-cell-container-top'>
                 <div class='spkg-table-cell-comp-left'>`
-                  if (listMbr.timerButtonMode == TimerButtonMode.play) {
+                  // if (listMbr.timerButtonMode == TimerButtonMode.play) {
                     tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
-                  } 
+                  // } 
                   tableRows2 += `<span class='spkg-table-cell-text' id='${myId}-n'>${mbr.firstName} ${mbr.lastName}</span>
                 </div>
                 <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
                   if(showIndividualTimers) {
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
                       tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
+                      timerActiveInCell = true
                     }
                     if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
                       tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                      timerActiveInCell = true
                     }
                     if (listMbr.timerIsActive == true) {
                       tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
+                      timerActiveInCell = true
                     } else {
                       tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
                     }     
                     if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                      tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
+                      if (!timerActiveInCell) {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
+                      }
+                      else {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play' disabled>a</button>`
+                      }
                     }
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
                       listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
@@ -266,6 +278,7 @@ async function populateTables () {
     }
     ++sectionIdx
   }
+  return false
 }
 
 function populateContextMenu(sectionNumber: number, rowNumber: number) {
@@ -274,8 +287,10 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
   const sectionMbrs = section.sectionMembers
   const numSpeakersInSection = sectionMbrs.length
   const lastMember = sectionMbrs[numSpeakersInSection - 1]
+  const contextMenu = document.getElementById('context-menu') as HTMLDivElement
 
-  // Current speaker in current section of a main debate so show amendment menu
+
+  // Is current speaker in current section of a main debate so show amendment menu
 
   if ((sectionNumber == numSectionsInTable - 1) && 
     (rowNumber == numSpeakersInSection -1) && 
@@ -284,11 +299,8 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
       <div class='context-row'><button id='cm-amend'>Moves amendment</button></div>
       <div class='context-row'><button id='cm-again'>Speaks again</button></div>
     `
-    const cm = document.getElementById('context-menu')
-    if (!cm) {return}
-    cm.innerHTML = menu
-    const amendBtn = document.getElementById('cm-amend')
-    if (!amendBtn) {return}
+    contextMenu.innerHTML = menu
+    const amendBtn = document.getElementById('cm-amend') as HTMLButtonElement
     amendBtn.addEventListener('click', async () => {
       // Create new amendment section and add to table
       const newSectionNumber = sectionNumber + 1
@@ -300,7 +312,11 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
       }
       table2.push(sectList)
       // Add to database
-      await addDebateSection(currentEventId,currentDebateNumber,newSectionNumber,"Amendment")
+      if (currentEventId !== null) {
+        await addDebateSection(currentEventId,currentDebateNumber,newSectionNumber,"Amendment")
+      }
+      else { console.warn("currentEventId is null!")}
+
       // Reset Remaining table with all other members
       const currentSpkrId = lastMember.member.id
       table0 = []
@@ -324,15 +340,13 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
   }
 
   // Current speaker in current section of an amendment debate so show final amendment speaker menu 
-  if ((sectionNumber == numSectionsInTable - 1) && 
+  else if ((sectionNumber == numSectionsInTable - 1) && 
   (rowNumber == numSpeakersInSection -1) && 
   (section.sectionType == SectionType.amendment)) {
     const menu = `
     <div class='context-row'><button id='cm-final'>Final speaker for amendment</button></div>
     `
-    const cm = document.getElementById('context-menu')
-    if (!cm) {return}
-    cm.innerHTML = menu
+    contextMenu.innerHTML = menu
     const finalBtn = document.getElementById('cm-final')
     if (!finalBtn) {return}
     finalBtn.addEventListener('click', async () => {
@@ -345,7 +359,11 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         sectionMembers: []
       }
       table2.push(sectList)
-      await addDebateSection(currentEventId, currentDebateNumber, (sectionNumber + 1), "Main debate")
+      if (currentEventId !== null) {
+        await addDebateSection(currentEventId, currentDebateNumber, (sectionNumber + 1), "Main debate")
+      }
+      else { console.warn("currentEventId is null!")}
+
       // Reset Remaining table with all other members
       table0 = []
       table1 = []
@@ -368,6 +386,29 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         }
       }
       await populateTables()
+      document.dispatchEvent(new CustomEvent('section-change', {
+        bubbles: true,
+        cancelable: false,
+        detail: { }
+      }))
+    })
+  }
+
+  // Is any speaker other than above
+  else {
+    const menu = `
+      <div class='context-row'><button id='cm-again'>Speaks again</button></div>
+    `
+    contextMenu.innerHTML = menu
+    const againBtn = document.getElementById('cm-again') as HTMLButtonElement
+    againBtn.addEventListener('click', async () => {
+      // Get member
+      const mbr = section.sectionMembers[rowNumber]
+      // Get last section
+      const lastSection = table2[numSectionsInTable - 1]
+      lastSection.sectionMembers.push(mbr)
+      await populateTables()
+      // Has been a change to the section
       document.dispatchEvent(new CustomEvent('section-change', {
         bubbles: true,
         cancelable: false,
@@ -518,6 +559,18 @@ async function updateListMember(section: number, row: number, target: string, se
   await populateTables()
 }
 
+function updateTimeForListMember(seconds: number) {
+  const activeCell = document.getElementById('timer-active-cell') 
+  if (!activeCell) {console.warn('No active cell');return}  // In case not set
+  const parent = activeCell.parentNode as HTMLElement
+  const rowDetails = parent.id
+  const section = rowDetails.slice(8,9)
+  const row = rowDetails.slice(4,6)
+  const tblSection = table2[parseInt(section)]
+  const mbr = tblSection.sectionMembers[parseInt(row)]
+  mbr.speakingTime = seconds
+}
+
 /**
  * Called after a new meeting is created in meeting setup.
  * @param entityIdx 
@@ -525,11 +578,14 @@ async function updateListMember(section: number, row: number, target: string, se
  * @param eventIdx 
  * @param isRecorded 
  */
-async function updateDataForNewMeeting(entityIdx: number, groupIdx: number, eventIdx: number, isRecorded: boolean ) {
+async function updateDataForNewMeeting(entityIdx: number, groupIdx: number, eventIdx: number | null, isRecorded: boolean ) {
   await setCurrentEntGroupEvtId(entityIdx,groupIdx,eventIdx)
   setCurrentDebateNumber(0)
-  await addDebate(currentEventId, 0)
-  await addDebateSection(currentEventId,0,0, "Main debate")
+  if (currentEventId !== null) {
+    await addDebate(currentEventId, 0)
+    await addDebateSection(currentEventId,0,0, "Main debate")
+  }
+  else { console.warn("currentEventId is null!")}
   setMeetingIsBeingRecorded(isRecorded)
 }
 
@@ -542,12 +598,18 @@ async function updateDataAfterSaveDebate() {
   const newDebateNum = currentDebateNumber + 1
   setCurrentDebateNumber(newDebateNum)
   setCurrentDebateSectionNumber(0)
-  await addDebate(currentEventId, newDebateNum)
-  await addDebateSection(currentEventId,newDebateNum,0,"Main debate")
+  if (currentEventId !== null) {
+    await addDebate(currentEventId, newDebateNum)
+    await addDebateSection(currentEventId,newDebateNum,0,"Main debate")
+  }
+  else {console.warn("currentEventId is null!")}
 }
 
 async function setNoteForCurrentDebate(note:string) {
-  await updateDebateNote(currentEventId, currentDebateNumber, note)
+  if (currentEventId !== null) {
+    await updateDebateNote(currentEventId, currentDebateNumber, note)
+  }
+  else {console.warn("currentEventId is null!")}
 }
 
 function getTimeForMember(section: number, row: number) {
@@ -634,17 +696,7 @@ function handleCollapsibleClick (this: Element) {
   else {chv.style.transform = 'rotate(-0deg)'}
 }
 
-// Helpers
 
-function getTimeStringFromSeconds(seconds: number) {
-  let minuteStrg = ''
-  let secondStrg = ''
-  const minute = Math.floor((seconds) / 60)
-  const secondsRemg = seconds - (minute * 60)
-  if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
-  if (secondsRemg < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
-  return `${minuteStrg}:${secondStrg}`
-}
 
 export { 
   handleMovingMember,
@@ -657,6 +709,7 @@ export {
   populateEventsDropdown,
   updateWaitingTableAfterDragging,
   updateListMember,
+  updateTimeForListMember,
   updateDataForNewMeeting,
   updateDataAfterSaveDebate,
   resetTables, 

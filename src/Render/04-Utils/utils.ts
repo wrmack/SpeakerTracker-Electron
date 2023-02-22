@@ -23,4 +23,19 @@ const formatIsoDate = (iso: string): string => {
     return fullString
 }
 
-export { formatIsoDate }
+/**
+ * Converts seconds into minutes and seconds and returns a string "minutes:seconds"
+ * @param seconds total seconds
+ * @returns a string formatted as "minutes:seconds"
+ */
+function getTimeStringFromSeconds(seconds: number) {
+  let minuteStrg = ''
+  let secondStrg = ''
+  const minute = Math.floor((seconds) / 60)
+  const secondsRemg = seconds - (minute * 60)
+  if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
+  if (secondsRemg < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
+  return `${minuteStrg}:${secondStrg}`
+}
+
+export { formatIsoDate, getTimeStringFromSeconds }

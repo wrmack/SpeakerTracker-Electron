@@ -88,6 +88,10 @@ async function handleSave() {
   edSHT.style.left = '100%'
   enableButtons()
 
+  // Enable Group button
+  const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+  grpBtn.disabled = false
+
   // Emit a mbr-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('mbr-saved', {
     bubbles: true,

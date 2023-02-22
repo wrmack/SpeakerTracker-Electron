@@ -22,11 +22,12 @@ import {
  * 
  */
 
+let debug = false
 /**
  * Terminology
- * id: is unique and usually corresponds to id field in database record
+ * id: is unique and usually corresponds to id field in database record; ids in database commence at 1
  * num: not unique - as in SectionNumber (each debate starts with DebateNumber and SectionNumber set to 0)
- * idx: is index in array (or row in a table list)
+ * idx: is index in array (or row in a table list); indices commence at 0
  */
 
 
@@ -44,7 +45,7 @@ let currentEntityId = 0
  */
 let currentGroupId = 0
 
-let currentEventId = 0
+let currentEventId: number | null = null
 
 let currentEventDate = ""
 
@@ -150,14 +151,19 @@ const getSavedEntGroupId = async () => {
  * using the indexes passed in.
  * Updates state in database.
  */
-const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: number) => {
+const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: number | null) => {
   const ent = await getEntityAtIdx(entIdx) as Entity
   currentEntityId = ent.Id
   const grp = await getGroupAtIdx(grpIdx) as Group
   currentGroupId = grp.Id
-  const evt = await getEventAtIdx(evtIdx) as GroupEvent
-  currentEventId = evt.Id
-  const sql = `UPDATE State SET EntityId = ${ent.Id}, GroupId = ${grp.Id}, EventId = ${evt.Id};`
+  let evtId
+  if (evtIdx !== null) {
+    const evt = await getEventAtIdx(evtIdx) as GroupEvent
+    evtId = evt.Id
+  }
+  else evtId = null
+  currentEventId = evtId
+  const sql = `UPDATE State SET EntityId = ${ent.Id}, GroupId = ${grp.Id}, EventId = ${evtId};`
   await window.myapi.selectAll(sql)
 }
 

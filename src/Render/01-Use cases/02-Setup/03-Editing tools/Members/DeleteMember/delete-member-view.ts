@@ -1,4 +1,4 @@
-import { execSql, getMembersForCurrentEntity } from '../../../../../02-Models/models.js'
+import { deleteMemberWithId, getMembersForCurrentEntity } from '../../../../../02-Models/models.js'
 import { masterRowIdx } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 
@@ -58,10 +58,9 @@ function handleCancel() {
 async function handleDelete() {
   const members = await getMembersForCurrentEntity()
   const member = members[masterRowIdx]
-  
+
   // Delete in database
-  const mysql = `DELETE FROM Members WHERE Members.Id = ${member.Id};`
-  await execSql(mysql)
+  await deleteMemberWithId(member.Id)
 
   // Close the panel
   const edSHt = document.getElementById('editing-sheet') as HTMLElement

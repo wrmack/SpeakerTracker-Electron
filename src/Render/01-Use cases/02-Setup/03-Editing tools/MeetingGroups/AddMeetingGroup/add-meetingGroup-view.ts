@@ -169,6 +169,11 @@ async function handleSave() {
     cancelable: false,
     detail: { }
   }))
+
+  // Ensure the sidebar events button is not disabled
+  const evtBtn = document.getElementById('setup-sidebar-events-btn') as HTMLButtonElement
+  evtBtn.disabled = false
+
 }
 
 export { loadAddGroupSheet, setupAddGroupListeners }

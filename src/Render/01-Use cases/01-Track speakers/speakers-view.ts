@@ -7,6 +7,7 @@ import {
   eventDateChanged,
   updateWaitingTableAfterDragging,
   updateListMember,
+  updateTimeForListMember,
   resetTables,
   handleMovingMember,
   getTimeForMember,
@@ -19,7 +20,7 @@ import {infoText} from './info.js'
 import { eventsGroupChanged } from '../02-Setup/01-Master/DisplayEvents/display-events-presenter.js'
 import { currentDebateNumber } from '../../03-State/state.js'
 import { getEventAtIdx } from '../../02-Models/models.js'
-import { formatIsoDate } from '../../04-Utils/utils.js'
+import { formatIsoDate, getTimeStringFromSeconds } from '../../04-Utils/utils.js'
 
 let totalSeconds = 0
 let timer: number
@@ -516,7 +517,9 @@ async function handleRightArrowClick(this: HTMLElement) {
   await handleMovingMember(tableNumber, rowNumber, tableNumber + 1)
   setupArrowButtonListeners()
   setupSpeakingTableMemberListeners()
-  if (tableNumber == 1) { setupSpeakingTableTimerListeners() }
+  // if (tableNumber == 1) { 
+    setupSpeakingTableTimerListeners() 
+  // }
 }
 
 async function handleLeftArrowClick(this: HTMLElement) {
@@ -534,6 +537,7 @@ async function handleLeftArrowClick(this: HTMLElement) {
   await handleMovingMember(tableNumber, rowNumber, tableNumber - 1, sectionNumber)
   setupArrowButtonListeners()
   setupSpeakingTableMemberListeners()
+  setupSpeakingTableTimerListeners() 
 }
 
 /**
@@ -776,7 +780,7 @@ async function handlePauseClicked(this: HTMLElement, ev: Event) {
 function handleContextMenuBlur (this: HTMLElement, ev: Event) {
   if ( ev && ev instanceof FocusEvent && ev.relatedTarget) {
     if (ev.relatedTarget instanceof Element) {
-      if (ev.relatedTarget.id == 'cm-amend' || ev.relatedTarget.id == 'cm-final') {
+      if (ev.relatedTarget.id == 'cm-amend' || ev.relatedTarget.id == 'cm-final' || ev.relatedTarget.id == 'cm-again') {
         return
       }
     } 
@@ -806,12 +810,13 @@ async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
   const elGrpSelect = document.getElementById('mtgsetup-select-group') as HTMLSelectElement
   const grpIdx = elGrpSelect.selectedIndex
   const elEvtSelect = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
-  const evtIdx = elEvtSelect.selectedIndex
+  let evtIdx = (meetingIsBeingRecorded) ? elEvtSelect.selectedIndex : null
   const mtgSht = document.getElementById('mtgsetup-sheet')
   if (!mtgSht) {return}
   mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
   if (!isSetupSheetExpanded) { populateEntityDropdown() }
   isSetupSheetExpanded = !isSetupSheetExpanded
+
   await updateDataForNewMeeting(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
   await resetTables()
   setupArrowButtonListeners()
@@ -822,11 +827,14 @@ async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
     const noteBtn = document.getElementById('note-button') as HTMLButtonElement
     noteBtn.addEventListener('click', handleNoteClicked)
   }
-  const mtgEvent = document.getElementById('meeting-event') as HTMLDivElement
-  const evt = await getEventAtIdx(evtIdx)
-  const evtDate = formatIsoDate(evt.EventDate)
-  mtgEvent.innerHTML = evtDate
-  mtgEvent.style.display = 'block'
+  if (evtIdx !== null) {
+    const mtgEvent = document.getElementById('meeting-event') as HTMLDivElement
+    const evt = await getEventAtIdx(evtIdx)
+    const evtDate = formatIsoDate(evt.EventDate)
+    mtgEvent.innerHTML = evtDate
+    mtgEvent.style.display = 'block'
+  }
+
 }
 
 function handleNoteClicked() {
@@ -1008,7 +1016,6 @@ function startTimer () {
   }
   
   timer = setInterval(myTimer as TimerHandler, 1000)
-  console.log("timer: ",timer)
   isTimerOn = true
 }
 
@@ -1019,22 +1026,25 @@ function stopTimer () {
 }
 
 function myTimer () {
+  // Increase totalSeconds
   ++totalSeconds
-  let minuteStrg = ''
-  let secondStrg = ''
-  const minute = Math.floor((totalSeconds) / 60)
-  const seconds = totalSeconds - (minute * 60)
-  if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
-  if (seconds < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
-  const clk = document.getElementById('clock-display')
-  if (!clk) {return} 
-  clk.innerHTML = minuteStrg + ':' + secondStrg
-  const largeClk = document.getElementById('large-clock-display')
-  if (!largeClk) {return}
-  largeClk.innerHTML = minuteStrg + ':' + secondStrg
+  // Format seconds into minutes and seconds strings
+  // let minuteStrg = ''
+  // let secondStrg = ''
+  // const minute = Math.floor((totalSeconds) / 60)
+  // const seconds = totalSeconds - (minute * 60)
+  // if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
+  // if (seconds < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
+  const timerStrg = getTimeStringFromSeconds(totalSeconds)
+  // Input strings into HTML for clock, large clock and timer in speaking cell
+  const clk = document.getElementById('clock-display') as HTMLElement
+  clk.innerHTML = timerStrg
+  const largeClk = document.getElementById('large-clock-display') as HTMLElement
+  largeClk.innerHTML = timerStrg
   const ac = document.getElementById('timer-active-cell') 
-  if (!ac) {return}
-  ac.innerText = minuteStrg + ':' + secondStrg
+  if (!ac) {return}  // Might not exist
+  ac.innerText = timerStrg
+  updateTimeForListMember(totalSeconds)
 }
 
 export { 

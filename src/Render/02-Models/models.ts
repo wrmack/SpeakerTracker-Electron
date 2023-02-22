@@ -18,6 +18,43 @@ const execSql = async function (mysql: string) {
   window.myapi.execSQL(mysql)
 }
 
+// Rows in tables
+
+/**
+ * 
+ * @returns Number of rows in Entity table
+ */
+const getRowsInEntitiesTable = async () => {
+  const sql = 'SELECT COUNT(*) FROM Entities;'
+  await window.myapi.connect()
+  const rows = await window.myapi.selectAll(sql) 
+  // rows looks like [{COUNT(*): 0}] - an array with one item which is an object
+  // Get values for the first item in the rows array and then take the first value
+  return Object.values(rows[0])[0] as number
+}
+
+/**
+ * 
+ * @returns Number of rows in Members table
+ */
+const getRowsInMembersTable = async () => {
+  const sql = 'SELECT COUNT(*) FROM Members;'
+  await window.myapi.connect()
+  const rows = await window.myapi.selectAll(sql)
+  return Object.values(rows[0])[0] as number
+}
+
+/**
+ * 
+ * @returns Number of rows in Groups table
+ */
+const getRowsInGroupsTable = async () => {
+  const sql = 'SELECT COUNT(*) FROM Groups;'
+  await window.myapi.connect()
+  const rows = await window.myapi.selectAll(sql)
+  return Object.values(rows[0])[0] as number
+}
+
 //
 // Entities
 //
@@ -29,7 +66,7 @@ const getEntities = async function () {
   const sql = 'SELECT * FROM Entities ORDER BY EntName;'
   await window.myapi.connect()
   const rows = await window.myapi.selectAll(sql)
-  console.log('getEntities rows: ' + rows)
+  // console.log('getEntities rows: ' + rows)
   return rows
 }
 
@@ -125,7 +162,7 @@ const getMemberWithId = async (id: number): Promise<{ Id: number; Title: string;
 const getMembersForCurrentEntity = async function () {
   const entityId = currentEntityId
   const sql = 'SELECT Id, Title, FirstName, LastName FROM Members WHERE Members.Entity = ' + entityId.toString() + ';'
-  console.log('getMembers sql: ' + sql)
+  // console.log('getMembers sql: ' + sql)
   await window.myapi.connect()
   return await window.myapi.selectAll(sql)
 }
@@ -133,7 +170,7 @@ const getMembersForCurrentEntity = async function () {
 // Retrieve all members for entity id
 const getMembersForEntityId = async (entityId: number) => {
   const sql = `SELECT Title, FirstName, LastName FROM Members WHERE Members.Entity = ${entityId};`
-  console.log('getMembersForEntityId sql: ' + sql)
+  // console.log('getMembersForEntityId sql: ' + sql)
   await window.myapi.connect()
   return await window.myapi.selectAll(sql)
 }
@@ -150,6 +187,19 @@ const addMember = async function (member: any) {
   })
 }
 
+/**
+ * Deletes a member from the Members and GroupMembers tables
+ * @param memberId id of the member
+ */
+const deleteMemberWithId = async (memberId: number) => {
+    // Delete from Members
+    const mysql1 = `DELETE FROM Members WHERE Members.Id = ${memberId};`
+    await execSql(mysql1)
+  
+    // Delete from GroupMembers
+    const mysql2 = `DELETE FROM GroupMembers WHERE GroupMembers.MemberId = ${memberId};`
+    await execSql(mysql2)
+}
 
 //
 // Groups
@@ -159,7 +209,7 @@ const addMember = async function (member: any) {
 const getGroupsForCurrentEntity = async function (): Promise<Group[]> {
   const entityId = currentEntityId
   const sql = `SELECT Id, GrpName FROM Groups WHERE Groups.Entity = ${entityId} ORDER BY GrpName;`
-  console.log('getGroups sql: ' + sql)
+  // console.log('getGroups sql: ' + sql)
   await window.myapi.connect()
   return await window.myapi.selectAll(sql)
 }
@@ -364,6 +414,13 @@ const getDebateSectionSpeeches = async (eventId: number, debateNumber: number, s
 //
 
 /** .play, .pause_stop, .play_stop, off */
+
+/**
+ * Timer button mode may be:
+ * * play: the only timer control available is the play button
+ * * pause_stop: the only controls available are the pause and stop buttons; typically the case after play is pressed
+ * * play_stop: the only controls available are the play and stop buttons; typically the case after pause is pressed
+ */
 enum TimerButtonMode {
   play,
   pause_stop,
@@ -379,6 +436,9 @@ enum SectionType {
 
 export {
   execSql,
+  getRowsInEntitiesTable,
+  getRowsInMembersTable,
+  getRowsInGroupsTable,
   getEntities,
   getEntityAtIdx,
   getEntityWithId,
@@ -388,6 +448,7 @@ export {
   getMemberWithId,
   getMembersForEntityId,
   addMember,
+  deleteMemberWithId,
   addGroup,
   addEvent,
   addDebate,

@@ -26,6 +26,7 @@ import { loadAddEventSheet, setupAddEventListeners } from './03-Editing tools/Ev
 import { loadEditEventSheet, setupEditEventListeners } from './03-Editing tools/Events/EditEvent/edit-event-view.js'
 import { loadDeleteEventSheet, setupDeleteEventListeners } from './03-Editing tools/Events/DeleteEvent/delete-event-view.js'
 
+import { getNumberOfRowsInEntitiesTable, getNumberOfRowsInMembersTable, getNumberOfRowsInGroupsTable } from './setup-view-presenter.js'
 
 const sideBarSelection = { name: 'entities' }
 
@@ -142,7 +143,7 @@ const setupEditItemListeners = function () {
 
 }
 
-const setupSidebarListeners =  function () {
+const setupSidebarListeners =  async function () {
   // Entities button
   const sident = document.getElementById('setup-sidebar-ent-btn')
   if (!sident) {return}
@@ -154,13 +155,12 @@ const setupSidebarListeners =  function () {
   })
   document.addEventListener('ent-saved', async (event) => {
     if (event instanceof CustomEvent) {
-      
       await showEntities()
     }
   })
 
   // Members button
-  const sidemem =  document.getElementById('setup-sidebar-mbrs-btn')
+  const sidemem =  document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
   if (!sidemem) {return}
   sidemem.addEventListener('click', () => {
     showMembers()
@@ -173,9 +173,14 @@ const setupSidebarListeners =  function () {
       await showMembers()
     }
   })
+  // If no entities setup disable members button
+  const numEnt = await getNumberOfRowsInEntitiesTable() 
+  if (numEnt === 0) {
+    sidemem.disabled = true
+  }
 
   // Meeting groups button
-  const sidegp = document.getElementById('setup-sidebar-groups-btn');
+  const sidegp = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
   if (!sidegp) {return}
   sidegp.addEventListener('click', () => {
     showGroups()
@@ -188,9 +193,14 @@ const setupSidebarListeners =  function () {
       await showGroups()
     }
   })
+  // If no members setup disable Groups button
+  const numMbr = await getNumberOfRowsInMembersTable()
+  if (numMbr === 0) {
+    sidegp.disabled = true
+  }
 
   // Events button
-  const sideevt = document.getElementById('setup-sidebar-events-btn');
+  const sideevt = document.getElementById('setup-sidebar-events-btn') as HTMLButtonElement
   if (!sideevt) {return}
   sideevt.addEventListener('click', () => {
     showEvents()
@@ -203,6 +213,11 @@ const setupSidebarListeners =  function () {
       await showEvents()
     }
   })
+  // If no groups setup disable Events button
+  const numGrp = await getNumberOfRowsInGroupsTable()
+  if (numGrp === 0) {
+    sideevt.disabled = true
+  }
 }
 
 //
@@ -217,7 +232,17 @@ const showEntities = async () => {
   head.innerHTML = 'Entities'
   detail.innerHTML = displaySelectedEntity
   setupEntityDetailListeners()
-  await loadEntities()
+  const numberEntities = await loadEntities()
+  const trashButton = document.getElementById('setup-topbar-trash') as HTMLButtonElement
+  const editButton = document.getElementById('setup-topbar-edit') as HTMLButtonElement
+  if (numberEntities === 0) {
+    trashButton.disabled = true
+    editButton.disabled = true
+  } 
+  else {
+    trashButton.disabled = false
+    editButton.disabled = false 
+  }
 }
 
 const showMembers = async () => {

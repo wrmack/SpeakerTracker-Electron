@@ -18,7 +18,7 @@ const infoText = `
     Meeting groups:  Full council, Committee One, Committee Two</p>
 
     <p>Optional: Create events if you wish to keep a record of speaking times for each meeting event</p>
-    
+
     <p id='i-para'>You can display this help again by pressing<span id='i-symbol'>d</span>on the Speaker Tracker main window.</p>
   </div>
 
@@ -81,6 +81,50 @@ const infoText = `
     Pressing the play button also removes the left arrow - a speaker cannot be moved to the center table once they
     have started speaking. Pressing the stop button for the speaker removes all timer controls for that speaker.  If the speaker 
     speaks again later, click on the speaker and select 'Speak again' from the menu.</p>
+
+  </div>
+
+  <div class="help-title2">Recording debates</div>
+
+  <div class="help-text">
+
+    <p><strong>Meeting events</strong></p>
+
+    <p>When a meeting group comes together to have a meeting, we call this a 'meeting event'. For the purposes of this app,
+    a meeting event includes the name of the entity, the name of the group that is meeting (the 'meeting group'), the members of the
+    meeting group and date and time of the meeting.</p>
+    <p>You can record and save all debates that take place at a meeting event as below.</p>
+    
+    <p><strong>Meeting events</strong></p>
+    <ul>
+    <li>Go to 'Setup'
+    <li>Select the 'Events' tab
+    <li>Select the Entity and Meeting group
+    <li>Press the 'Add' button
+    <li>Set the date and time, press 'Save'
+    </ul>
+
+    <p><strong>Setup the meeting to record the meeting event</strong></p>
+    <ul>
+    <li>Go to 'Speakers' (the main window for tracking speakers at a meeting)
+    <li>Open the slide-out by pressing 'Meeting setup'
+    <li>Ensure 'Entity' and 'Meeting group' are correct
+    <li>Enable 'Show individual member times'
+    <li>Enable 'Create a record of speaking times for this meeting'
+    <li>Select the meeting event from the drop-down
+    <li>Press 'Done'
+    </ul>
+
+    <p>Note: the drop-down will display only the meeting events for the selected Entity / Meeting group</p>
+    <p>A red recording icon will now be visible</p>
+
+    <p><strong>Recording the meeting event</strong></p>
+
+    <p>Press the 'Note' button at the top of the 'Spoken / Speaking' table to add a note for the current debate,
+    for example to identify which item in the agneda the debate relates to.</p>
+    <p>After each debate is completed, press the 'Save debate' button to save the debate and start a new one.</p>
+    <p>When the meeting event is over, save the final debate and end the meeting.<p>
+    <p>View the record of the meeting event's speaking times in 'Reports'</p>
 
   </div>
 

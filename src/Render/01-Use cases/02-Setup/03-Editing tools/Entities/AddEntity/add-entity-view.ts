@@ -55,6 +55,10 @@ async function handleSave() {
   // Enable editing buttons
   enableButtons()
 
+  // Enable Members button
+  const mbrBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
+  mbrBtn.disabled = false
+
   // Emit a ent-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('ent-saved', {
     bubbles: true,

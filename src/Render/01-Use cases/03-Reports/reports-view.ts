@@ -29,7 +29,7 @@ const reportsView = `
     </div>
   </div>
   <div id="reports-detail">
-  
+    <div id="loader"></div>
   </div>
 </div>
 `
@@ -108,7 +108,9 @@ const handleReportGroupSelected = async (event: Event) => {
   // Inject the cards
   const detail = document.getElementById('reports-detail')
   if (detail) {
-    detail.innerHTML = cardsHtml
+    // detail.innerHTML = cardsHtml
+    const loader = document.getElementById('loader') as HTMLDivElement
+    loader.insertAdjacentHTML("afterend", cardsHtml)
   }
 
   // Add click listeners to each card
@@ -120,13 +122,16 @@ const handleReportGroupSelected = async (event: Event) => {
 
 // Cannot use an arrow function - does not bind to 'this'
 const handleReportCardClick = async function (this: HTMLElement, ev: Event)  {
+  // Start spinner
+  const spinner = document.getElementById('loader') as HTMLDivElement
+  spinner.style.display = 'block'
   // Get event id of the event relating to the report that was clicked
   const reportId = this.id
   const eventId = parseInt(reportId.slice(6))
   const rptDetails = await getReportDetailsForEventId(eventId)
 
   const jsPDF = window.jspdf.jsPDF
-  // Default export is a4 paper, portrait, using millimeters for units
+  // Default export is a4 paper, portrait, using millimeters for units (210 x 297 mm)
   const doc: jsPDF = new jsPDF()
   doc.setDisplayMode("50%")
   
@@ -170,6 +175,7 @@ const handleReportCardClick = async function (this: HTMLElement, ev: Event)  {
       // Speeches
       const speeches = section.DebateSpeeches
       speeches.forEach((item) => {
+        if (y > 270) { doc.addPage("a4", "portrait"); y = 20;}
         y += 5
         const speech = item as DebateSpeechViewModel
         const fullDate = formatIsoDate(speech.StartTime)
@@ -179,12 +185,12 @@ const handleReportCardClick = async function (this: HTMLElement, ev: Event)  {
         doc.text(speech.SpeakingTime, 100, y)
       })
     })
-
   })
   doc.setProperties({
     title: "Meeting report"
   });
   doc.output("dataurlnewwindow",{'filename':'Report.pdf'})
+  spinner.style.display = 'none'
 }
 
 export {

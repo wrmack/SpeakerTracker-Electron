@@ -21,7 +21,7 @@ export const displaySelectedEntity = `
 `
 export const setupEntityDetailListeners = function () {
   document.addEventListener('entity-selected', async (event) => {
-    console.log('entity-selected received')
+    // console.log('entity-selected received')
     if (event instanceof CustomEvent) {
       // Get entity using row index
       const rowStrg = event.detail.id.slice(4)

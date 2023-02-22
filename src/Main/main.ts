@@ -100,11 +100,10 @@ ipcMain.handle('dbConnect', async () => {
   const dbPath = path.join(userPath,'mydb.db')
   db = new sqlite3.Database(dbPath, (err: Error) => {
     if (err) {
-    console.log('Error coming up')
-    console.error(err.message)
+      console.error(err.message)
     }
     else {
-    console.log('Connected to sqlite3, version ',sqlite3.VERSION)
+      // console.log('Connected to sqlite3, version ',sqlite3.VERSION)
     }
   })
 })
@@ -133,7 +132,6 @@ ipcMain.handle('dbInit', async () => {
 
 ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
   // db.serialize(function () {
-    console.log(sql)
     db.exec(sql, (err) => {
       if (err) {
         return console.error("------->> ",err.message)
@@ -155,13 +153,12 @@ ipcMain.handle('dbRun', async (ev: Event, sql: string, params: any) => {
 // db.all uses a callback therefore wrap whole thing in a Promise and return the Prommise
 ipcMain.handle('dbSelect', async (ev:Event, sql: string) => {
   // db.serialize( () => {
-    console.log('db.all sql: ' + sql)
     return new Promise((resolve, reject) => {
       db.all(sql, (err, rows) => {
         if (err) {
-          console.log('------->> db.all error: ' + err)
+          console.error('------->> db.all error: ' + err)
         }
-        console.log('db.all rows: ' + JSON.stringify(rows))
+        // console.log('db.all rows: ' + JSON.stringify(rows))
         resolve (rows)
       })
     })

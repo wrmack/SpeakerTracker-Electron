@@ -1,19 +1,24 @@
 import { getEntities } from '../../../../02-Models/models.js';
 
+/**
+ * 
+ * @returns number of entities
+ */
 async function loadEntities () {
   const entities = await getEntities()
-  if (entities.length == 0){
-    const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
-    if (mbrsBtn != null) {mbrsBtn.disabled = true}
-    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
-    if (grpBtn != null) {grpBtn.disabled = true}
-  }
-  else {
-    const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
-    if (mbrsBtn != null) {mbrsBtn.disabled = false}
-    const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
-    if (grpBtn != null) {grpBtn.disabled = false}
-  }
+  const numEntities = entities.length
+  const mbrsBtn = document.getElementById('setup-sidebar-mbrs-btn') as HTMLButtonElement
+  const grpBtn = document.getElementById('setup-sidebar-groups-btn') as HTMLButtonElement
+  const evtBn = document.getElementById('setup-sidebar-events-btn') as HTMLButtonElement
+  // if (entities.length == 0){
+  //   mbrsBtn.disabled = true
+  //   grpBtn.disabled = true
+  //   evtBn.disabled = true
+  // }
+  // else {
+  //   mbrsBtn.disabled = false
+  //   grpBtn.disabled = false
+  // }
   let tableRows = ''
   for (const i in entities) {
     const myId = 'en-r' + i
@@ -46,7 +51,7 @@ async function loadEntities () {
     }))
     handleSelection(cells[0])
   }
-
+  return numEntities
 }
 
 const handleSelection = (el: Element) => {
