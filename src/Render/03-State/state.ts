@@ -67,8 +67,24 @@ let currentDebateSectionNumber: number
 /** Whether members on speaking table have individual timers */
 let showIndividualTimers = false
 
+function setShowIndividualTimers(showTimer: boolean) {
+  showIndividualTimers = showTimer
+}
+
 /** Whether meeting is being recorded */
 let meetingIsBeingRecorded = false
+
+const setMeetingIsBeingRecorded = (isBeingRecorded: boolean) => {
+  meetingIsBeingRecorded = isBeingRecorded
+}
+
+/** Whether meeting sheet is expanded */
+
+let isSetupSheetExpanded = false
+
+const setIsSetupSheetExpanded = (isExpanded: boolean) => {
+  isSetupSheetExpanded = isExpanded
+}
 
 
 /**  ------- Getters and setters: selected Entity, Group, Event ---------------- */ 
@@ -196,15 +212,9 @@ const setMasterRowIdx = (idx: number) => {
   masterRowIdx = idx
 }
 
-/**  ------- Getters and setters: meeting setup sheet ---------------- */ 
 
-function setShowIndividualTimers(showTimer: boolean) {
-  showIndividualTimers = showTimer
-}
 
-function setMeetingIsBeingRecorded(on: boolean) {
-  meetingIsBeingRecorded = on ? true : false
-}
+
 
 export {
     masterRowIdx,
@@ -221,6 +231,8 @@ export {
     showIndividualTimers,
     meetingIsBeingRecorded,
     setMeetingIsBeingRecorded,
+    isSetupSheetExpanded,
+    setIsSetupSheetExpanded,
     currentEventId,
     setCurrentEventId,
     currentDebateNumber,

@@ -1,7 +1,6 @@
 import  { populateTables } from './01-Use cases/01-Track speakers/speakers-presenter.js'
 import { 
   speaker_tracker, 
-  loadSetupMeetingSheet, 
   setupArrowButtonListeners, 
   setupTimerControlListeners, 
   setupMeetingSetupListeners, 
@@ -13,6 +12,7 @@ import {
   setupMeetingEventListeners,
   handleInfoButtonClick
 } from './01-Use cases/01-Track speakers/speakers-view.js'
+import { loadSetupMeetingSheet } from './01-Use cases/01-Track speakers/meetingsetup-view.js'
 import { 
   setupView, 
   setupEditItemListeners, 
@@ -93,6 +93,7 @@ async function loadSpeakersView () {
   setupWaitingTableMenuListener()
   setupMeetingEventListeners()
   if (isFirstTime) {
+    // Is first time (no entities set up yet) so display info window
     handleInfoButtonClick()
   }
 }

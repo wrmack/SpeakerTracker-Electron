@@ -300,6 +300,8 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
       <div class='context-row'><button id='cm-again'>Speaks again</button></div>
     `
     contextMenu.innerHTML = menu
+    const againBtn = document.getElementById('cm-again') as HTMLButtonElement
+    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,section,rowNumber,numSectionsInTable))
     const amendBtn = document.getElementById('cm-amend') as HTMLButtonElement
     amendBtn.addEventListener('click', async () => {
       // Create new amendment section and add to table
@@ -401,21 +403,23 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
     `
     contextMenu.innerHTML = menu
     const againBtn = document.getElementById('cm-again') as HTMLButtonElement
-    againBtn.addEventListener('click', async () => {
-      // Get member
-      const mbr = section.sectionMembers[rowNumber]
-      // Get last section
-      const lastSection = table2[numSectionsInTable - 1]
-      lastSection.sectionMembers.push(mbr)
-      await populateTables()
-      // Has been a change to the section
-      document.dispatchEvent(new CustomEvent('section-change', {
-        bubbles: true,
-        cancelable: false,
-        detail: { }
-      }))
-    })
+    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,section,rowNumber,numSectionsInTable))
   }
+}
+
+const handleContextMenuSpeakAgain = async (sectionParam: SectionList,rowNumberParam:number,numSectionsInTableParam:number,ev:Event) => {
+  // Get member
+  const mbr = sectionParam.sectionMembers[rowNumberParam]
+  // Get last section
+  const lastSection = table2[numSectionsInTableParam - 1]
+  lastSection.sectionMembers.push(mbr)
+  await populateTables()
+  // Has been a change to the section
+  document.dispatchEvent(new CustomEvent('section-change', {
+    bubbles: true,
+    cancelable: false,
+    detail: { }
+  }))
 }
 
 // Meeting setup
@@ -438,8 +442,7 @@ async function populateEntityDropdown() {
       }
     })
   }
-  const ent = document.getElementById('mtgsetup-select-entity')
-  if (ent) { ent.innerHTML = options} 
+  return options
 }
  /**
   * Gets the entity id given the index passed in.
@@ -476,9 +479,7 @@ async function populateGroupDropdown() {
       }
     })
   }
-
-  const grp = document.getElementById('mtgsetup-select-group')
-  if (grp) {grp.innerHTML = options}
+  return options
 }
 
 async function populateEventsDropdown() {
@@ -503,9 +504,7 @@ async function populateEventsDropdown() {
       }
     })
   }
-
-  const evt = document.getElementById('mtgsetup-select-event')
-  if (evt) {evt.innerHTML = options}
+  return options
 }
 
 async function updateWaitingTableAfterDragging(indexArray: number[]) {
