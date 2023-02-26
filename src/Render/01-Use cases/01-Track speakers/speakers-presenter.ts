@@ -51,7 +51,20 @@ let table0: Member[] = []
 let table1: Member[] = []
 let table2: SectionList[] = []
 
+/**
+ * A flag that is set in updateListMember when a member presses play and unset when pause or stop are clicked.
+ * It is read in populateTables, and, if set, all other members play buttons are disabled.
+ */
+let aMemberIsSpeaking= false
 
+/**
+ * Populates the table model
+ * - table0 is a Member array
+ * - table1 is a Member array
+ * - table2 is a SectionList array
+ * 
+ * @returns true if no entities are setup otherwise false
+ */
 async function populateTables () {
   // If no entities set up - return
   const ents = await getEntities()
@@ -197,8 +210,6 @@ async function populateTables () {
     // Iterate through members in this section
     const listMbrs = section.sectionMembers
     idx = 0
-    // timerActiveInCell set to true when a member is rendered who is speaking; any subsequent members will have play buttons disabled
-    let timerActiveInCell = false
     
     for (const listMbr of listMbrs) {
       let spkgTime = listMbr.speakingTime
@@ -222,30 +233,42 @@ async function populateTables () {
                 <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
                   if(showIndividualTimers) {
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
-                      tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
-                      timerActiveInCell = true
+                      if (!aMemberIsSpeaking || listMbr.timerIsActive) {
+                        tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
+                      }
+                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                        tableRows2 += `<button class='spkg-table-cell-timer-pause' disabled>c</button>`
+                      }
                     }
                     if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
-                      tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
-                      timerActiveInCell = true
+                      if (!aMemberIsSpeaking || listMbr.timerIsActive) {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                      }
+                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play2' disabled>a</button>`
+                      }
                     }
                     if (listMbr.timerIsActive == true) {
                       tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
-                      timerActiveInCell = true
                     } else {
                       tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
                     }     
                     if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                      if (!timerActiveInCell) {
+                      if (!aMemberIsSpeaking) {
                         tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
                       }
-                      else {
+                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
                         tableRows2 += `<button class='spkg-table-cell-timer-play' disabled>a</button>`
                       }
                     }
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
                       listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
-                      tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
+                        if (!aMemberIsSpeaking || listMbr.timerIsActive) {
+                          tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
+                        }
+                        else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                          tableRows2 += `<button class='spkg-table-cell-timer-stop' disabled>b</button>`
+                        }
                     }
                   }
                   `
@@ -301,7 +324,8 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
     `
     contextMenu.innerHTML = menu
     const againBtn = document.getElementById('cm-again') as HTMLButtonElement
-    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,section,rowNumber,numSectionsInTable))
+    const mbrClicked = section.sectionMembers[rowNumber]
+    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,mbrClicked,numSectionsInTable))    
     const amendBtn = document.getElementById('cm-amend') as HTMLButtonElement
     amendBtn.addEventListener('click', async () => {
       // Create new amendment section and add to table
@@ -403,16 +427,28 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
     `
     contextMenu.innerHTML = menu
     const againBtn = document.getElementById('cm-again') as HTMLButtonElement
-    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,section,rowNumber,numSectionsInTable))
+    const mbrClicked = section.sectionMembers[rowNumber]
+    againBtn.addEventListener('click',handleContextMenuSpeakAgain.bind(null,mbrClicked,numSectionsInTable))
   }
 }
 
-const handleContextMenuSpeakAgain = async (sectionParam: SectionList,rowNumberParam:number,numSectionsInTableParam:number,ev:Event) => {
+const handleContextMenuSpeakAgain = async (mbrParam: ListMember,numSectionsInTableParam:number) => {
   // Get member
-  const mbr = sectionParam.sectionMembers[rowNumberParam]
+  const mbr = mbrParam
+  const finalSection = table2[numSectionsInTableParam - 1]
+  const newRow = finalSection.sectionMembers.length
+  // Get new row
+  const duplicateMbr: ListMember = {
+    row: newRow,
+    member: mbr.member,
+    startTime: null,
+    speakingTime: 0,
+    timerButtonMode: TimerButtonMode.play,
+    timerIsActive: false
+  }
   // Get last section
   const lastSection = table2[numSectionsInTableParam - 1]
-  lastSection.sectionMembers.push(mbr)
+  lastSection.sectionMembers.push(duplicateMbr)
   await populateTables()
   // Has been a change to the section
   document.dispatchEvent(new CustomEvent('section-change', {
@@ -528,11 +564,13 @@ async function updateListMember(section: number, row: number, target: string, se
     mbr.timerButtonMode = TimerButtonMode.pause_stop
     mbr.timerIsActive = true
     mbr.startTime = new Date()
+    aMemberIsSpeaking = true
   }
   if (target == 'spkg-table-cell-timer-stop') {
     mbr.timerButtonMode = TimerButtonMode.off
     mbr.timerIsActive = false
     mbr.speakingTime = seconds as number
+    aMemberIsSpeaking = false
     if (mbr.startTime && meetingIsBeingRecorded == true) {
       const eventEl = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
       if (!eventEl) { return} 
@@ -549,10 +587,12 @@ async function updateListMember(section: number, row: number, target: string, se
     mbr.timerButtonMode = TimerButtonMode.play_stop
     mbr.timerIsActive = false
     mbr.speakingTime = seconds as number
+    aMemberIsSpeaking = false
   }
   if (target == 'spkg-table-cell-timer-play2') {
     mbr.timerButtonMode = TimerButtonMode.pause_stop
     mbr.timerIsActive = true
+    aMemberIsSpeaking = true
     // mbr.speakingTime = seconds as number
   }
   await populateTables()

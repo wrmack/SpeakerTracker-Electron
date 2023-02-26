@@ -399,6 +399,7 @@ function handleSpeakingTableMemberClick(this: HTMLElement, ev: Event) {
 function handleSpeakingTableSectionChange(this: HTMLElement) {
   setupArrowButtonListeners()
   setupSpeakingTableMemberListeners()
+  setupSpeakingTableTimerListeners()
   // setupSpeakingTableSectionChangeListener()
   const contextMenu = document.getElementById('context-menu')
   if (!contextMenu) {return}

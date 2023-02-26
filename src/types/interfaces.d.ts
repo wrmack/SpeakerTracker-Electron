@@ -33,6 +33,9 @@ export interface MyAPI {
  * 
  */
 
+/**
+ * Enum: play=0, pause_stop=1,play_stop=2,off=3 
+ */
 declare enum TimerButtonMode {
     play = 0,
     pause_stop = 1,
@@ -40,12 +43,19 @@ declare enum TimerButtonMode {
     off = 3
 }
 
+/**
+ * Enum: mainDebate=0, amendment=1,off=2 
+ */
 declare enum SectionType {
     mainDebate = 0,
     amendment = 1,
     off = 2
 }
 
+/**
+ * A member of a SectionList.
+ * 
+ */
 interface ListMember {
     row: number;
     member: Member;
