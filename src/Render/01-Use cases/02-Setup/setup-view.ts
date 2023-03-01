@@ -19,7 +19,7 @@ import { loadAddGroupSheet, setupAddGroupListeners } from './03-Editing tools/Me
 import { loadDeleteGroupSheet, setupDeleteGroupListeners } from './03-Editing tools/MeetingGroups/DeleteMeetingGroup/delete-meeting-group.js'
 import { loadEditGroupSheet, setupEditGroupListeners } from './03-Editing tools/MeetingGroups/EditMeetingGroup/edit-group-view.js'
 
-import { displayEvents } from './01-Master/DisplayEvents/display-events-view.js'
+import { displayEvents, setupEventsDropdownListeners } from './01-Master/DisplayEvents/display-events-view.js'
 import { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents } from './01-Master/DisplayEvents/display-events-presenter.js'
 import { displaySelectedEvent, setupEventDetailListeners } from './02-Detail/DisplaySelectedEvent/display-selected-event-view.js'
 import { loadAddEventSheet, setupAddEventListeners } from './03-Editing tools/Events/AddEvent/add-event-view.js' 
@@ -279,7 +279,7 @@ const showEvents = async () => {
   setupEventDetailListeners()
   await loadEntitiesDropdownForEvents()
   await loadGroupsDropdownForEvents()
-  // setupEventsEntitiesDropdownListeners()
+  setupEventsDropdownListeners()
   await loadEvents()
   const det = document.getElementById('setup-detail') as HTMLElement
   det.innerHTML = displaySelectedEvent

@@ -58,12 +58,17 @@
     color: white;
     border-collapse: collapse;
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    overflow-y: scroll;
+}
+
+#reports-cards {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  overflow-y: auto;
 }
 
 .report-card {
@@ -71,7 +76,7 @@
     width: 160px;
     background-color: white;
     color: black;
-    margin-left: 96px;
+    margin-left: 80px;
     margin-top: 50px;
     font-size: 10pt;
     text-align: center;

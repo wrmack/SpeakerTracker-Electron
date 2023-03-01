@@ -102,6 +102,7 @@ div#setup-content-container {
   height: 530px;
   overflow-y: auto;
   margin-left: 20px;
+  overflow-x: clip;
 }
 
 #setup-detail {
@@ -188,6 +189,7 @@ div#selected-ent {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-end;
+  color: #aaa;
 }
 
 #editing-sheet {

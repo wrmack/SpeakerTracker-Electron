@@ -225,49 +225,55 @@ async function populateTables () {
             <div class='spkg-table-cell-container'> 
               <div class='spkg-table-cell-container-top'>
                 <div class='spkg-table-cell-comp-left'>`
-                  // if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                    tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
-                  // } 
+                  tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
                   tableRows2 += `<span class='spkg-table-cell-text' id='${myId}-n'>${mbr.firstName} ${mbr.lastName}</span>
                 </div>
                 <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
                   if(showIndividualTimers) {
+                    // Rendering is left to right, starting with the pause button
+
+                    // Render the pause button
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
-                      if (!aMemberIsSpeaking || listMbr.timerIsActive) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
-                      }
-                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                      // Disabled if a member is speaking and it isn't the current member 
+                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
                         tableRows2 += `<button class='spkg-table-cell-timer-pause' disabled>c</button>`
                       }
-                    }
-                    if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
-                      if (!aMemberIsSpeaking || listMbr.timerIsActive) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                      else {
+                        tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
                       }
-                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                    }
+                    // Render the left play button
+                    if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
+                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
                         tableRows2 += `<button class='spkg-table-cell-timer-play2' disabled>a</button>`
                       }
+                      else {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                      }
                     }
+                    // Render the timestring and add id if this is the active cell
                     if (listMbr.timerIsActive == true) {
                       tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
                     } else {
                       tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
-                    }     
+                    }
+                    // Render the right play button     
                     if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                      if (!aMemberIsSpeaking) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
-                      }
-                      else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
                         tableRows2 += `<button class='spkg-table-cell-timer-play' disabled>a</button>`
                       }
+                      else {
+                        tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
+                      }
                     }
+                    // Render the stop button
                     if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
                       listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
-                        if (!aMemberIsSpeaking || listMbr.timerIsActive) {
-                          tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
-                        }
-                        else if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                        if (aMemberIsSpeaking && !listMbr.timerIsActive) {
                           tableRows2 += `<button class='spkg-table-cell-timer-stop' disabled>b</button>`
+                        }
+                        else {
+                          tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
                         }
                     }
                   }
@@ -458,91 +464,6 @@ const handleContextMenuSpeakAgain = async (mbrParam: ListMember,numSectionsInTab
   }))
 }
 
-// Meeting setup
-
-async function populateEntityDropdown() {
-  let options = ''
-  const entities = await getEntities()
-  if (entities.length == 0) {
-    options += `<option disabled selected hidden>Go to Setup and create an Entity</option>`
-    const entEl = document.getElementById('mtgsetup-select-entity')
-    if (entEl) {entEl.classList.add("mtgsetup-prompt") }
-  }
-  else {
-    entities.forEach( (entity) => {
-      if (entity.Id == currentEntityId) {
-        options += `<option selected>${entity.EntName}</option>`
-      }
-      else {
-        options += `<option>${entity.EntName}</option>`
-      }
-    })
-  }
-  return options
-}
- /**
-  * Gets the entity id given the index passed in.
-  * Sets the global `currentEntityId` then causes the group
-  * dropdown to be repopulated.
-  * @param newEntityIdx The index of the current entity.
-  */
-async function entityChanged(newEntityIdx: number) {
-  const ent = await getEntityAtIdx(newEntityIdx)
-  await setCurrentEntityId(ent.Id)
-  await populateGroupDropdown()
-  await populateEventsDropdown()
-}
-
-async function eventDateChanged(newEventIdx: number) {
-
-}
-
-async function populateGroupDropdown() {
-  let options = ''
-  const groups = await getGroupsForEntityId(currentEntityId)
-  if (groups.length == 0) {
-    options += `<option disabled selected hidden>Go to Setup and create a Meeting group</option>`
-    const entEl = document.getElementById('mtgsetup-select-group')
-    if (entEl) {entEl.classList.add("mtgsetup-prompt") }
-  }
-  else {
-    groups.forEach( async (group) => {
-      if (group.Id == currentGroupId) {
-        options += `<option selected>${group.GrpName}</option>`
-      }
-      else {
-        options += `<option>${group.GrpName}</option>`
-      }
-    })
-  }
-  return options
-}
-
-async function populateEventsDropdown() {
-  let options = ''
-  const events = await getEventsForCurrentGroup()
-  if (events.length == 0) {
-    options += `<option disabled selected hidden>Go to Setup and create a Meeting event</option>`
-    const entEl = document.getElementById('mtgsetup-select-event')
-    if (entEl) {entEl.classList.add("mtgsetup-prompt") }
-  }
-  else {
-    let idx = 0
-    events.forEach( async (event) => {
-      const date = formatIsoDate(event.EventDate)
-      // Select the first event
-      if (idx == 0) {
-        options += `<option selected>${date}</option>`
-        idx += 1
-      }
-      else {
-        options += `<option>${date}</option>`
-      }
-    })
-  }
-  return options
-}
-
 async function updateWaitingTableAfterDragging(indexArray: number[]) {
   const newMemberArray: Member[] = []
   indexArray.forEach(idx => {
@@ -610,23 +531,6 @@ function updateTimeForListMember(seconds: number) {
   mbr.speakingTime = seconds
 }
 
-/**
- * Called after a new meeting is created in meeting setup.
- * @param entityIdx 
- * @param groupIdx 
- * @param eventIdx 
- * @param isRecorded 
- */
-async function updateDataForNewMeeting(entityIdx: number, groupIdx: number, eventIdx: number | null, isRecorded: boolean ) {
-  await setCurrentEntGroupEvtId(entityIdx,groupIdx,eventIdx)
-  setCurrentDebateNumber(0)
-  if (currentEventId !== null) {
-    await addDebate(currentEventId, 0)
-    await addDebateSection(currentEventId,0,0, "Main debate")
-  }
-  else { console.warn("currentEventId is null!")}
-  setMeetingIsBeingRecorded(isRecorded)
-}
 
 /**
  * Called after "Save this debate" button is clicked. 
@@ -739,17 +643,11 @@ function handleCollapsibleClick (this: Element) {
 
 export { 
   handleMovingMember,
-  entityChanged,
-  eventDateChanged,
   populateTables, 
   populateContextMenu,
-  populateEntityDropdown, 
-  populateGroupDropdown, 
-  populateEventsDropdown,
   updateWaitingTableAfterDragging,
   updateListMember,
   updateTimeForListMember,
-  updateDataForNewMeeting,
   updateDataAfterSaveDebate,
   resetTables, 
   getTimeForMember,

@@ -32,9 +32,7 @@ async function loadEntitiesDropdownForEvents () {
 
 async function loadGroupsDropdownForEvents () {
   const groups = await getGroupsForCurrentEntity()
-  // if (selectedEntityId == 0 || selectedEntityId == undefined) {
-  //   await setSelectedEntityId(entities[0].Id)
-  // }
+  await setCurrentGroupId(groups[0].Id)
   let options = ''
   groups.forEach( (group) => {
     if (group.Id == currentGroupId) {
@@ -96,6 +94,14 @@ function handleSelection(this: HTMLElement)  {
   }
 }
 
+async function eventsEntityChanged(idx: number) {
+  const ents = await getEntities()
+  const ent = ents[idx]
+  setCurrentEntityId(ent.Id)
+  await loadGroupsDropdownForEvents()
+  await eventsGroupChanged(0)
+}
+
 async function eventsGroupChanged(idx: number) {
   const grps = await getGroupsForCurrentEntity()
   const grp = grps[idx]
@@ -103,4 +109,4 @@ async function eventsGroupChanged(idx: number) {
   loadEvents()
 }
 
-export { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents, eventsGroupChanged }
+export { loadEntitiesDropdownForEvents, loadGroupsDropdownForEvents, loadEvents, eventsEntityChanged, eventsGroupChanged }

@@ -4,15 +4,20 @@ import {
   isSetupSheetExpanded,
   setIsSetupSheetExpanded 
 } from "../../03-State/state.js"
+
 import { 
+  setTimerDisplay
+} from "./speakers-presenter.js"
+
+import {
   populateEntityDropdown, 
   populateGroupDropdown, 
   populateEventsDropdown,
   updateDataForNewMeeting,
   entityChanged,
-  setTimerDisplay,
   eventDateChanged
-} from "./speakers-presenter.js"
+} from "../01-Track speakers/meetingsetup-presenter.js"
+
 import { resetAfterMeetingSetupDoneClicked } from "./speakers-view.js"
 
 /** The html for the slide-out meeting setup sheet. */  
@@ -128,7 +133,7 @@ const mtgSetupInfoRecord = `
 const loadSetupMeetingSheet = async () => {
   const mtgsht = document.getElementById('mtgsetup-sheet')
   if (!mtgsht) {return}
-  if (mtgsht) {mtgsht.innerHTML = setupMeetingSheet}
+  mtgsht.innerHTML = setupMeetingSheet
   mtgsht.style.left = isSetupSheetExpanded ? '0px' : '-300px'
   if (isSetupSheetExpanded) { 
     const entOptions = await populateEntityDropdown() 
@@ -143,7 +148,7 @@ const loadSetupMeetingSheet = async () => {
     if (evt) {evt.innerHTML = evtOptions}
   }
   
-  // Info button and display
+  // Info button and info display
   const mtgshtInfoBtn = document.getElementById('mtgsetup-info-btn') as HTMLButtonElement
   if (mtgshtInfoBtn) {
     mtgshtInfoBtn.addEventListener('click', handleMtgshtInfoBtnClick)
@@ -154,7 +159,7 @@ const loadSetupMeetingSheet = async () => {
     mtgshtInfo.innerHTML = mtgSetupInfo 
   }
   
-  // Info button and display for setting individual timer 
+  // Info button and info display for setting individual timer 
   const mtgshtInfoTimerBtn = document.getElementById('mtgsetup-info-timer-btn') as HTMLButtonElement
   if (mtgshtInfoTimerBtn) {
     mtgshtInfoTimerBtn.addEventListener('click', handleMtgshtInfoTimerBtnClick)
@@ -165,7 +170,7 @@ const loadSetupMeetingSheet = async () => {
     mtgshtTimerInfo.innerHTML = mtgSetupInfoTimer 
   }
 
-  // Info button and display for setting "record on" 
+  // Info button and info display for setting "record on" 
   const mtgshtInfoRecordBtn = document.getElementById('mtgsetup-info-record-btn') as HTMLButtonElement
   if (mtgshtInfoRecordBtn) {
     mtgshtInfoRecordBtn.addEventListener('click', handleMtgshtInfoRecordBtnClick)
@@ -210,20 +215,42 @@ const loadSetupMeetingSheet = async () => {
 // Meeting setup sheet handlers
 
 async function handleMeetingSetupDoneButtonClick(this: HTMLElement) {
-    const elEntSelect = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
-    const entIdx = elEntSelect.selectedIndex
-    const elGrpSelect = document.getElementById('mtgsetup-select-group') as HTMLSelectElement
-    const grpIdx = elGrpSelect.selectedIndex
-    const elEvtSelect = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
-    const mtgSht = document.getElementById('mtgsetup-sheet')
-    if (!mtgSht) {return}
-    mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
-    if (!isSetupSheetExpanded) { populateEntityDropdown() }
-    setIsSetupSheetExpanded(!isSetupSheetExpanded)
+  const mtgSht = document.getElementById('mtgsetup-sheet')
+  if (!mtgSht) {return}
 
-    let evtIdx = (meetingIsBeingRecorded) ? elEvtSelect.selectedIndex : null
-    await updateDataForNewMeeting(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
-    await resetAfterMeetingSetupDoneClicked(evtIdx)
+  // Get selected options from dropdowns
+  const elEntSelect = document.getElementById('mtgsetup-select-entity') as HTMLSelectElement
+  const entIdx = elEntSelect.selectedIndex
+  const elGrpSelect = document.getElementById('mtgsetup-select-group') as HTMLSelectElement
+  const grpIdx = elGrpSelect.selectedIndex
+  const elEvtSelect = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
+    
+  // If there were no events set up
+  if (elEvtSelect.options[0].disabled === true) {
+    setMeetingIsBeingRecorded(false)
+    const recordMeetingBtn = document.getElementById('create_record') as HTMLInputElement
+    recordMeetingBtn.checked = false
+    const event = document.getElementById('mtgsetup-event-dropdown-container') as HTMLDivElement
+    event.style.visibility = 'hidden'
+    const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarBtns.length; i++) {
+    sidebarBtns[i].style["display"] = "block"
+    }
+    const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+    for (let i = 0; i < sidebarRecordBtns.length; i++) {
+    sidebarRecordBtns[i].style["display"] = "none"
+    }
+    const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+    sidebarRecordCircle.style["display"] = "none"
+  }
+
+  let evtIdx = (meetingIsBeingRecorded) ? elEvtSelect.selectedIndex : null
+  await updateDataForNewMeeting(entIdx,grpIdx,evtIdx,meetingIsBeingRecorded)
+  await resetAfterMeetingSetupDoneClicked(evtIdx)
+
+  mtgSht.style.left = isSetupSheetExpanded ? '-300px' : '0px'
+  if (!isSetupSheetExpanded) { populateEntityDropdown() }
+  setIsSetupSheetExpanded(!isSetupSheetExpanded)
 }
 
 function handleMtgshtInfoBtnClick(this: HTMLButtonElement) {
@@ -273,10 +300,16 @@ function handleMtgshtInfoRecordBtnBlur() {
 
   /**
  * Called when different entity is selected in meeting setup, emitting a `change` event.
- * Passes the index to `entityChanged` function in `speakers-presenter.js`.
+ * Passes the index to `entityChanged` function in `meetingsetup-presenter.js`.
  */
 async function handleChangedEntitySelection(this: HTMLSelectElement) {
     await entityChanged(this.selectedIndex)
+    const grpOptions = await populateGroupDropdown() 
+    const evtOptions = await populateEventsDropdown()
+    const grp = document.getElementById('mtgsetup-select-group')
+    if (grp) {grp.innerHTML = grpOptions}
+    const evt = document.getElementById('mtgsetup-select-event')
+    if (evt) {evt.innerHTML = evtOptions}
 }
   
 async function handleChangedTimerType(this: HTMLInputElement) {
@@ -292,34 +325,34 @@ async function handleChangedTimerType(this: HTMLInputElement) {
 }
   
 async function handleChangedRecordEvent(this: HTMLInputElement) {
-    const event = document.getElementById('mtgsetup-event-dropdown-container') as HTMLDivElement
-    if (this.checked) {
-        event.style.visibility = 'visible'
-        setMeetingIsBeingRecorded(true)
-        const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
-        for (let i = 0; i < sidebarBtns.length; i++) {
-        sidebarBtns[i].style["display"] = "none"
-        }
-        const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
-        for (let i = 0; i < sidebarRecordBtns.length; i++) {
-        sidebarRecordBtns[i].style["display"] = "block"
-        }
-        const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
-        sidebarRecordCircle.style["display"] = "flex"
-    }
-    else { event.style.visibility = 'hidden'
-        setMeetingIsBeingRecorded(false)
-        const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
-        for (let i = 0; i < sidebarBtns.length; i++) {
-        sidebarBtns[i].style["display"] = "block"
-        }
-        const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
-        for (let i = 0; i < sidebarRecordBtns.length; i++) {
-        sidebarRecordBtns[i].style["display"] = "none"
-        }
-        const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
-        sidebarRecordCircle.style["display"] = "none"
-    }
+  const event = document.getElementById('mtgsetup-event-dropdown-container') as HTMLDivElement
+  if (this.checked) {
+      event.style.visibility = 'visible'
+      setMeetingIsBeingRecorded(true)
+      const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+      for (let i = 0; i < sidebarBtns.length; i++) {
+      sidebarBtns[i].style["display"] = "none"
+      }
+      const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+      for (let i = 0; i < sidebarRecordBtns.length; i++) {
+      sidebarRecordBtns[i].style["display"] = "block"
+      }
+      const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+      sidebarRecordCircle.style["display"] = "flex"
+  }
+  else { event.style.visibility = 'hidden'
+      setMeetingIsBeingRecorded(false)
+      const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+      for (let i = 0; i < sidebarBtns.length; i++) {
+      sidebarBtns[i].style["display"] = "block"
+      }
+      const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+      for (let i = 0; i < sidebarRecordBtns.length; i++) {
+      sidebarRecordBtns[i].style["display"] = "none"
+      }
+      const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+      sidebarRecordCircle.style["display"] = "none"
+  }
 }
 
 async function handleChangedEventDate(this: HTMLSelectElement) {

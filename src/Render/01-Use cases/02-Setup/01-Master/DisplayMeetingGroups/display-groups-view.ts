@@ -17,7 +17,6 @@ const displayGroups = `
 const setupGroupsEntitiesDropdownListeners = function () {
   const el = document.getElementById('groups-select-entities') as HTMLSelectElement
   if (el) {
-    // el.addEventListener('click', handleDropDownEvent)
     el.addEventListener('change', handleDropDownEvent)
   }
 }

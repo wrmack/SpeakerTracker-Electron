@@ -1,4 +1,4 @@
-import { eventsGroupChanged } from "./display-events-presenter.js"
+import { eventsEntityChanged, eventsGroupChanged } from "./display-events-presenter.js"
 
 const displayEvents = `
 <div class='dropdown-container'>
@@ -19,16 +19,24 @@ const displayEvents = `
 `
 
 const setupEventsDropdownListeners = function () {
-    const el = document.getElementById('events-select-entities') as HTMLSelectElement
-    if (el) {
-      // el.addEventListener('click', handleDropDownEvent)
-      el.addEventListener('change', handleDropDownEvent)
+    const ent = document.getElementById('events-select-entities') as HTMLSelectElement
+    if (ent) {
+      ent.addEventListener('change', handleEntityDropDownChange)
+    }
+    const grp = document.getElementById('events-select-groups') as HTMLSelectElement
+    if (grp) {
+      grp.addEventListener('change', handleGroupDropDownChange)
     }
   }
   
-  function handleDropDownEvent(this: HTMLElement) {
-    const el = this as HTMLSelectElement
-    eventsGroupChanged(el.selectedIndex)
-  }
-  
-  export { displayEvents, setupEventsDropdownListeners }
+function handleEntityDropDownChange(this: HTMLElement) {
+  const el = this as HTMLSelectElement
+  eventsEntityChanged(el.selectedIndex)
+}
+
+function handleGroupDropDownChange(this: HTMLElement) {
+  const el = this as HTMLSelectElement
+  eventsGroupChanged(el.selectedIndex)
+}
+
+export { displayEvents, setupEventsDropdownListeners }

@@ -30,6 +30,7 @@ const reportsView = `
   </div>
   <div id="reports-detail">
     <div id="loader"></div>
+    <div id="reports-cards"></div>
   </div>
 </div>
 `
@@ -46,7 +47,6 @@ const setupReports = async () => {
 const setupReportsEntitiesDropdownListeners = function () {
   const el = document.getElementById('reports-select-entities') as HTMLSelectElement
   if (el) {
-    // el.addEventListener('click', handleDropDownEvent)
     el.addEventListener('change', handleDropDownEvent)
   }
 }
@@ -60,8 +60,7 @@ function handleDropDownEvent(this: HTMLElement) {
 
 declare global {
   interface Window {
-    jspdf: any,
-    PDFObject: any
+    jspdf: any
   }
 }
 
@@ -106,13 +105,13 @@ const handleReportGroupSelected = async (event: Event) => {
   })
 
   // Inject the cards
-  const detail = document.getElementById('reports-detail')
-  if (detail) {
-    // detail.innerHTML = cardsHtml
-    const loader = document.getElementById('loader') as HTMLDivElement
-    loader.insertAdjacentHTML("afterend", cardsHtml)
-  }
-
+  const reportsCards = document.getElementById('reports-cards') as HTMLDivElement
+  // if (detail) {
+  //   // detail.innerHTML = cardsHtml
+  //   const loader = document.getElementById('loader') as HTMLDivElement
+  //   loader.insertAdjacentHTML("afterend", cardsHtml)
+  // }
+  reportsCards.innerHTML = cardsHtml
   // Add click listeners to each card
   const cards = document.querySelectorAll('.report-card')
     for (let i = 0; i < cards.length; i++) {
