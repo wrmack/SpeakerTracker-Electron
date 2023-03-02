@@ -36,6 +36,7 @@ table {
   border-spacing: 0px;
   border-collapse: collapse;
   overflow-x: clip;
+  margin-bottom: 40px;
 }
 
 thead {

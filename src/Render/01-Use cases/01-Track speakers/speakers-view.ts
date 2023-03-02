@@ -12,7 +12,7 @@ import {
 } from './speakers-presenter.js'
 import {infoText} from './info.js'
 import { eventsGroupChanged } from '../02-Setup/01-Master/DisplayEvents/display-events-presenter.js'
-import {  isSetupSheetExpanded, setIsSetupSheetExpanded,  meetingIsBeingRecorded, setMeetingIsBeingRecorded, currentDebateNumber } from '../../03-State/state.js'
+import { isSetupSheetExpanded, setIsSetupSheetExpanded,  meetingIsBeingRecorded, setMeetingIsBeingRecorded, currentDebateNumber } from '../../03-State/state.js'
 import { getEventAtIdx } from '../../02-Models/models.js'
 import { formatIsoDate, getTimeStringFromSeconds } from '../../04-Utils/utils.js'
 import { loadSetupMeetingSheet } from './meetingsetup-view.js'

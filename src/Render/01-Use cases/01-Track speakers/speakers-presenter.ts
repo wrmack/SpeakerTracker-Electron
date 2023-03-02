@@ -112,7 +112,8 @@ async function populateTables () {
       sectionNumber: 0,
       sectionType: SectionType.mainDebate,
       sectionHeader: "Main debate",
-      sectionMembers: []
+      sectionMembers: [],
+      isCollapsed: false
     }
     table2 = [spkgList]
 
@@ -187,7 +188,15 @@ async function populateTables () {
     if (section.sectionType == SectionType.amendment) {
       tableRows2 += `<th>
         <div class='spkg-table-row-header'>
-          ${section.sectionHeader}<div class='chevron'>V</div>
+        ${section.sectionHeader}
+        `
+        if (section.isCollapsed == true) {
+          tableRows2 += `<div class='chevron' style='transform: rotate(-90deg);'>V</div>`
+        }
+        else {
+          tableRows2 += `<div class='chevron'>V</div>`
+        }
+        tableRows2 += `
         </div>
           <hr class='spkg-table-cell-rule'>
         </th>`
@@ -222,7 +231,14 @@ async function populateTables () {
       tableRows2 += `
         <tr class='spkg-table-row'>  
           <td>
-            <div class='spkg-table-cell-container'> 
+          `
+          if (section.isCollapsed === true) {
+            tableRows2 += `<div class='spkg-table-cell-container' style='overflow: hidden; max-height: 0px;'> `
+          }
+          else {
+            tableRows2 += `<div class='spkg-table-cell-container'> `
+          }
+            tableRows2 += `
               <div class='spkg-table-cell-container-top'>
                 <div class='spkg-table-cell-comp-left'>`
                   tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
@@ -292,6 +308,7 @@ async function populateTables () {
     const tb = tabl2.appendChild(document.createElement('tbody'))
     if (tb) {
       tb.setAttribute("class","spkg-table-tbody")
+      tb.setAttribute("id", `${sectionIdx}`)
       tb.innerHTML = tableRows2
     }
     // Event listener on Amendment header
@@ -340,7 +357,8 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         sectionNumber: newSectionNumber,
         sectionType: SectionType.amendment,
         sectionHeader: "Amendment",
-        sectionMembers: []
+        sectionMembers: [],
+        isCollapsed: false
       }
       table2.push(sectList)
       // Add to database
@@ -388,7 +406,8 @@ function populateContextMenu(sectionNumber: number, rowNumber: number) {
         sectionNumber: sectionNumber + 1,
         sectionType: SectionType.mainDebate,
         sectionHeader: "Main debate",
-        sectionMembers: []
+        sectionMembers: [],
+        isCollapsed: false
       }
       table2.push(sectList)
       if (currentEventId !== null) {
@@ -622,9 +641,11 @@ async function handleMovingMember(sourceTable: number, sourceRow: number, destin
 
 
 function handleCollapsibleClick (this: Element) {
-  const bdy = this.parentNode?.parentNode?.parentNode
+  const bdy = this.parentNode?.parentNode?.parentNode as HTMLTableSectionElement
   if (!bdy) {return}
   const rowDivs = bdy.querySelectorAll('.spkg-table-cell-container')
+  const sectionNum = parseInt(bdy.id)
+
   for (const rowDiv of rowDivs) {
     if (rowDiv instanceof HTMLDivElement) {
       rowDiv.style.overflow = 'hidden'
@@ -635,8 +656,12 @@ function handleCollapsibleClick (this: Element) {
   const chv = elArray[0] as HTMLElement
   if (chv.style.transform == 'rotate(0deg)' || getComputedStyle(chv).transform == 'matrix(1, 0, 0, 1, 0, 0)') {
     chv.style.transform = 'rotate(-90deg)'
+    table2[sectionNum].isCollapsed = true
   }
-  else {chv.style.transform = 'rotate(-0deg)'}
+  else {
+    chv.style.transform = 'rotate(-0deg)'
+    table2[sectionNum].isCollapsed = false
+  }
 }
 
 

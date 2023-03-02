@@ -70,6 +70,7 @@ interface SectionList {
     sectionType: SectionType;
     sectionHeader: string;
     sectionMembers: ListMember[];
+    isCollapsed: boolean;
 }
 
 interface SpeakingTable {
