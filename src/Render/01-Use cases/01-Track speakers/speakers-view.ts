@@ -442,6 +442,10 @@ function handleInfoButtonClick() {
   const childWindow = window.open('', 'modal')
   if (childWindow) {
     childWindow.document.write(infoText)
+    const testClk = childWindow.document.getElementById('st-electron') as HTMLAnchorElement
+    testClk.addEventListener('click', () =>{
+      window.open("https://github.com/wrmack/SpeakerTracker-Electron")
+    })
   }
 }
 

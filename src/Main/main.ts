@@ -33,6 +33,7 @@ function createWindow () {
   // Open the DevTools.
   mainWindow.webContents.openDevTools({mode:'detach'})
 
+  // Handles opening windows
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     console.log("window url ", url)
     if (url === 'about:blank#blocked') {
@@ -45,8 +46,14 @@ function createWindow () {
         }
       }
     }
-    return { action: 'deny' }
+    else {
+      // Opens the window in the default external browser
+      const { shell } = require('electron')
+      shell.openExternal(url);
+      return { action: 'deny' }
+    }
   })
+
 }
 
 // This method will be called when Electron has finished

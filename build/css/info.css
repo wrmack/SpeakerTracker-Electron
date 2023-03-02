@@ -45,3 +45,8 @@ body {
   vertical-align: -35%;
 }
 
+#st-electron {
+  color: #00f;
+  cursor: pointer;
+}
+

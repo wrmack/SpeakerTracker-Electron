@@ -1,6 +1,7 @@
 const infoText = `
 <html>
 <head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self';">
 <title>Speaker Tracker Info</title>
 </head>
 <link href="css/info.css" rel="stylesheet">
@@ -144,11 +145,11 @@ const infoText = `
 
   </div>
 
-  <div class="help-title">App info </div>   
+  <div class="help-title">App info </div>  
 
   <div class="help-text">
-    <p>Source code: <a href="https://github.com/wrmack/SpeakerTracker">https://github.com/wrmack/SpeakerTracker</a> <br>
-    Developer: <a href="mailto:warwick.mcnaughton@gmail.com"> Warwick McNaughton</a>  </p>
+    <p>Source code: <div id="st-electron">https://github.com/wrmack/SpeakerTracker-Electron</div> <br>
+    Developer: Warwick McNaughton  </p>
 
     <p><strong>Privacy statement</strong></p>
     <p>The app does not use personal information for any purpose other than the purpose of tracking speakers 
@@ -156,7 +157,6 @@ const infoText = `
     The personal information used for tracking speakers comprises members' names and speaking times.</p>
     <p>&nbsp;</p>
   </div>
-
 </body>
 </html>
 `
