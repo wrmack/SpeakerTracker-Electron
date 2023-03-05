@@ -1,4 +1,4 @@
-import { execSql, getEventsForCurrentGroup, getGroupForId, getEntityWithId } from '../../../../../02-Models/models.js'
+import { execSql, getOpenEventsForCurrentGroup, getGroupForId, getEntityWithId } from '../../../../../02-Models/models.js'
 import {masterRowIdx} from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 
@@ -27,7 +27,7 @@ const loadDeleteEventSheet = async function () {
     edSht.innerHTML = deleteEventView
 
     // Get event to be deleted
-    const events = await getEventsForCurrentGroup()
+    const events = await getOpenEventsForCurrentGroup()
     const event = events[masterRowIdx]
 
     // Get group, entity and date and inject into DOM
@@ -65,7 +65,7 @@ function handleCancel() {
 }
 
 async function handleDelete() {
-  const events = await getEventsForCurrentGroup()
+  const events = await getOpenEventsForCurrentGroup()
   const event = events[masterRowIdx]
   
   // Delete in database

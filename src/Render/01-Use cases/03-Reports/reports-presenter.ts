@@ -4,7 +4,7 @@ import { setCurrentEntityId,  currentEntityId, setCurrentGroupId } from '../../0
 import { 
   getEntities, 
   getEntityWithId, 
-  getEventsForCurrentGroup, 
+  getClosedEventsForCurrentGroup, 
   getEventWithId,
   getMemberWithId,
   getGroupAtIdx, 
@@ -98,7 +98,7 @@ const getReportsForGroupAtIdx = async (idx: number) => {
 
   // Get the events for the group
   // Each Event has Event.ID, GroupID, EventDate
-  const events = await getEventsForCurrentGroup()
+  const events = await getClosedEventsForCurrentGroup()
 
   // Build the view model
   let reportEvents: ReportEventViewModel[] = []

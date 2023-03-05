@@ -341,9 +341,20 @@ const addEvent = async (eventDate: string, groupId: number) => {
   await window.myapi.runSQL(sql, {$groupId: groupId, $eventDate: eventDate})
 }
 
-const getEventsForCurrentGroup = async () => {
+/**
+ * 
+ * @returns an array of Events which have not been closed, for the current group 
+ */
+const getOpenEventsForCurrentGroup = async () => {
   const groupId = currentGroupId
-  const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE Events.GroupId = ${groupId} ORDER BY EventDate;`
+  const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE (Events.GroupId = ${groupId} AND (Events.Closed = 0 OR Events.Closed IS NULL)) ORDER BY EventDate;`
+  await window.myapi.connect()
+  return await window.myapi.selectAll(sql) as GroupEvent[]
+}
+
+const getClosedEventsForCurrentGroup = async () => {
+  const groupId = currentGroupId
+  const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE (Events.GroupId = ${groupId} AND Events.Closed = 1) ORDER BY EventDate;`
   await window.myapi.connect()
   return await window.myapi.selectAll(sql) as GroupEvent[]
 }
@@ -354,8 +365,8 @@ const getEventsForCurrentGroup = async () => {
  * @param idx the idx of the event for the current group
  * @returns promise of the group event
  */
-const getEventAtIdx = async (idx: number) => {
-  const events = await getEventsForCurrentGroup() 
+const getOpenEventAtIdx = async (idx: number) => {
+  const events = await getOpenEventsForCurrentGroup() 
   const selectedEvent = events[idx]
   return selectedEvent 
 }
@@ -463,8 +474,9 @@ export {
   getGroupsForEntityId,
   groupIdExists,
   entityIdExists,
-  getEventsForCurrentGroup,
-  getEventAtIdx,
+  getOpenEventsForCurrentGroup,
+  getClosedEventsForCurrentGroup,
+  getOpenEventAtIdx,
   getEventWithId,
   getDebatesForEventId,
   getDebateSections,

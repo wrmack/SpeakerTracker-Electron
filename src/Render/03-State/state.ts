@@ -4,7 +4,7 @@ import {
     getGroupAtIdx, 
     groupIdExists, 
     entityIdExists, 
-    getEventAtIdx, 
+    getOpenEventAtIdx, 
 } from "../02-Models/models.js"
 import {
   Entity,
@@ -174,7 +174,7 @@ const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: n
   currentGroupId = grp.Id
   let evtId
   if (evtIdx !== null) {
-    const evt = await getEventAtIdx(evtIdx) as GroupEvent
+    const evt = await getOpenEventAtIdx(evtIdx) as GroupEvent
     evtId = evt.Id
   }
   else evtId = null

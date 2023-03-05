@@ -1,0 +1,79 @@
+@font-face {
+    font-family: "STFonts";
+    src: url("../fonts/Font1.woff") format("woff");
+    font-weight: bold;
+    font-style: normal;
+  }
+
+body {
+    margin: 0px;
+    background-color: #525254;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: unset;
+    /* color: #ccc; */
+}
+
+button {
+  cursor: pointer;
+}
+
+#modal-clock-display {
+    position: absolute;
+    display: flex;
+    /* top: 225px; */
+    /* left: 10px; */
+    width: 100%;
+    /* max-width: 1297px; */
+    /* height: 100%; */
+    background-color: #525254;
+    opacity: 0.95;
+    /* transform: translate(-50%); */
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    font-size: 65vh;
+    font-weight: bold;
+    color: #e50000;
+    /* border: 4px solid #b1b1b1; */
+    /* border-radius: 8px; */
+  }
+
+  #modal-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding-right: 40px;
+    padding-top: 10px;
+  }
+
+  .modal-btn-control {
+    background: none;
+    border: 0;
+    opacity: 0.8;
+  }
+
+  .modal-icon-control {
+    font-family: STFonts;
+    font-size: 30pt;
+    margin-left: 25px;
+    color: white;
+  }
+  
+  /* .modal-icon-pause {
+    font-family: STFonts;
+    font-size: 90pt;
+    color:white;
+    margin-left: 36px;
+  }
+  
+  .modal-icon-stop {
+    font-family: STFonts;
+    font-size: 90pt;
+    color:white;
+    margin-left: 50px;
+  } */

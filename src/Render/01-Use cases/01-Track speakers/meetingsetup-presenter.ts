@@ -2,7 +2,7 @@ import {
     getEntities,
     getEntityAtIdx,
     getGroupsForEntityId,
-    getEventsForCurrentGroup,
+    getOpenEventsForCurrentGroup,
     addDebate,
     addDebateSection
 } from "../../02-Models/models.js"
@@ -64,7 +64,7 @@ async function populateGroupDropdown() {
 
 async function populateEventsDropdown() {
   let options = ''
-  const events = await getEventsForCurrentGroup()
+  const events = await getOpenEventsForCurrentGroup()
   if (events.length == 0) {
     options += `<option disabled selected hidden>Go to Setup: create a Meeting event</option>`
     const entEl = document.getElementById('mtgsetup-select-event')

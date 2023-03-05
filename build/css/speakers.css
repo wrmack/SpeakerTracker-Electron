@@ -48,11 +48,11 @@ Speakers view
 }
 
 #clock-display {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 70pt;
-    font-weight: 600;
-    float: right;
-    margin-right: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 70pt;
+  font-weight: 600;
+  float: right;
+  margin-right: 20px;
 }
 
 #large-clock-display {
@@ -113,6 +113,7 @@ Speakers view
   font-size: 18pt;
   color: white;
   display: inline;
+  cursor: pointer;
 }
 
 .div-table {
@@ -164,19 +165,33 @@ div#right-sidebar {
 
 button#sidebar-clock-btn {
   color: white;
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   margin-top: 30px;
   background-image: url(../images/expand.png);
   background-size: contain;
   filter: invert(1);
+  cursor: pointer;
 }
+
+button#sidebar-modal-clock-btn {
+  color: white;
+  width: 40px;
+  height: 40px;
+  margin-top: 30px;
+  background-image: url(../images/open-window.svg);
+  background-size: contain;
+  filter: invert(1);
+  cursor: pointer;
+}
+
 button#sidebar-meeting-setup-btn {
   color: white;
   font-size: 20pt;
   font-weight: bold;
   width: 100px;
   margin-top: 40px;
+  cursor: pointer;
 }
 
 button#sidebar-reset-btn {
@@ -185,6 +200,7 @@ button#sidebar-reset-btn {
   font-weight: bold;
   width: 100px;
   margin-top: 40px;
+  cursor: pointer;
 }
 
 button#sidebar-info-btn {
@@ -192,6 +208,7 @@ button#sidebar-info-btn {
   font-size: 40pt;
   color: white;
   margin-top: 60px;
+  cursor: pointer;
 }
 
 .sidebar-norm {
@@ -300,6 +317,7 @@ button#sidebar-info-btn {
 .spkg-table-cell-text {
   margin-left: 10px;
   font-size: 11pt;
+  cursor: pointer;
 }
 
 .spkg-table-cell-comp-right {
@@ -325,6 +343,7 @@ button#sidebar-info-btn {
   font-size: 15pt;
   margin-left: 5px;
   color: blue;
+  cursor: pointer;
 }
 
 .spkg-table-cell-timer-play2 {
@@ -333,6 +352,7 @@ button#sidebar-info-btn {
   font-size: 15pt;
   margin-left: 5px;
   color: blue;
+  cursor: pointer;
 }
 
 .spkg-table-cell-timer-stop {
@@ -341,6 +361,7 @@ button#sidebar-info-btn {
   font-size: 15pt;
   margin-left: 5px;
   color: blue;
+  cursor: pointer;
 }
 
 .spkg-table-cell-timer-pause {
@@ -349,6 +370,7 @@ button#sidebar-info-btn {
   font-size: 15pt;
   margin-right: 5px;
   color: blue;
+  cursor: pointer;
 }
 
 hr.spkg-table-cell-rule {
@@ -374,6 +396,7 @@ hr.spkg-table-cell-rule {
     font-size: 20pt;
     color: rgb(184,184,184);
     font-family: STFonts;
+    cursor: pointer;
 }
 
 .arrow-button-l {
@@ -384,6 +407,7 @@ hr.spkg-table-cell-rule {
     font-size: 20pt;
     color: rgb(184,184,184);
     font-family: STFonts;
+    cursor: pointer;
 }
 
 #context-menu {
@@ -447,6 +471,7 @@ div#mtgsetup-done {
 
 button#mtgsetup-done-btn {
   color: white;
+  cursor: pointer;
   /* background-color: antiquewhite; */
 }
 
@@ -472,6 +497,7 @@ select.mtgsetup-prompt {
   border: 1px solid #282828;
   color: rgb(51, 51, 51);
   border-radius: 6px;
+  cursor: pointer;
 }
 
 #mtgsetup-info-display {
@@ -480,6 +506,7 @@ select.mtgsetup-prompt {
 
 #mtgsetup-info-timer {
   height: 30px;
+  cursor: pointer;
 }
 
 #mtgsetup-info-timer-display {
@@ -488,6 +515,7 @@ select.mtgsetup-prompt {
   
 #mtgsetup-info-record {
   height: 35px;
+  cursor: pointer;
 }
 
 #mtgsetup-info-record-display {
@@ -519,6 +547,7 @@ select.mtgsetup-prompt {
   padding-top: 12px;
   padding-left: 0px;
   text-align: left;
+  cursor: pointer;
 }
 
 
@@ -527,6 +556,7 @@ select.mtgsetup-prompt {
   display: inline-block;
   width: 60px;
   height: 34px;
+  cursor: pointer;
 }
 
 .switch input { 

@@ -42,7 +42,8 @@ function createWindow () {
         overrideBrowserWindowOptions: {
           frame: true,
           fullscreenable: false,
-          autoHideMenuBar: true
+          autoHideMenuBar: true,
+          show: true
         }
       }
     }
@@ -54,6 +55,11 @@ function createWindow () {
     }
   })
 
+  mainWindow.webContents.once('did-create-window', (window, details) => {
+    console.log("here")
+    // details.options.backgroundColor = '#525254'
+    // window.show()
+  })
 }
 
 // This method will be called when Electron has finished

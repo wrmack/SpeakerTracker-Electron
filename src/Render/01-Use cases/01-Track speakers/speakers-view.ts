@@ -13,7 +13,7 @@ import {
 import {infoText} from './info.js'
 import { eventsGroupChanged } from '../02-Setup/01-Master/DisplayEvents/display-events-presenter.js'
 import { isSetupSheetExpanded, setIsSetupSheetExpanded,  meetingIsBeingRecorded, setMeetingIsBeingRecorded, currentDebateNumber } from '../../03-State/state.js'
-import { getEventAtIdx } from '../../02-Models/models.js'
+import { getOpenEventAtIdx } from '../../02-Models/models.js'
 import { formatIsoDate, getTimeStringFromSeconds } from '../../04-Utils/utils.js'
 import { loadSetupMeetingSheet } from './meetingsetup-view.js'
 import { isSet } from 'util/types'
@@ -25,6 +25,7 @@ let isPaused = false
 let isDragging = false
 let draggedRow: HTMLTableRowElement
 let isClockVisible = false
+let clockWindow: Window | null
 
 /** The html for the main speaker tracker page. */
 const speaker_tracker = `
@@ -99,6 +100,7 @@ const speaker_tracker = `
   <!-- Right side-bar  -->
   <div id='right-sidebar'>
     <button id='sidebar-clock-btn'></button>
+    <button id='sidebar-modal-clock-btn'></button>
     <button id='sidebar-reset-btn' class='sidebar-norm'><span>Reset</span></button>
     <button id='sidebar-meeting-setup-btn' class='sidebar-norm'><span>Meeting setup</span></button>
     <button id='sidebar-info-btn' class='sidebar-norm'><span>d</span></button>
@@ -118,6 +120,30 @@ const speaker_tracker = `
 <!-- Meeting setup slide-out sheet: record info -->
 <div id='mtgsetup-info-record-display' class='sheet-info'></div>
 `
+
+const windowTimer = `
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; ">
+<title>Speaker Tracker Info</title>
+<link href="css/large-timer.css" rel="stylesheet">
+</head>
+<body>
+<div id="modal-controls">
+  <button id="modal-btn-play" class="modal-btn-control">
+    <span class="modal-icon-control">a</span>
+  </button>
+  <button id="modal-btn-pause" class="modal-btn-control" disabled>
+    <span class="modal-icon-control">c</span>
+  </button>
+  <button id="modal-btn-stop" class="modal-btn-control" disabled>
+    <span class="modal-icon-control">b</span>
+  </button>
+</div>
+<div id='modal-clock-display'>00:00</div>
+</body>
+</html>
+`
 /**
  * 
  */
@@ -133,7 +159,7 @@ const resetAfterMeetingSetupDoneClicked = async (evtIdx: number | null) => {
   }
   if (evtIdx !== null) {
     const mtgEvent = document.getElementById('meeting-event') as HTMLDivElement
-    const evt = await getEventAtIdx(evtIdx)
+    const evt = await getOpenEventAtIdx(evtIdx)
     const evtDate = formatIsoDate(evt.EventDate)
     mtgEvent.innerHTML = evtDate
     mtgEvent.style.display = 'block'
@@ -189,6 +215,8 @@ const setupMeetingSetupListeners = () => {
 const setupClockExpandListener = () => {
   const exp = document.getElementById('sidebar-clock-btn')
   exp?.addEventListener('click', handleClockExpand)
+  const modClk = document.getElementById('sidebar-modal-clock-btn')
+  modClk?.addEventListener('click', handleClockNewWindow)
 }
 
 
@@ -521,6 +549,34 @@ async function handlePlayClicked(this: HTMLElement, ev: Event): Promise<void> {
     pauseBtn.disabled = false
     const stopBtn = document.getElementById('btn-stop') as HTMLButtonElement
     stopBtn.disabled = false
+
+    if (clockWindow) {
+      const modPlayBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      modPlayBtn.disabled = true
+      const modPauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      modPauseBtn.disabled = false
+      const modStopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      modStopBtn.disabled = false
+    }
+  }
+
+  // Modal timer
+  if (clockWindow) {
+    if (this.id == 'modal-btn-play') {
+      const modPlayBtn = this as HTMLButtonElement
+      modPlayBtn.disabled = true
+      const modPauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      modPauseBtn.disabled = false
+      const modStopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      modStopBtn.disabled = false
+
+      const btn = document.getElementById('btn-play') as HTMLButtonElement
+      btn.disabled = true
+      const pauseBtn = document.getElementById('btn-pause') as HTMLButtonElement
+      pauseBtn.disabled = false
+      const stopBtn = document.getElementById('btn-stop') as HTMLButtonElement
+      stopBtn.disabled = false
+    }
   }
   startTimer()
 }
@@ -564,7 +620,35 @@ async function handleStopClicked(this: HTMLElement, ev: Event) {
     pauseBtn.disabled = true
     const playBtn = document.getElementById('btn-play') as HTMLButtonElement
     playBtn.disabled = false
+
+    if (clockWindow) {
+      const modStopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      modStopBtn.disabled = true
+      const modPauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      modPauseBtn.disabled = true
+      const modPlayBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      modPlayBtn.disabled = false
+    }
   }
+  // Modal timer
+  if (clockWindow) {
+    if (this.id == 'modal-btn-stop') {
+      const modStopBtn = this as HTMLButtonElement
+      modStopBtn.disabled = true
+      const modPauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      modPauseBtn.disabled = true
+      const modPlayBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      modPlayBtn.disabled = false
+
+      const stopBtn = document.getElementById('btn-stop') as HTMLButtonElement
+      stopBtn.disabled = true
+      const pauseBtn = document.getElementById('btn-pause') as HTMLButtonElement
+      pauseBtn.disabled = true
+      const playBtn = document.getElementById('btn-play') as HTMLButtonElement
+      playBtn.disabled = false
+    }
+  }
+
   stopTimer()
 }
 
@@ -589,6 +673,32 @@ async function handlePauseClicked(this: HTMLElement, ev: Event) {
   }
   if (this.id == 'btn-pause') {
     const pauseBtn = this as HTMLButtonElement
+    pauseBtn.disabled = true
+    const playBtn = document.getElementById('btn-play') as HTMLButtonElement
+    playBtn.disabled = false
+    const stopBtn = document.getElementById('btn-stop') as HTMLButtonElement
+    stopBtn.disabled = false
+
+    if (clockWindow) {
+      const modPauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      modPauseBtn.disabled = true
+      const modPlayBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      modPlayBtn.disabled = false
+      const modStopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      modStopBtn.disabled = false
+    }
+  }
+
+  if (clockWindow) {
+    if (this.id == 'modal-btn-pause') {
+      const modPauseBtn = this as HTMLButtonElement
+      modPauseBtn.disabled = true
+      const modPlayBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      modPlayBtn.disabled = false
+      const modStopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      modStopBtn.disabled = false
+    }
+    const pauseBtn = document.getElementById('btn-pause') as HTMLButtonElement
     pauseBtn.disabled = true
     const playBtn = document.getElementById('btn-play') as HTMLButtonElement
     playBtn.disabled = false
@@ -632,6 +742,25 @@ function handleClockExpand(this: HTMLElement) {
     this.style.backgroundImage = 'url("./images/expand.png")'
   }
   isClockVisible = isClockVisible == false ? true : false
+}
+
+function handleClockNewWindow() {
+  if (clockWindow && !clockWindow.closed) {
+    clockWindow.close()
+    clockWindow = null
+  } 
+  else {
+    clockWindow = window.open('', 'clock','width=1100,height=560,backgroundColor="#525254"') as Window
+    if (clockWindow) {
+      clockWindow.document.write(windowTimer)
+      const playBtn = clockWindow.document.getElementById('modal-btn-play') as HTMLButtonElement
+      playBtn.addEventListener('click', handlePlayClicked)
+      const stopBtn = clockWindow.document.getElementById('modal-btn-stop') as HTMLButtonElement
+      stopBtn.addEventListener('click', handleStopClicked)
+      const pauseBtn = clockWindow.document.getElementById('modal-btn-pause') as HTMLButtonElement
+      pauseBtn.addEventListener('click', handlePauseClicked)
+    }
+  }
 }
 
 function handleNoteClicked() {
@@ -741,8 +870,13 @@ function myTimer () {
   const largeClk = document.getElementById('large-clock-display') as HTMLElement
   largeClk.innerHTML = timerStrg
   const ac = document.getElementById('timer-active-cell') 
-  if (!ac) {return}  // Might not exist
-  ac.innerText = timerStrg
+  if (ac) {ac.innerText = timerStrg}  // Might not exist
+
+  if (clockWindow) {
+    const largeClkWinDiv = clockWindow.document.getElementById('modal-clock-display') 
+    if (largeClkWinDiv) {largeClkWinDiv.innerHTML = timerStrg }
+  }
+ 
   updateTimeForListMember(totalSeconds)
 }
 

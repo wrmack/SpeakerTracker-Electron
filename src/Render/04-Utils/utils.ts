@@ -34,7 +34,7 @@ function getTimeStringFromSeconds(seconds: number) {
   const minute = Math.floor((seconds) / 60)
   const secondsRemg = seconds - (minute * 60)
   if (minute < 10) { minuteStrg = '0' + minute.toString() } else { minuteStrg = minute.toString()}
-  if (secondsRemg < 10) { secondStrg = '0' + seconds.toString() } else { secondStrg = seconds.toString()}
+  if (secondsRemg < 10) { secondStrg = '0' + secondsRemg.toString() } else { secondStrg = secondsRemg.toString()}
   return `${minuteStrg}:${secondStrg}`
 }
 

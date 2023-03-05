@@ -30,4 +30,4 @@ export function getGroupsForEntityId(id: number): Promise<any>;
 export function groupIdExists(id: number): Promise<boolean>;
 export function entityIdExists(id: number): Promise<boolean>;
 export function getEventsForCurrentGroup(): Promise<GroupEvent[]>;
-export function getEventAtIdx(idx: number): Promise<GroupEvent>;
+export function getOpenEventAtIdx(idx: number): Promise<GroupEvent>;

@@ -1,4 +1,4 @@
-import { getEventAtIdx, getGroupForId, getEntityWithId } from '../../../../02-Models/models.js'
+import { getOpenEventAtIdx, getGroupForId, getEntityWithId } from '../../../../02-Models/models.js'
 import { setMasterRowIdx } from '../../../../03-State/state.js'
 import { formatIsoDate } from '../../../../04-Utils/utils.js'
 
@@ -27,7 +27,7 @@ async function handleEventSelected (ev: Event) {
     const rowNumber = parseInt(rowStrg)
 
     // Get event on that row
-    const event = await getEventAtIdx(rowNumber)
+    const event = await getOpenEventAtIdx(rowNumber)
     const eventDate = event.EventDate
     const dateString = formatIsoDate(eventDate)
 

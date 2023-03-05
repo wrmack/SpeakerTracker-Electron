@@ -5,14 +5,14 @@ import {
   getGroupForId,
   getMembersForGroupId, 
   getMemberWithId,
-  getEventsForCurrentGroup,
+  getOpenEventsForCurrentGroup,
   addDebate,
   updateDebateNote,
   addDebateSection,
   addDebateSpeech,
   SectionType,
   TimerButtonMode,
-  getEventAtIdx
+  getOpenEventAtIdx
 } from "../../02-Models/models.js"
 
 import {
@@ -184,6 +184,7 @@ async function populateTables () {
   let sectionIdx = 0
   for (const section of table2) {
     let tableRows2 = ''
+    // Heading Main debate or Amendment
     tableRows2 += `<tr class='spkg-table-row'>`
     if (section.sectionType == SectionType.amendment) {
       tableRows2 += `<th>
@@ -229,78 +230,77 @@ async function populateTables () {
       if (idx < 10) {row = "0" + row} 
       const myId = `t2-r${row}-s${sectionIdx}`
       tableRows2 += `
-        <tr class='spkg-table-row'>  
-          <td>
-          `
-          if (section.isCollapsed === true) {
-            tableRows2 += `<div class='spkg-table-cell-container' style='overflow: hidden; max-height: 0px;'> `
-          }
-          else {
-            tableRows2 += `<div class='spkg-table-cell-container'> `
-          }
-            tableRows2 += `
-              <div class='spkg-table-cell-container-top'>
-                <div class='spkg-table-cell-comp-left'>`
-                  tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
-                  tableRows2 += `<span class='spkg-table-cell-text' id='${myId}-n'>${mbr.firstName} ${mbr.lastName}</span>
-                </div>
-                <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
-                  if(showIndividualTimers) {
-                    // Rendering is left to right, starting with the pause button
-
-                    // Render the pause button
-                    if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
-                      // Disabled if a member is speaking and it isn't the current member 
-                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-pause' disabled>c</button>`
-                      }
-                      else {
-                        tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
-                      }
-                    }
-                    // Render the left play button
-                    if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
-                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play2' disabled>a</button>`
-                      }
-                      else {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
-                      }
-                    }
-                    // Render the timestring and add id if this is the active cell
-                    if (listMbr.timerIsActive == true) {
-                      tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
-                    } else {
-                      tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
-                    }
-                    // Render the right play button     
-                    if (listMbr.timerButtonMode == TimerButtonMode.play) {
-                      if (aMemberIsSpeaking && !listMbr.timerIsActive) {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play' disabled>a</button>`
-                      }
-                      else {
-                        tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
-                      }
-                    }
-                    // Render the stop button
-                    if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
-                      listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
-                        if (aMemberIsSpeaking && !listMbr.timerIsActive) {
-                          tableRows2 += `<button class='spkg-table-cell-timer-stop' disabled>b</button>`
-                        }
-                        else {
-                          tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
-                        }
-                    }
-                  }
-                  `
-                </div>
-              </div>
-              <hr class='spkg-table-cell-rule'>
+      <tr class='spkg-table-row'> 
+        <td>`
+        if (section.isCollapsed === true) {
+          tableRows2 += `<div class='spkg-table-cell-container' style='overflow: hidden; max-height: 0px;'> `
+        }
+        else {
+          tableRows2 += `<div class='spkg-table-cell-container'> `
+        }
+      tableRows2 += `
+          <div class='spkg-table-cell-container-top'>
+            <div class='spkg-table-cell-comp-left'>`
+              tableRows2 += `<button class='arrow-button-l' id='${myId}-l'>g</button>`
+              tableRows2 += `<span class='spkg-table-cell-text' id='${myId}-n'>${mbr.firstName} ${mbr.lastName}</span>
             </div>
-          </td>
-        </tr>
-      `
+            <div class='spkg-table-cell-comp-right' id='${myId}-r'>`
+              if(showIndividualTimers) {
+                // Rendering is left to right, starting with the pause button
+
+                // Render the pause button
+                if (listMbr.timerButtonMode == TimerButtonMode.pause_stop) {
+                  // Disabled if a member is speaking and it isn't the current member 
+                  if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                    tableRows2 += `<button class='spkg-table-cell-timer-pause' disabled>c</button>`
+                  }
+                  else {
+                    tableRows2 += `<button class='spkg-table-cell-timer-pause'>c</button>`
+                  }
+                }
+                // Render the left play button
+                if (listMbr.timerButtonMode == TimerButtonMode.play_stop) {
+                  if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                    tableRows2 += `<button class='spkg-table-cell-timer-play2' disabled>a</button>`
+                  }
+                  else {
+                    tableRows2 += `<button class='spkg-table-cell-timer-play2'>a</button>`
+                  }
+                }
+                // Render the timestring and add id if this is the active cell
+                if (listMbr.timerIsActive == true) {
+                  tableRows2 += `<span class='spkg-table-cell-timer' id='timer-active-cell'>${timeString}</span>`
+                } else {
+                  tableRows2 += `<span class='spkg-table-cell-timer'>${timeString}</span>`
+                }
+                // Render the right play button     
+                if (listMbr.timerButtonMode == TimerButtonMode.play) {
+                  if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                    tableRows2 += `<button class='spkg-table-cell-timer-play' disabled>a</button>`
+                  }
+                  else {
+                    tableRows2 += `<button class='spkg-table-cell-timer-play'>a</button>`
+                  }
+                }
+                // Render the stop button
+                if (listMbr.timerButtonMode == TimerButtonMode.pause_stop || 
+                  listMbr.timerButtonMode == TimerButtonMode.play_stop ) {
+                    if (aMemberIsSpeaking && !listMbr.timerIsActive) {
+                      tableRows2 += `<button class='spkg-table-cell-timer-stop' disabled>b</button>`
+                    }
+                    else {
+                      tableRows2 += `<button class='spkg-table-cell-timer-stop'>b</button>`
+                    }
+                }
+              }
+              `
+            </div>
+          </div>
+          <hr class='spkg-table-cell-rule'>
+        </div>
+        </td>
+      </tr>
+    `
       tableRows2 += '</tr>'
       ++idx
     }
@@ -515,7 +515,7 @@ async function updateListMember(section: number, row: number, target: string, se
       const eventEl = document.getElementById('mtgsetup-select-event') as HTMLSelectElement
       if (!eventEl) { return} 
       const eventIdx = eventEl.options.selectedIndex
-      const evt = await getEventAtIdx(eventIdx)
+      const evt = await getOpenEventAtIdx(eventIdx)
       setCurrentEventId(evt.Id)
       const debateNum = currentDebateNumber
       setCurrentDebateNumber(debateNum)
@@ -540,7 +540,7 @@ async function updateListMember(section: number, row: number, target: string, se
 
 function updateTimeForListMember(seconds: number) {
   const activeCell = document.getElementById('timer-active-cell') 
-  if (!activeCell) {console.warn('No active cell');return}  // In case not set
+  if (!activeCell) {return}  // In case not set
   const parent = activeCell.parentNode as HTMLElement
   const rowDetails = parent.id
   const section = rowDetails.slice(8,9)

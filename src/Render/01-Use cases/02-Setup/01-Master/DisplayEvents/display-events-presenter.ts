@@ -1,7 +1,7 @@
 import { 
   getEntities, 
   getGroupsForCurrentEntity, 
-  getEventsForCurrentGroup,  
+  getOpenEventsForCurrentGroup,  
 } from '../../../../02-Models/models.js'
 import { 
   setCurrentEntityId,  
@@ -48,7 +48,7 @@ async function loadGroupsDropdownForEvents () {
 }
   
 async function loadEvents () {
-  const events = await getEventsForCurrentGroup()
+  const events = await getOpenEventsForCurrentGroup()
   let tableRows = ''
   for (const i in events) {
     const isoDateStr = events[i].EventDate

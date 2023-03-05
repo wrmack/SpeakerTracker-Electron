@@ -23,11 +23,13 @@ h1 {
 button {
   background:none;
   border:0;
+  cursor: pointer;
 }
 
 button:disabled {
   opacity: 0.6;
   color:#ccc;
+  cursor: unset;
 }
 
 table {
@@ -161,6 +163,7 @@ Content
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.06);
   -webkit-app-region: no-drag;
   background-color: rgb(100, 100, 100);
+  cursor: pointer;
 }
 
 .nav-item-btn.active {

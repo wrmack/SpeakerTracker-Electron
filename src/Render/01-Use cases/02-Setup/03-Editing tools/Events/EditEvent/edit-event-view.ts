@@ -1,4 +1,4 @@
-import { getEventsForCurrentGroup, execSql } from '../../../../../02-Models/models.js'
+import { getOpenEventsForCurrentGroup, execSql } from '../../../../../02-Models/models.js'
 import {masterRowIdx, setCurrentEventDate,getCurrentEventDate } from '../../../../../03-State/state.js'
 import { enableButtons } from '../../../setup-view.js'
 import flatpickr from '../../../../../04-Utils/Flatpickr/index.js'
@@ -18,7 +18,7 @@ const editEventView = `
 const loadEditEventSheet = async function () {
   const edSht = document.getElementById('editing-sheet') as HTMLElement
   edSht.innerHTML = editEventView
-  const events = await getEventsForCurrentGroup()
+  const events = await getOpenEventsForCurrentGroup()
   const event = events[masterRowIdx]
   const eventEl = document.getElementById('input-edit-event') as HTMLInputElement
   eventEl.value = event.EventDate
@@ -52,7 +52,7 @@ function handleCancel() {
 
 async function handleSave() {
   // Get the event that needs changing
-  const events = await getEventsForCurrentGroup()
+  const events = await getOpenEventsForCurrentGroup()
   const event = events[masterRowIdx]
 
   // Save to database
