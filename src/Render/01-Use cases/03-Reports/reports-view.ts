@@ -3,17 +3,27 @@ import {
   loadEntitiesDropdownForGroups, 
   loadGroups, 
   getReportsForGroupAtIdx,
-  getReportDetailsForEventId
+  getReportsForCurrentGroup,
+  getReportDetailsForEventId,
+  deleteReportsForEventIds
  } from "./reports-presenter.js"
  
 import { jsPDF } from "../../../types/jspdf"
-import { DebateSectionViewModel, DebateSpeechViewModel, DebateViewModel } from "../../../types/interfaces.js"
+import { DebateSectionViewModel, DebateSpeechViewModel, DebateViewModel, ReportEventViewModel } from "../../../types/interfaces.js"
 import { formatIsoDate } from "../../04-Utils/utils.js"
+import { report } from "process"
 
 const reportsView = `
 <div id='reports-topbar-container'>
   <div id='reports-topbar-heading' class='reports-topbar-item'>Reports</div>
-  <div id='reports-topbar-meetinggroups' class='reports-topbar-item'>Meeting groups</div>
+  <div id='reports-topbar-items-container'>
+    <div id='reports-topbar-meetinggroups' class='reports-topbar-item'>Meeting groups</div>
+    <button id='reports-topbar-edit' class='reports-topbar-item'>Edit</button>
+    <div id='reports-topbar-trash-cancel'>
+      <button id='reports-topbar-trash' class='reports-topbar-item'></button>
+      <button id='reports-topbar-cancel' class='reports-topbar-item'>Cancel</button>
+    </div>
+  </div>
 </div>
 <div id="reports-content-container">
   <div id="reports-master">
@@ -41,6 +51,12 @@ const setupReports = async () => {
   await loadEntitiesDropdownForGroups()
   setupReportDetailListeners()
   await loadGroups()
+  const edit = document.getElementById('reports-topbar-edit')
+  edit?.addEventListener('click', handleEditClicked)
+  const trash = document.getElementById('reports-topbar-trash')
+  trash?.addEventListener('click', handleTrashClicked)
+  const cancel = document.getElementById('reports-topbar-cancel')
+  cancel?.addEventListener('click', handleCancelClicked)
 }
 
 
@@ -81,42 +97,7 @@ const handleReportGroupSelected = async (event: Event) => {
   const rowStrg = event.detail.id.slice(4)
   const rowNumber = parseInt(rowStrg)
   const reports = await getReportsForGroupAtIdx(rowNumber)
-
-  // Create html for cards
-  let cardsHtml = ""
-  reports.forEach((report) => {
-    const fulldate = formatIsoDate(report.Date)
-    const split = fulldate.split(" ")
-    const time = split[0]
-    const ampm = split[1]
-    const weekday = split[2]
-    const date = split[3]
-    const month = split[4]
-    const year = split[5]
-    const cardStrg = `
-    <div class='report-card' id='evtid-${report.EventId.toString()}'>
-      <p>${report.GroupName}</p>
-      <p>${time} ${ampm}</p>
-      <p>${weekday}</p>
-      <p>${date} ${month} ${year}</p>
-    </div>
-    `
-    cardsHtml = cardsHtml + cardStrg
-  })
-
-  // Inject the cards
-  const reportsCards = document.getElementById('reports-cards') as HTMLDivElement
-  // if (detail) {
-  //   // detail.innerHTML = cardsHtml
-  //   const loader = document.getElementById('loader') as HTMLDivElement
-  //   loader.insertAdjacentHTML("afterend", cardsHtml)
-  // }
-  reportsCards.innerHTML = cardsHtml
-  // Add click listeners to each card
-  const cards = document.querySelectorAll('.report-card')
-    for (let i = 0; i < cards.length; i++) {
-      cards[i].addEventListener('click', handleReportCardClick)
-    }
+  createCardsFromReportsViewModel(reports)
 }
 
 // Cannot use an arrow function - does not bind to 'this'
@@ -192,7 +173,116 @@ const handleReportCardClick = async function (this: HTMLElement, ev: Event)  {
   spinner.style.display = 'none'
 }
 
+function handleEditClicked(this: HTMLButtonElement) {
+  // Replace Edit with Trash and Cancel
+  this.style.display = 'none';
+  (document.getElementById('reports-topbar-trash-cancel') as HTMLButtonElement).style.display = 'block';
+
+  // Make report card checkboxes visible
+  const boxes = document.getElementsByClassName('input-container') as HTMLCollectionOf<HTMLInputElement>
+  for (const box of boxes) {
+    box.style.visibility = 'visible'
+  }
+
+  // Remove listeners from cards
+  const cards = document.getElementsByClassName('report-card')
+  for (const card of cards) {
+    card.removeEventListener('click', handleReportCardClick)
+  }
+}
+
+async function handleTrashClicked() {
+  // Get event ids of selected cards
+  const selectedBoxes = document.querySelectorAll('input[type="checkbox"].report-card-input:checked')
+  let evtIds:number[] = []
+  for (const box of selectedBoxes) {
+    const id = box.parentElement?.parentElement?.id as string
+    const evtId = parseInt(id.slice(6))
+    evtIds.push(evtId)
+  }
+  
+  // Delete event from model
+  if (evtIds.length > 0) {
+    await deleteReportsForEventIds(evtIds)
+  }
+  
+  // Replace Trash and Cancel with Edit by removing inline styles
+  (document.getElementById('reports-topbar-trash-cancel') as HTMLDivElement).style.display = '';
+  (document.getElementById('reports-topbar-edit') as HTMLButtonElement).style.display = '';
+
+  // Re-display remaining report cards
+  const reports = await getReportsForCurrentGroup()
+  if (!reports) {return}
+  createCardsFromReportsViewModel(reports)
+
+  // Make report card checkboxes hidden
+  const boxes = document.getElementsByClassName('input-container') as HTMLCollectionOf<HTMLInputElement>
+  for (const box of boxes) {
+    box.style.visibility = 'hidden'
+  }
+}
+
+function handleCancelClicked() {
+  // Replace Trash and Cancel with Edit by removing inline styles
+  (document.getElementById('reports-topbar-trash-cancel') as HTMLDivElement).style.display = '';
+  (document.getElementById('reports-topbar-edit') as HTMLButtonElement).style.display = '';
+
+  // Make report card checkboxes hidden
+  const boxes = document.getElementsByClassName('input-container') as HTMLCollectionOf<HTMLInputElement>
+  for (const box of boxes) {
+    box.style.visibility = 'hidden'
+  }
+
+  // Add card listeners
+  const cards = document.getElementsByClassName('report-card')
+  for (const card of cards) {
+    card.addEventListener('click', handleReportCardClick)
+  }
+}
+
+// Helpers
+
+const createCardsFromReportsViewModel = (reports: ReportEventViewModel[]) => {
+
+  // Create html for cards
+  let cardsHtml = ""
+  reports.forEach((report) => {
+    const fulldate = formatIsoDate(report.Date)
+    const split = fulldate.split(" ")
+    const time = split[0]
+    const ampm = split[1]
+    const weekday = split[2]
+    const date = split[3]
+    const month = split[4]
+    const year = split[5]
+    const cardStrg = `
+    <div class='report-card' id='evtid-${report.EventId.toString()}'>
+      <label class='input-container'>
+        <input class='report-card-input' type='checkbox'>
+        <span class='input-checkmark'></span>
+      </label>
+      <p>&nbsp;</p>
+      <p>${report.GroupName}</p>
+      <p>${time} ${ampm}</p>
+      <p>${weekday}</p>
+      <p>${date} ${month} ${year}</p>
+    </div>
+    `
+    cardsHtml = cardsHtml + cardStrg
+  })
+
+  // Inject the cards
+  const reportsCards = document.getElementById('reports-cards') as HTMLDivElement
+  reportsCards.innerHTML = cardsHtml
+
+  // Add click listeners to each card
+  const cards = document.querySelectorAll('.report-card')
+    for (let i = 0; i < cards.length; i++) {
+      cards[i].addEventListener('click', handleReportCardClick)
+    }
+}
+
 export {
-    reportsView,
-    setupReports
+  reportsView,
+  setupReports
 }

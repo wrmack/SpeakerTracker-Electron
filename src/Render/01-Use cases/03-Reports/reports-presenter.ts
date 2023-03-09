@@ -1,11 +1,12 @@
 import { report } from 'process'
 import { Group, Debate, ReportDetailsViewModel, ReportEventViewModel, DebateViewModel, DebateSection, DebateSectionViewModel, DebateSpeechViewModel, DebateSpeech } from '../../../types/interfaces.js'
-import { setCurrentEntityId,  currentEntityId, setCurrentGroupId } from '../../03-State/state.js'
+import { setCurrentEntityId,  currentEntityId, setCurrentGroupId, currentGroupId } from '../../03-State/state.js'
 import { 
   getEntities, 
   getEntityWithId, 
   getClosedEventsForCurrentGroup, 
   getEventWithId,
+  deleteEvent,
   getMemberWithId,
   getGroupAtIdx, 
   getGroupsForCurrentEntity,
@@ -116,6 +117,30 @@ const getReportsForGroupAtIdx = async (idx: number) => {
   return reportEvents
 }
 
+const getReportsForCurrentGroup = async () => {
+  // Get the events for the group
+  // Each Event has Event.ID, GroupID, EventDate
+  const events = await getClosedEventsForCurrentGroup()
+
+  const group = await getGroupForId(currentGroupId)
+  if (!group) {return}
+
+  // Build the view model
+  let reportEvents: ReportEventViewModel[] = []
+
+  events.forEach((event) => {
+    const reportEvent: ReportEventViewModel = {
+      EventId: event.Id,
+      GroupName: group.GrpName,
+      Date: event.EventDate
+    }
+    reportEvents.push(reportEvent)
+  })
+  
+  // Return the view model
+  return reportEvents
+}
+
 // Refer to interfaces.d.ts for view models
 const getReportDetailsForEventId = async (eventId: number) => {
   // Get the debates
@@ -141,7 +166,10 @@ const getReportDetailsForEventId = async (eventId: number) => {
       const sectionViewModel = { SectionName: sectionName, DebateSpeeches: speechesArray } as DebateSectionViewModel
       sectionsForDebate.push(sectionViewModel)
     }
-    const debateViewModel = {DebateNote: debate.Note, DebateSections: sectionsForDebate} as DebateViewModel
+    let debateNote = ""
+    if (debate.Note !== "undefined") { debateNote = debate.Note}
+
+    const debateViewModel = {DebateNote: debateNote, DebateSections: sectionsForDebate} as DebateViewModel
     debatesForReport.push(debateViewModel)
   }
 
@@ -179,10 +207,18 @@ const getReportDetailsForEventId = async (eventId: number) => {
   return reportDetails
 } 
 
+async function deleteReportsForEventIds(eventIds: number[] ) {
+  for await (const eventId of eventIds) {
+    deleteEvent(eventId)
+  }
+}
+
 export{
     entityChanged,
     loadEntitiesDropdownForGroups,
     loadGroups,
     getReportsForGroupAtIdx,
-    getReportDetailsForEventId
+    getReportsForCurrentGroup,
+    getReportDetailsForEventId,
+    deleteReportsForEventIds
 }

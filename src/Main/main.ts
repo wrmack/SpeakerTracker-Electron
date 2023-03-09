@@ -144,14 +144,15 @@ ipcMain.handle('dbInit', async () => {
 
 
 ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
-  // db.serialize(function () {
+  db.serialize(function () {
     db.exec(sql, (err) => {
       if (err) {
         return console.error("------->> ",err.message)
       }
+      console.log('db.exec: ', sql)
     })
-  // })
-  db.close()
+  })
+  // db.close()
 })
 
 

@@ -8,6 +8,8 @@ import {
   getTimeForMember,
   setTimerDisplay,
   updateDataAfterSaveDebate,
+  updateDataAfterEndMeeting,
+  updateDataAfterCancelMeeting,
   setNoteForCurrentDebate
 } from './speakers-presenter.js'
 import {infoText} from './info.js'
@@ -97,6 +99,7 @@ const speaker_tracker = `
     <div id='large-clock-display'>00:00</div>
 
   </div>
+
   <!-- Right side-bar  -->
   <div id='right-sidebar'>
     <button id='sidebar-clock-btn'></button>
@@ -108,6 +111,7 @@ const speaker_tracker = `
     <button id='sidebar-endmeeting-btn' class='sidebar-recording'><span>End this meeting</span></button>
     <div id='sidebar-recordon-stop' class='sidebar-recording'><img id='sidebar-recordon-img' src='./images/red-circle.svg' /></div>
     <div id='sidebar-recordon' class='sidebar-recording'>Recording on</div>
+    <button id='sidebar-record-cancel-btn' class='sidebar-recording'><span>Cancel recording</span></button>
   </div>
 
 </div>
@@ -189,10 +193,15 @@ const setupWaitingTableMenuListener = () => {
 /** 
  * Add `click` event listeners to all table cells in speaking table.
  * For popping up a context menu.
+ * Also add 'click' event listener for Note button.
  */
 const setupSpeakingTableMemberListeners = () => {
   const memberCells = document.querySelectorAll('.spkg-table-cell-text')
   memberCells.forEach(el => el.addEventListener('click', handleSpeakingTableMemberClick))
+  if (meetingIsBeingRecorded) {
+    const noteBtn = document.getElementById('note-button') as HTMLButtonElement
+    noteBtn.addEventListener('click', handleNoteClicked)
+  }
 }
 
 /**
@@ -237,6 +246,8 @@ const setupMeetingEventListeners = () => {
   })
   const meetingEnd = document.getElementById('sidebar-endmeeting-btn')
   meetingEnd?.addEventListener('click', handleEndMeetingButtonClick)
+  const meetingCancel = document.getElementById('sidebar-record-cancel-btn')
+  meetingCancel?.addEventListener('click', handleCancelMeetingButtonClick)
 }
 
 /** 
@@ -457,6 +468,33 @@ async function handleEndMeetingButtonClick(this: HTMLElement) {
   const mtgEvt = document.getElementById('meeting-event') as HTMLDivElement
   mtgEvt.style["display"] = "none"
   
+  // Close meeting event
+  await updateDataAfterEndMeeting()
+
+  // Reset other
+  setMeetingIsBeingRecorded(false)
+  await resetAll()
+}
+
+async function handleCancelMeetingButtonClick(this: HTMLElement) {
+  // Handle display of sidebar buttons
+  const sidebarBtns = document.getElementsByClassName('sidebar-norm') as HTMLCollectionOf<HTMLButtonElement>
+  for (let i = 0; i < sidebarBtns.length; i++) {
+    sidebarBtns[i].style["display"] = "block"
+  }
+  const sidebarRecordBtns = document.getElementsByClassName('sidebar-recording') as HTMLCollectionOf<HTMLButtonElement>
+  for (let i = 0; i < sidebarRecordBtns.length; i++) {
+    sidebarRecordBtns[i].style["display"] = "none"
+  }
+  const sidebarRecordCircle = document.getElementById('sidebar-recordon-stop') as HTMLDivElement
+  sidebarRecordCircle.style["display"] = "none"
+  // Meeting date in top container
+  const mtgEvt = document.getElementById('meeting-event') as HTMLDivElement
+  mtgEvt.style["display"] = "none"
+  
+  // Close meeting event
+  await updateDataAfterCancelMeeting()
+
   // Reset other
   setMeetingIsBeingRecorded(false)
   await resetAll()

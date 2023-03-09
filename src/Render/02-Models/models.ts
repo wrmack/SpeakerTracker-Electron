@@ -1,4 +1,4 @@
-import { currentEntityId, currentGroupId } from "../03-State/state.js";
+import { currentEntityId, currentGroupId, currentEventId, currentDebateNumber, currentDebateSectionNumber } from "../03-State/state.js";
 import { MyAPI, Entity, Group, GroupEvent, DebateSection } from "../../types/interfaces"
 
 declare global {
@@ -297,7 +297,7 @@ const groupIdExists = async (id: number) => {
     - id                                        (event unique identifier)
     - meeting group id                          (data)
     - date of event                             (data)
-    - whether closed (meeting has happened)     (data)
+    - whether closed (meeting has happened)     (data: 0=false, 1=true)
     
     A debate's data are 
     - id                                        (not used)
@@ -336,7 +336,7 @@ const groupIdExists = async (id: number) => {
 */
 
 const addEvent = async (eventDate: string, groupId: number) => {
-  const sql = 'INSERT INTO Events (GroupId, EventDate) VALUES ($groupId, $eventDate);'
+  const sql = 'INSERT INTO Events (GroupId, EventDate, Closed) VALUES ($groupId, $eventDate, 0);'
   await window.myapi.connect()
   await window.myapi.runSQL(sql, {$groupId: groupId, $eventDate: eventDate})
 }
@@ -356,7 +356,51 @@ const getClosedEventsForCurrentGroup = async () => {
   const groupId = currentGroupId
   const sql = `SELECT Id, GroupId, EventDate FROM Events WHERE (Events.GroupId = ${groupId} AND Events.Closed = 1) ORDER BY EventDate;`
   await window.myapi.connect()
-  return await window.myapi.selectAll(sql) as GroupEvent[]
+  const res = await window.myapi.selectAll(sql) as GroupEvent[]
+  return res
+}
+
+/**
+ * Closes off the meeting event after 'End this meeting' is pressed.
+ * Sets Closed field to 1 (true).
+ * An additional debate and debate section will have been created if 'Save debate' was pressed
+ * before 'End this meeting' so deletes this debate and section.
+ */
+const closeCurrentEvent = async () => {
+  const eventId = currentEventId
+  const debateNum = currentDebateNumber
+
+  // Check whether any speeches for the current debate
+  const selSql = `SELECT * FROM DebateSpeeches WHERE (DebateSpeeches.EventId = ${eventId} AND DebateSpeeches.DebateNumber = ${debateNum});`
+  await window.myapi.connect()
+  const speeches =  await window.myapi.selectAll(selSql) 
+
+  let sql: string
+  // Save debate was pressed before 'End this meeting' and so an empty debate was created without speeches
+  if (speeches.length === 0) {
+    sql = `
+    UPDATE Events SET Closed = 1 WHERE Events.Id = ${eventId};
+    DELETE FROM Debates WHERE (Debates.EventId = ${eventId} AND Debates.DebateNumber = ${debateNum});
+    DELETE FROM DebateSections WHERE (DebateSections.EventId = ${eventId} AND DebateSections.DebateNumber = ${debateNum});
+    `
+  }
+  else {
+    sql = `UPDATE Events SET Closed = 1 WHERE Events.Id = ${eventId};`
+  }
+  await window.myapi.connect()
+  await window.myapi.execSQL(sql)
+}
+
+const resetCurrentEvent = async () => {
+  const eventId = currentEventId
+  const sql = `
+  UPDATE Events SET Closed = 0 WHERE Events.Id = ${eventId};
+  DELETE FROM DebateSpeeches WHERE DebateSpeeches.EventId = ${eventId};
+  DELETE FROM DebateSections WHERE DebateSections.EventId = ${eventId};
+  DELETE FROM Debates WHERE Debates.EventId = ${eventId}; 
+  `
+  await window.myapi.connect()
+  await window.myapi.execSQL(sql)
 }
 
 /**
@@ -376,6 +420,19 @@ const getEventWithId = async (eventId: number) => {
   await window.myapi.connect()
   const evts = await window.myapi.selectAll(sql) 
   return evts[0] as GroupEvent
+}
+
+const deleteEvent = async (eventId: number) => {
+  // Delete event from Events
+  // Delete debates, debate sections and speeches for given event
+  const sql = `
+    DELETE FROM Events WHERE Events.Id = ${eventId};
+    DELETE FROM Debates WHERE Debates.EventId = ${eventId};
+    DELETE FROM DebateSections WHERE DebateSections.EventId = ${eventId};
+    DELETE FROM DebateSpeeches WHERE DebateSpeeches.EventId = ${eventId};
+  `
+  await window.myapi.connect()
+  await window.myapi.execSQL(sql)
 }
 
 const addDebate = async (eventId: number, debateNumber: number, note?: string) =>  {
@@ -462,6 +519,7 @@ export {
   deleteMemberWithId,
   addGroup,
   addEvent,
+  deleteEvent,
   addDebate,
   updateDebateNote,
   addDebateSection,
@@ -478,6 +536,8 @@ export {
   getClosedEventsForCurrentGroup,
   getOpenEventAtIdx,
   getEventWithId,
+  closeCurrentEvent,
+  resetCurrentEvent,
   getDebatesForEventId,
   getDebateSections,
   getDebateSectionSpeeches,

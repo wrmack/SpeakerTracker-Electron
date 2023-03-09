@@ -10,6 +10,8 @@ import {
   updateDebateNote,
   addDebateSection,
   addDebateSpeech,
+  closeCurrentEvent,
+  resetCurrentEvent,
   SectionType,
   TimerButtonMode,
   getOpenEventAtIdx
@@ -567,6 +569,14 @@ async function updateDataAfterSaveDebate() {
   else {console.warn("currentEventId is null!")}
 }
 
+async function updateDataAfterEndMeeting() {
+  await closeCurrentEvent()
+}
+
+async function updateDataAfterCancelMeeting() {
+  await resetCurrentEvent()
+}
+
 async function setNoteForCurrentDebate(note:string) {
   if (currentEventId !== null) {
     await updateDebateNote(currentEventId, currentDebateNumber, note)
@@ -674,6 +684,8 @@ export {
   updateListMember,
   updateTimeForListMember,
   updateDataAfterSaveDebate,
+  updateDataAfterEndMeeting,
+  updateDataAfterCancelMeeting,
   resetTables, 
   getTimeForMember,
   setTimerDisplay,

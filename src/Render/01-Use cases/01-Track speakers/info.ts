@@ -139,9 +139,21 @@ const infoText = `
     <p><strong>Members</strong></p>
     <p>Select an entity and add members, or edit existing members.</p>
 
-    <p><strong>Meeting groups</strong></p>
+    <p><strong>Groups</strong></p>
     <p>Select an entity and add meeting groups.  For each meeting group assign members from the entity's members. 
     You can also edit existing meeting groups.</p>
+
+    <p><strong>Events</strong></p>
+    <p>Select an entity and a meeting group.  Existing meeting events that have not been recorded are listed. 
+    Add a meeting event.  You can also edit existing meeting events.</p>
+
+  </div>
+
+  <div class="help-title">Reports</div>
+
+  <div class="help-text">
+    <p>Select an Entity and a Meeting group.  Meeting events that have been recorded will be displayed.</p>
+    <p>Click a meeting event to open its report as a pdf in a new window.  The pdf can be downloaded from the pdf viewer in the new window.</p>
 
   </div>
 
