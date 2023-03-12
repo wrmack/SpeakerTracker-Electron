@@ -26,6 +26,8 @@ const loadAddMemberSheet = function () {
   const edSht = document.getElementById('editing-sheet')
   if (!edSht) {return}
   edSht.innerHTML = addMemberView
+  const title = document.getElementById('member-title')
+  title?.focus()
 }
 
 const setupAddMemberListeners = function () {

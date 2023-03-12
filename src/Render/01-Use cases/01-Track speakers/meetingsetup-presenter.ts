@@ -44,7 +44,7 @@ async function populateEntityDropdown() {
 async function populateGroupDropdown() {
   let options = ''
   const groups = await getGroupsForEntityId(currentEntityId)
-  if (groups.length == 0) {
+  if (groups == undefined || groups.length == 0) {
     options += `<option disabled selected hidden>Go to Setup: create a Meeting group</option>`
     const entEl = document.getElementById('mtgsetup-select-group')
     if (entEl) {entEl.classList.add("mtgsetup-prompt") }
@@ -65,7 +65,7 @@ async function populateGroupDropdown() {
 async function populateEventsDropdown() {
   let options = ''
   const events = await getOpenEventsForCurrentGroup()
-  if (events.length == 0) {
+  if (events === undefined || events.length == 0) {
     options += `<option disabled selected hidden>Go to Setup: create a Meeting event</option>`
     const entEl = document.getElementById('mtgsetup-select-event')
     if (entEl) {entEl.classList.add("mtgsetup-prompt") }

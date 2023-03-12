@@ -33,7 +33,9 @@ import {
   setCurrentEntGroupEvtId,
   setMeetingIsBeingRecorded,
   currentDebateSectionNumber,
-  setCurrentDebateSectionNumber
+  setCurrentDebateSectionNumber,
+  saveTableState,
+  getTableState
 } from "../../03-State/state.js"
 
 import {
@@ -58,6 +60,16 @@ let table2: SectionList[] = []
  * It is read in populateTables, and, if set, all other members play buttons are disabled.
  */
 let aMemberIsSpeaking= false
+
+async function resetTablesWithSavedData() {
+  const tables = await getTableState()
+  if (tables == null) {return}
+  table0 = tables.table0
+  table1 = tables.table1
+  table2 = tables.table2
+  isInitialised = true
+}
+
 
 /**
  * Populates the table model
@@ -326,6 +338,7 @@ async function populateTables () {
     }
     ++sectionIdx
   }
+  await saveTableState(table0,table1,table2)
   return false
 }
 
@@ -604,6 +617,7 @@ function setTimerDisplay(showTimer: boolean) {
 async function resetTables() {
   // if (grpIdx != undefined) { groupIdx = grpIdx}
   isInitialised = false
+  aMemberIsSpeaking = false
   await populateTables()
 }
 
@@ -677,6 +691,7 @@ function handleCollapsibleClick (this: Element) {
 
 
 export { 
+  resetTablesWithSavedData,
   handleMovingMember,
   populateTables, 
   populateContextMenu,

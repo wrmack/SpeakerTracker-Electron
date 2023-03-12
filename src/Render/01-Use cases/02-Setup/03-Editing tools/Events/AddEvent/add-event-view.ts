@@ -66,7 +66,7 @@ async function handleSave() {
   edSHT.style.left = '100%'
   enableButtons()
 
-  // Emit a mbr-saved event to cause a refresh
+  // Emit an evt-saved event to cause a refresh
   document.dispatchEvent(new CustomEvent('evt-saved', {
       bubbles: true,
       cancelable: false,

@@ -55,11 +55,6 @@ function createWindow () {
     }
   })
 
-  mainWindow.webContents.once('did-create-window', (window, details) => {
-    console.log("here")
-    // details.options.backgroundColor = '#525254'
-    // window.show()
-  })
 }
 
 // This method will be called when Electron has finished
@@ -132,7 +127,7 @@ ipcMain.handle('dbInit', async () => {
   CREATE TABLE IF NOT EXISTS DebateSpeeches (Id INTEGER PRIMARY KEY AUTOINCREMENT, EventId INTEGER, DebateNumber INTEGER, SectionNumber INTEGER, MemberId INTEGER, StartTime TEXT, Seconds INTEGER);
   CREATE TABLE IF NOT EXISTS DebateSections (Id INTEGER PRIMARY KEY AUTOINCREMENT,  EventId INTEGER, DebateNumber INTEGER, SectionNumber INTEGER, SectionName TEXT);
   CREATE TABLE IF NOT EXISTS Debates (Id INTEGER PRIMARY KEY AUTOINCREMENT, EventId INTEGER, DebateNumber INTEGER, Note TEXT);
-  CREATE TABLE IF NOT EXISTS State (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntityId INTEGER, GroupId INTEGER, EventId INTEGER);
+  CREATE TABLE IF NOT EXISTS State (Id INTEGER PRIMARY KEY AUTOINCREMENT, EntityId INTEGER, GroupId INTEGER, EventId INTEGER, Tables TEXT);
   `
 
   db.exec(sql, (err: Error | null) => {
@@ -149,7 +144,7 @@ ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
       if (err) {
         return console.error("------->> ",err.message)
       }
-      console.log('db.exec: ', sql)
+      // console.log('db.exec: ', sql)
     })
   })
   // db.close()

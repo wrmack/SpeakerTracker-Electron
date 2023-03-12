@@ -21,6 +21,9 @@ import {
 
 async function loadEntitiesDropdownForGroups () {
   const entities = await getEntities()
+  // No entities setup yet
+  if (entities.length === 0) {return}
+
   if (currentEntityId == 0 || currentEntityId == undefined) {
     await setCurrentEntityId(entities[0].Id)
   }

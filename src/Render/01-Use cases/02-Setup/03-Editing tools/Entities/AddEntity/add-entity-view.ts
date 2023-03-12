@@ -1,4 +1,4 @@
-import { execSql } from '../../../../../02-Models/models.js'
+import { addEntity } from '../../../../../02-Models/models.js'
 import { enableButtons } from '../../../setup-view.js';
 
 // Inserted into sheet
@@ -44,9 +44,7 @@ async function handleSave() {
   const newCouncilName = enam.value
 
   // Save to database
-  const mysql = "INSERT INTO Entities (EntName) VALUES ('" + newCouncilName + "' );"
-  await execSql(mysql)
-
+  await addEntity(newCouncilName)
 
   // Close the panel
   const edSHT = document.getElementById('editing-sheet') as HTMLElement

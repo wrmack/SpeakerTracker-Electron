@@ -1,17 +1,19 @@
 import { 
-    getEntityAtIdx, 
-    getGroupIdsForEntityId, 
-    getGroupAtIdx, 
-    groupIdExists, 
-    entityIdExists, 
-    getOpenEventAtIdx, 
+  getEntityAtIdx, 
+  getGroupIdsForEntityId, 
+  getGroupAtIdx, 
+  groupIdExists, 
+  entityIdExists, 
+  getOpenEventAtIdx, 
 } from "../02-Models/models.js"
+
 import {
   Entity,
   Member,
   Group,
   GroupEvent,
-  DebateSpeech
+  DebateSpeech,
+  SectionList
 } from "../../types/interfaces"
 
 
@@ -36,12 +38,16 @@ let debug = false
 /** Holds the id of the current entity.
  *  This is exported and is the source of truth for
  *  the id of the entity that is currently selected.
+ * 
+ * Values start at 1. A value of 0 means it has not been set.
  */
 let currentEntityId = 0
 
 /** Holds the id of the current group.
  *  This is exported and is the source of truth for
  *  the id of the group that is currently selected.
+ * 
+ *  Values start at 1. A value of 0 means it has not been set.
  */
 let currentGroupId = 0
 
@@ -163,23 +169,31 @@ const getSavedEntGroupId = async () => {
 
 /**
  * Sets currentEntityId, currentGroupId, currentEventId 
- * with values retrieved from database 
- * using the indexes passed in.
+ * with values retrieved from database using the indexes passed in.
  * Updates state in database.
  */
 const setCurrentEntGroupEvtId = async (entIdx: number, grpIdx: number, evtIdx: number | null) => {
-  const ent = await getEntityAtIdx(entIdx) as Entity
-  currentEntityId = ent.Id
-  const grp = await getGroupAtIdx(grpIdx) as Group
-  currentGroupId = grp.Id
+  const ent = await getEntityAtIdx(entIdx) as Entity | undefined
+  if (ent) {
+    currentEntityId = ent.Id
+  }
+  else currentEntityId = 0
+
+  const grp = await getGroupAtIdx(grpIdx) as Group | undefined
+  if (grp) {
+    currentGroupId = grp.Id
+  }
+  else {currentGroupId = 0}
+  
   let evtId
   if (evtIdx !== null) {
     const evt = await getOpenEventAtIdx(evtIdx) as GroupEvent
     evtId = evt.Id
   }
   else evtId = null
+  
   currentEventId = evtId
-  const sql = `UPDATE State SET EntityId = ${ent.Id}, GroupId = ${grp.Id}, EventId = ${evtId};`
+  const sql = `UPDATE State SET EntityId = ${currentEntityId}, GroupId = ${currentGroupId}, EventId = ${currentEventId};`
   await window.myapi.selectAll(sql)
 }
 
@@ -189,6 +203,23 @@ const setCurrentEventDate = (date: string) => {
 
 const getCurrentEventDate = () => {
   return currentEventDate
+}
+
+const saveTableState = async (table0:Member[],table1:Member[],table2:SectionList[]) => {
+  const tableObj = { table0:table0, table1:table1, table2:table2}
+  const jsonObj = JSON.stringify(tableObj)
+  const jsonStrg = jsonObj.toString()
+  const sql = `UPDATE State SET Tables = '${jsonObj}';`
+  await window.myapi.selectAll(sql)
+}
+
+const getTableState = async () => {
+  const sql = `SELECT Tables FROM State;`
+  const selArray = await window.myapi.selectAll(sql)
+  if (selArray.length === 0) { return null}
+  const tableJsonString = selArray[0].Tables
+  const tableJsonObj = JSON.parse(tableJsonString)
+  return tableJsonObj
 }
 
 /**  ------- Getters and setters: recording meetings ---------------- */ 
@@ -226,6 +257,8 @@ export {
     setCurrentEntGroupEvtId,
     setCurrentEventDate,
     getSavedEntGroupId,
+    saveTableState,
+    getTableState,
     getCurrentEventDate,
     setShowIndividualTimers,
     showIndividualTimers,

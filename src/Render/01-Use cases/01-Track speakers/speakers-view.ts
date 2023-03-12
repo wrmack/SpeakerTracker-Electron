@@ -505,8 +505,9 @@ async function handleResetButtonClick(this: HTMLElement) {
 }
 
 function handleInfoButtonClick() {
-  const childWindow = window.open('', 'modal')
+  const childWindow = window.open('', 'Info')
   if (childWindow) {
+    childWindow.focus()
     childWindow.document.write(infoText)
     const testClk = childWindow.document.getElementById('st-electron') as HTMLAnchorElement
     testClk.addEventListener('click', () =>{
@@ -847,6 +848,8 @@ function handleNoteClicked() {
   if (childWindow) {
     childWindow.document.write(noteWindowHtml)
     const saveBtn = childWindow.document.getElementById('save-btn') as HTMLButtonElement
+    const textArea = childWindow.document.getElementById('debate-note')
+    textArea?.focus()
     saveBtn.addEventListener('click', () => {
       const txtArea = childWindow.document.getElementById('debate-note') as HTMLTextAreaElement
       const note = txtArea.value
@@ -855,9 +858,6 @@ function handleNoteClicked() {
     })
   }
 }
-
-
-
 
 
 async function resetAll() {

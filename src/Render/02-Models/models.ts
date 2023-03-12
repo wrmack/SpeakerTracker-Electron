@@ -100,6 +100,12 @@ const getEntityWithId = async (id: number) => {
   return ent[0] as Entity
 }
 
+const addEntity = async (name: string) => {
+  const sql = `INSERT INTO Entities (EntName) VALUES ('${name}');`
+  await window.myapi.connect()
+  await window.myapi.selectAll(sql)
+}
+
 const deleteEntityWithId = async (id: number) => {
   const mysql1 = `
   DELETE FROM Entities WHERE Entities.Id = ${id};
@@ -510,6 +516,7 @@ export {
   getEntities,
   getEntityAtIdx,
   getEntityWithId,
+  addEntity,
   deleteEntityWithId,
   getMembersForCurrentEntity,
   getMemberAtIdx,

@@ -1,4 +1,4 @@
-import  { populateTables } from './01-Use cases/01-Track speakers/speakers-presenter.js'
+import  { resetTablesWithSavedData, populateTables } from './01-Use cases/01-Track speakers/speakers-presenter.js'
 import { 
   speaker_tracker, 
   setupArrowButtonListeners, 
@@ -27,12 +27,14 @@ import {
 
 /**
  * Initialise the database and load the speakers view.
+ * Called when app is loaded.
  *  */ 
 async function initialise() {
   const paths = await window.myapi.getPaths()
   console.log("App paths: ",paths)
   await window.myapi.connect()
   await window.myapi.initDb()
+  await resetTablesWithSavedData()
   loadSpeakersView()
 }
 

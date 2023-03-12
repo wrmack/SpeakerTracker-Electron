@@ -154,7 +154,7 @@ const infoText = `
   <div class="help-text">
     <p>Select an Entity and a Meeting group.  Meeting events that have been recorded will be displayed.</p>
     <p>Click a meeting event to open its report as a pdf in a new window.  The pdf can be downloaded from the pdf viewer in the new window.</p>
-
+    <p>Click Edit to delete reports. Select the reports to be deleted and click Trash.</p>
   </div>
 
   <div class="help-title">App info </div>  
