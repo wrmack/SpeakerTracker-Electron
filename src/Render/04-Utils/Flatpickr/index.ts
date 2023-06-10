@@ -1229,9 +1229,7 @@ function FlatpickrInstance(
         "flatpickr-am-pm",
         self.l10n.amPM[
           int(
-            (self.latestSelectedDateObj
-              ? self.hourElement.value
-              : self.config.defaultHour) > 11
+            (self.latestSelectedDateObj ? self.hourElement.valueAsNumber : self.config.defaultHour) > 11
           )
         ]
       );
