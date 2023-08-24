@@ -1,6 +1,7 @@
 import type { Database } from 'sqlite3'
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path = require('path')
+import { IpcMainInvokeEvent } from 'electron/main'
 const sqlite3 = require('sqlite3').verbose()
 
 
@@ -140,7 +141,7 @@ ipcMain.handle('dbInit', async () => {
 })
 
 
-ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
+ipcMain.handle('dbExec', async (event: IpcMainInvokeEvent,sql: string) => {
   db.serialize(function () {
     db.exec(sql, (err) => {
       if (err) {
@@ -153,7 +154,7 @@ ipcMain.handle('dbExec', async (ev: Event,sql: string) => {
 })
 
 
-ipcMain.handle('dbRun', async (ev: Event, sql: string, params: any) => {
+ipcMain.handle('dbRun', async (event: IpcMainInvokeEvent, sql: string, params: any) => {
   db.run(sql, params, err => {
     if (err) {
       return console.error("------->> ",err.message);
@@ -162,7 +163,7 @@ ipcMain.handle('dbRun', async (ev: Event, sql: string, params: any) => {
 })
 
 // db.all uses a callback therefore wrap whole thing in a Promise and return the Prommise
-ipcMain.handle('dbSelect', async (ev:Event, sql: string) => {
+ipcMain.handle('dbSelect', async (event:IpcMainInvokeEvent, sql: string) => {
   // db.serialize( () => {
     return new Promise((resolve, reject) => {
       db.all(sql, (err, rows) => {
