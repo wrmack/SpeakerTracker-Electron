@@ -39,7 +39,7 @@ function createWindow () {
   // Handles opening windows
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     console.log("window url ", url)
-    if (url === 'about:blank#blocked') {
+    if (url === 'about:blank') {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
