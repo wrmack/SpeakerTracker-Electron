@@ -4,7 +4,7 @@
   "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./build/Main/main.js",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "author": "warwickmcnaughton",
   "scripts": {
     "start": "electron-forge start",
@@ -16,22 +16,22 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.7.0",
-    "@electron-forge/maker-appx": "^7.7.0",
-    "@electron/rebuild": "^3.7.1",
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-appx": "^7.8.1",
+    "@electron/rebuild": "^4.0.1",
     "@types/keyv": "^4.2.0",
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.15.30",
     "@types/node-abi": "^3.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.26.1",
-    "@typescript-eslint/parser": "^8.26.1",
-    "electron": "^34.3.2",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
+    "electron": "^36.4.0",
     "electron-windows-store": "^2.1.0",
-    "eslint": "^9.22.0",
-    "got": "^14.4.6",
-    "keyv": "^5.3.1",
-    "node-abi": "^4.2.0",
+    "eslint": "^9.28.0",
+    "got": "^14.4.7",
+    "keyv": "^5.3.3",
+    "node-abi": "^4.9.0",
     "source-map-support": "^0.5.21",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "config": {
     "forge": {
