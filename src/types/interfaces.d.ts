@@ -90,7 +90,7 @@ interface Entity {
     Id: number,
     EntName: string
   }
-  
+
 // Property labels lowercase - legacy so cannot change this witout affecting users who have already installed the app
 interface Member {
   id: number,

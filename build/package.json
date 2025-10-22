@@ -13,7 +13,6 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "electron": "36.4.0",
-    "eslint": "^9.28.0"
+    "electron": "^38.3.0"
   }
 }
