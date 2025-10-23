@@ -4,7 +4,7 @@
   "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./Main/main.js",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "author": "warwickmcnaughton",
   "scripts": {
     "start": "electron ."

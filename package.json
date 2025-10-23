@@ -4,7 +4,7 @@
   "description": "An electron app to keep track of speakers during a debate",
   "keywords": [],
   "main": "./build/Main/main.js",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "author": "warwickmcnaughton",
   "scripts": {
     "start": "electron-forge start",
@@ -20,13 +20,13 @@
     "@electron-forge/maker-appx": "^7.10.2",
     "@electron/rebuild": "^4.0.1",
     "@types/keyv": "^4.2.0",
-    "@types/node": "^24.9.0",
+    "@types/node": "^24.9.1",
     "@types/node-abi": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
-    "electron": "^38.3.0",
+    "electron": "^38.4.0",
     "electron-windows-store": "^2.1.0",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "got": "^14.6.0",
     "keyv": "^5.5.3",
     "node-abi": "^4.14.0",
@@ -49,11 +49,11 @@
           "name": "@electron-forge/maker-appx",
           "config": {
             "publisher": "CN=14EFDD4D-6393-45C1-9098-784F9A3D8508",
-            "windowsKit": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.22621.0\\x64",
+            "windowsKit": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64",
             "devCert": "C:\\Users\\warwi\\AppData\\Roaming\\electron-windows-store\\14EFDD4D-6393-45C1-9098-784F9A3D8508\\14EFDD4D-6393-45C1-9098-784F9A3D8508.pfx",
             "certPass": "",
-            "assets": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\Assets",
-            "manifest": "C:\\Users\\warwi\\SpeakerTracker-Electron\\assets\\custom\\AppXManifest.xml",
+            "assets": "C:\\Users\\warwi\\LocalDeveloper\\SpeakerTracker-Electron\\assets\\custom\\Assets",
+            "manifest": "C:\\Users\\warwi\\LocalDeveloper\\SpeakerTracker-Electron\\assets\\custom\\AppXManifest.xml",
             "makePri": true
           }
         }
